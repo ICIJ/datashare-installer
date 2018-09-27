@@ -11,6 +11,8 @@ Name "Datashare ${VERSION}"
 
 !define DOCKER_FOR_WINDOWS_URL "https://download.docker.com/win/stable/Docker%20for%20Windows%20Installer.exe"
 !define DOCKER_FOR_WINDOWS_PATH "$TEMP\docker_for_windows.exe"
+!define DOCKER_TOOLBOX_URL "https://download.docker.com/win/stable/DockerToolbox.exe"
+!define DOCKER_TOOLBOX_PATH "$TEMP\docker_toolbox.exe"
 
 OutFile installDatashare.exe
 
@@ -25,6 +27,14 @@ FunctionEnd
 
 Function InstallDockerToolbox
   DetailPrint "Installing docker toolbox for windows"
+  inetc::get "${DOCKER_TOOLBOX_URL}" "${DOCKER_TOOLBOX_PATH}" /end
+    Pop $0
+    DetailPrint "Download Status: $0"
+    ${If} $0 != "OK"
+      MessageBox MB_OK "Download Failed: $0"
+      Abort
+    ${EndIf}
+    ExecWait '"${DOCKER_TOOLBOX_PATH}" install --quiet'
 FunctionEnd
 
 Function InstallDockerForWindows
