@@ -31,9 +31,11 @@ Function InstallDockerForWindows
   DetailPrint "Datashare uses Docker, downloading and installing docker for windows"
   inetc::get "${DOCKER_FOR_WINDOWS_URL}" "${DOCKER_FOR_WINDOWS_PATH}" /end
   Pop $0
-  Pop $1
-  Pop $2
-  DetailPrint "Download Status: $0, $1, $2"
+  DetailPrint "Download Status: $0"
+  ${If} $0 != "OK"
+    MessageBox MB_OK "Download Failed: $0"
+    Abort
+  ${EndIf}
   ExecWait '"${DOCKER_FOR_WINDOWS_PATH}" install --quiet'
 FunctionEnd
 
