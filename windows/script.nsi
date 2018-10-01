@@ -13,8 +13,10 @@ Name "Datashare ${VERSION}"
 !define DOCKER_FOR_WINDOWS_PATH "$TEMP\docker_for_windows.exe"
 !define DOCKER_TOOLBOX_URL "https://download.docker.com/win/stable/DockerToolbox.exe"
 !define DOCKER_TOOLBOX_PATH "$TEMP\docker_toolbox.exe"
+Var shouldReboot
 
 OutFile installDatashare.exe
+InstallDir "$PROGRAMFILES64\Datashare"
 
 Function .onInit
   System::Call 'kernel32::CreateMutex(p 0, i 0, t "dsMutex") p .r1 ?e'
@@ -49,7 +51,14 @@ Function InstallDockerForWindows
   ExecWait '"${DOCKER_FOR_WINDOWS_PATH}" install --quiet'
 FunctionEnd
 
+Function InstallDatashare
+  SetOutPath "$INSTDIR"
+  File "datashare.bat"
+  File "docker-compose.yml"
+FunctionEnd
+
 Section
+  StrCpy $shouldReboot "false"
   ${GetWindowsVersion} $R0
   DetailPrint "Detected Windows $R0"
 
@@ -59,7 +68,16 @@ Section
      DetailPrint "Nice! Docker is already installed"
   ${ElseIf} $R0 == "10.0"
      Call InstallDockerForWindows
+     StrCpy $shouldReboot "true"
   ${Else}
      Call InstallDockerToolbox
+     StrCpy $shouldReboot "true"
+  ${EndIf}
+
+  Call InstallDatashare
+
+  ${If} $shouldReboot == "true"
+    MessageBox MB_YESNO|MB_ICONQUESTION "System needs to reboot. Do you wish to reboot now ?" IDNO +2
+    Reboot
   ${EndIf}
 SectionEnd

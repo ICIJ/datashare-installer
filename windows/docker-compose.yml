@@ -1,0 +1,28 @@
+version: '2'
+services:
+  datashare:
+    image: icij/datashare:0.31
+    command:
+      -w
+    ports:
+      - "8080:8080"
+
+  redis:
+    image: redis:4.0.1-alpine
+    ports:
+      - 6379:6379
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.3.0
+    environment:
+      - "http.host=0.0.0.0"
+      - "transport.host=0.0.0.0"
+      - "cluster.name=datashare"
+      - "discovery.type=single-node"
+      - "discovery.zen.minimum_master_nodes=1"
+      - "xpack.license.self_generated.type=basic"
+      - "http.cors.enabled=true"
+      - "http.cors.allow-origin=*"
+      - "http.cors.allow-methods=OPTIONS, HEAD, GET, POST, PUT, DELETE"
+    ports:
+      - "9200:9200"
