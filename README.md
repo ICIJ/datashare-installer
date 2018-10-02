@@ -11,7 +11,7 @@ Basically the scripts are :
 
 It is based on [Nullsoft Scriptable Install System](http://nsis.sourceforge.net). 
 
-Under linux you can run `makensis script.nsi` with the package [nsis](https://packages.ubuntu.com/search?keywords=nsis).
+Under linux you can run `makensis installDatashare.nsi` with the package [nsis](https://packages.ubuntu.com/search?keywords=nsis).
 
 ## MacOS 
 
