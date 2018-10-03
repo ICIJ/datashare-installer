@@ -81,6 +81,11 @@ Function InstallDatashare
   createDirectory "$SMPROGRAMS\${COMPANYNAME}"
   createShortCut "$SMPROGRAMS\${COMPANYNAME}\${APPNAME}.lnk" "$INSTDIR\datashare.bat" "" "$INSTDIR\logo.ico"
 
+  # Data
+  createDirectory "$APPDATA\Datashare\models"
+  createDirectory "$APPDATA\Datashare\data"
+  CreateShortcut "$DESKTOP\Datashare Data.lnk" "$APPDATA\Datashare\data"
+
   writeUninstaller "$INSTDIR\uninstall.exe"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" "DisplayName" "${APPNAME}"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" "UninstallString" "$\"$INSTDIR\uninstall.exe$\""
@@ -116,15 +121,15 @@ SectionEnd
 
 section "uninstall"
   delete "$SMPROGRAMS\${COMPANYNAME}\${APPNAME}.lnk"
-  # this will only happen if it is empty
-  rmDir "$SMPROGRAMS\${COMPANYNAME}"
+  rmDir "$SMPROGRAMS\${COMPANYNAME}" # only if empty
+  rmDir /r $INSTDIR # recursive
 
-  delete $INSTDIR\datashare.bat
-  delete $INSTDIR\docker-compose.yml
-  delete $INSTDIR\icij.ico
-  delete $INSTDIR\uninstall.exe
-  # this will only happen if it is empty
-  rmDir $INSTDIR
+  # data
+  rmDir /r "$APPDATA\Datashare\models"
+  MessageBox MB_YESNO|MB_ICONQUESTION "Do you want to remove Datashare data directory ?" IDNO +3
+    rmDir /r "$APPDATA\Datashare\data"
+    delete "$DESKTOP\Datashare Data.lnk"
+  rmDir "$APPDATA\Datashare" # only if empty
 
   ReadRegStr $0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" "GetWindowsVersion"
   # Remove uninstaller information from the registry
