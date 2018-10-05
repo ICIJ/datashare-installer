@@ -1,9 +1,9 @@
-<pkg-info format-version="2" identifier="org.ICIJ.Datashare.base.pkg" version="0.31" install-location="/" auth="root">
-  <payload installKBytes="264" numberOfFiles="13"/>
+<pkg-info format-version="2" identifier="${BUNDLE_ID}.base.pkg" version="${VERSION}" install-location="/" auth="root">
+  <payload installKBytes="${SIZE}" numberOfFiles="${NB_FILES}"/>
   <scripts>
     <postinstall file="build/postinstall"/>
   </scripts>
 <bundle-version>
-    <bundle id="com.ProFarms.SimCow" CFBundleIdentifier="com.ProFarms.SimCow" path="./Applications/SimCow 1.3.app" CFBundleVersion="1.3.0"/>
+    <bundle id="${BUNDLE_ID}.base.pkg" CFBundleIdentifier="${BUNDLE_ID}" path="./Applications/${APPNAME}.app" CFBundleVersion="${VERSION}"/>
 </bundle-version>
 </pkg-info>

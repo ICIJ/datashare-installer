@@ -1,0 +1,10 @@
+#!/bin/bash
+SOURCE_TPL=$1
+DEST_FILE=$2
+
+NB_FILES=`find dist/root | wc -l`
+SIZE=`du -s dist/root | cut -f1`
+
+TEMPLATE="$(cat $SOURCE_TPL)" 
+TEMPLATE=$(sed 's/\([^\\]\)"/\1\\"/g; s/^"/\\"/g' <<< "$TEMPLATE")
+eval "echo \"${TEMPLATE}\"" > $DEST_FILE

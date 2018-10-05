@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <installer-script minSpecVersion="1.000000" authoringTool="com.apple.PackageMaker" authoringToolVersion="3.0.3" authoringToolBuild="174">
-    <title>Datashare 0.31</title>
+    <title>${APPNAME}</title>
     <options customize="never" allow-external-scripts="no"/>
     <domains enable_anywhere="true"/>
     <installation-check script="pm_install_check();"/>
@@ -19,7 +19,7 @@ function pm_install_check() {
         <line choice="choice1"/>
     </choices-outline>
     <choice id="choice1" title="base">
-        <pkg-ref id="org.ICIJ.Datashare.base.pkg"/>
+        <pkg-ref id="${BUNDLE_ID}.base.pkg"/>
     </choice>
-    <pkg-ref id="org.ICIJ.Datashare.base.pkg" installKBytes="264" version="0.31" auth="Root">#base.pkg</pkg-ref>
+    <pkg-ref id="${BUNDLE_ID}.base.pkg" installKBytes="${SIZE}" version="${VERSION}" auth="Root">#base.pkg</pkg-ref>
 </installer-script>
