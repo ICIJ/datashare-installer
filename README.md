@@ -15,4 +15,4 @@ Under linux you can run `makensis installDatashare.nsi` with the package [nsis](
 
 ## MacOS 
 
-TODO
+Based on [this tutorial](http://bomutils.dyndns.org/tutorial.html) (cf the [Makefile](mac/Makefile))
