@@ -8,12 +8,12 @@ dist:
 		mkdir -p ${DIST}/flat/base.pkg ${DIST}/flat/Resources/en.lproj ${DIST}/root/Applications
 		./build/appify ../../datashare/datashare-dist/src/main/datashare.sh "${APPNAME}"
 		mv "${APPNAME}.app" ${DIST}/root/Applications/
-		( find ${DIST}/root | cpio -o --format odc --owner 0:80 | gzip -c ) > ${DIST}/flat/base.pkg/Payload
+		( cd ${DIST}/root && find . | cpio -o --format odc --owner 0:80 | gzip -c ) > ${DIST}/flat/base.pkg/Payload
 		./build/gen_file PackageInfo ${DIST}/flat/base.pkg/PackageInfo
 		( find scripts | cpio -o --format odc --owner 0:80 | gzip -c ) > ${DIST}/flat/base.pkg/Scripts
-		mkbom -u 0 -g 80 ${DIST}/root ${DIST}/flat/base.pkg/Bom
+		( cd ${DIST} && mkbom -u 0 -g 80 root flat/base.pkg/Bom )
 		./build/gen_file Distribution ${DIST}/flat/Distribution
-		xar --compression none -cf "${DIST}/${APPNAME}.pkg" ${DIST}/flat/*
+		( cd ${DIST}/flat && xar --compression none -cf "../${APPNAME}.pkg" * )
 		chmod +x "${DIST}/${APPNAME}.pkg"
 
 PHONY: clean

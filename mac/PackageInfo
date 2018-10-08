@@ -1,7 +1,7 @@
 <pkg-info format-version="2" identifier="${BUNDLE_ID}.base.pkg" version="${VERSION}" install-location="/" auth="root">
   <payload installKBytes="${SIZE}" numberOfFiles="${NB_FILES}"/>
   <scripts>
-    <postinstall file="build/postinstall"/>
+    <postinstall file="scripts/postinstall"/>
   </scripts>
 <bundle-version>
     <bundle id="${BUNDLE_ID}.base.pkg" CFBundleIdentifier="${BUNDLE_ID}" path="./Applications/${APPNAME}.app" CFBundleVersion="${VERSION}"/>
