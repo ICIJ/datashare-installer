@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <pkg-info format-version="2" identifier="${BUNDLE_ID}.base.pkg" version="${VERSION}" install-location="/" auth="root">
   <payload installKBytes="${SIZE}" numberOfFiles="${NB_FILES}"/>
   <scripts>
