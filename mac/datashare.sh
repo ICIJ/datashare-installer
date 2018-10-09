@@ -3,8 +3,8 @@
 datashare_version=${VERSION}
 redis_image=redis:4.0.1-alpine
 elasticsearch_image=docker.elastic.co/elasticsearch/elasticsearch:6.3.0
-data_path="/Users/\${USER}/Desktop/Datashare Data"
-dist_path="/Users/\${USER}/Library/Datashare Models"
+data_path="/Users/\${USER}/Desktop/Datashare_Data"
+dist_path="/Users/\${USER}/Library/Datashare_Models"
 
 function create_docker_compose_file {
 cat > /tmp/datashare.yml << EOF
