@@ -5,4 +5,6 @@ echo "pre-install"
 DOCKER_URL=https://download.docker.com/mac/stable/Docker.dmg
 
 curl -O ${DOCKER_URL}
-hdiutil attach Docker.dmg
+hdiutil attach -nobrowse Docker.dmg
+cp -a /Volumes/Docker/Docker.app /Applications
+hdiutils detach /Volumes/Docker
