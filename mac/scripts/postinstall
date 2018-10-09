@@ -1,3 +1,6 @@
 #!/bin/bash
 
 echo "post install"
+
+mkdir -p "/Users/${USER}/Desktop/Datashare Data"
+mkdir -p "/Users/${USER}/Library/Datashare Models"
