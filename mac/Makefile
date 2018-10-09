@@ -1,12 +1,13 @@
 export DIST=dist
-export VERSION=$(shell cat ../../datashare/pom.xml | grep '<version>[0-9.]\+' | sed 's/<version>\([0-9.]\+\)<\/version>/\1/g' | tr -d '[:space:]')
+export VERSION=0.31
 export APPNAME=Datashare ${VERSION}
 export BUNDLE_ID=org.icij.Datashare
 
 # cf http://bomutils.dyndns.org/tutorial.html
 dist: 
 		mkdir -p ${DIST}/flat/base.pkg ${DIST}/flat/Resources/en.lproj ${DIST}/root/Applications
-		./build/appify ../../datashare/datashare-dist/src/main/datashare.sh "${APPNAME}"
+		./build/gen_file datashare.sh ${DIST}/datashare.sh
+		./build/appify ${DIST}/datashare.sh "${APPNAME}"
 		mv "${APPNAME}.app" ${DIST}/root/Applications/
 		( cd ${DIST}/root && find . | cpio -o --format odc --owner 0:80 | gzip -c ) > ${DIST}/flat/base.pkg/Payload
 		./build/gen_file PackageInfo ${DIST}/flat/base.pkg/PackageInfo
