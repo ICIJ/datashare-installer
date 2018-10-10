@@ -5,6 +5,7 @@ export APPNAME=Datashare ${VERSION}
 # cf http://bomutils.dyndns.org/tutorial.html
 dist: 
 		mkdir -p ${DIST}
+		../mac/build/gen_file docker-compose.yml dist/docker-compose.yml
 		makensis installDatashare.nsi
 
 PHONY: clean

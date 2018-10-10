@@ -1,14 +1,14 @@
 version: '2'
 services:
   datashare:
-    image: icij/datashare:0.31
+    image: icij/datashare:${VERSION}
     command:
       -w
     ports:
       - "8080:8080"
     volumes:
-      - "${APPDATA}/Datashare/models:/home/datashare/dist"
-      - "${APPDATA}/Datashare/data:/home/datashare/data:ro"
+      - "\${APPDATA}/Datashare/models:/home/datashare/dist"
+      - "\${APPDATA}/Datashare/data:/home/datashare/data:ro"
 
   redis:
     image: redis:4.0.1-alpine

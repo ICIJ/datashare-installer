@@ -74,7 +74,7 @@ Function InstallDatashare
   SetOutPath "$INSTDIR"
   file "icij.ico"
   File "datashare.bat"
-  File "docker-compose.yml"
+  File /oname=docker-compose.yml "dist/docker-compose.yml"
 
   # Start Menu
   createDirectory "$SMPROGRAMS\${COMPANYNAME}"
