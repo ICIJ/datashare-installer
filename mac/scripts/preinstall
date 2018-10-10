@@ -1,14 +1,20 @@
 #!/bin/bash
 
-echo "pre-install"
+DS_LOG=/tmp/datashare_install.log
+echo "pre-install" >> ${DS_LOG}
 
 DOCKER_URL=https://download.docker.com/mac/stable/Docker.dmg
 
 if [ -d "/Applications/Docker.app" ]; then
-  echo "Nice, Docker is installed"
+  echo "Nice, Docker is installed" >> ${DS_LOG}
 else
   curl -O ${DOCKER_URL}
+  echo "downloaded docker (res: $?)" >> ${DS_LOG}
   hdiutil attach -nobrowse Docker.dmg
+  echo "mounted Docker volume (res: $?)" >> ${DS_LOG}
   cp -a /Volumes/Docker/Docker.app /Applications/
-  hdiutils detach /Volumes/Docker
+  echo "cp docker app (res: $?)" >> ${DS_LOG}
+  sync
+  hdiutil detach /Volumes/Docker
+  echo "unmounted docker volume (res: $?)" >> ${DS_LOG}
 fi
