@@ -5,7 +5,7 @@ Basically the scripts are :
 * testing the OS version to choose between docker for OS supporting virtualization or docker toolbox (including virtualbox)
 * installing the right version of docker
 * installing datashare run script based on docker-compose
-* providing an uninstaller
+* providing an uninstaller (for windows)
 
 To compile installers, just type `make clean dist` under mac or windows.
 
