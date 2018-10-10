@@ -1,5 +1,4 @@
 !include LogicLib.nsh
-!include Registry.nsh
 !include GetWindowsVersion.nsh
 !include "MUI2.nsh"
 !define MUI_ICON "${NSISDIR}\Contrib\Graphics\Icons\modern-install-colorful.ico"
@@ -7,9 +6,9 @@
 !insertmacro MUI_PAGE_INSTFILES
 !insertmacro MUI_LANGUAGE "English"
 
-!define VERSION "0.31"
+!define VERSION "$%VERSION%"
 !define COMPANYNAME "ICIJ"
-!define APPNAME "Datashare ${VERSION}"
+!define APPNAME "$%APPNAME%"
 
 Name "${COMPANYNAME} - ${APPNAME}"
 Icon "icij.ico"
@@ -22,7 +21,7 @@ Icon "icij.ico"
 !define DATASHARE_UNINSTALL_KEY "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}"
 Var shouldReboot
 
-OutFile installDatashare.exe
+OutFile dist/installDatashare.exe
 InstallDir "$PROGRAMFILES64\${APPNAME}"
 
 Function .onInit
