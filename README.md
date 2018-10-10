@@ -23,4 +23,4 @@ You will also need the [inetc plugin](http://nsis.sourceforge.net/Inetc_plug-in)
 
 Based on [this tutorial](http://bomutils.dyndns.org/tutorial.html) (cf the [Makefile](mac/Makefile))
 
-You have to install the `cpio` package and the [xar tarball](https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/xar/xar-1.5.2.tar.gz).
+You have to install the `cpio` package, [bomutils](https://github.com/hogliux/bomutils) and the [xar tarball](https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/xar/xar-1.5.2.tar.gz).
