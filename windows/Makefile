@@ -1,5 +1,5 @@
 export DIST=dist
-export VERSION=0.33
+export VERSION=0.36
 export APPNAME=Datashare ${VERSION}
 
 # cf http://bomutils.dyndns.org/tutorial.html
