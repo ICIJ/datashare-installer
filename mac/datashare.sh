@@ -10,14 +10,15 @@ function create_docker_compose_file {
 cat > /tmp/datashare.yml << EOF
 version: '2'
 services:
-  image: icij/datashare:\${datashare_version}
-    command:
-      -w
+  datashare:
+    image: icij/datashare:\${datashare_version}
+    command: "-w"
     ports:
       - "8080:8080"
     volumes:
       - "\${dist_path}:/home/datashare/dist"
       - "\${data_path}:/home/datashare/data:ro"
+
   redis:
     image: \${redis_image}
     ports:
