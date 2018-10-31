@@ -27,7 +27,9 @@ if [ -a "$APPNAME.app" ]; then
 fi
 
 mkdir -p "$DIR"
-cp "$1" "$DIR/$APPNAME"
+cp "$1" "$DIR/$APPNAME.command"
+chmod +x "$DIR/$APPNAME.command"
+printf "#!/bin/bash\n\nopen \"/Applications/${DIR}/${APPNAME}.command\"" > "${DIR}/${APPNAME}"
 chmod +x "$DIR/$APPNAME"
 
 echo "$PWD/$APPNAME.app"
