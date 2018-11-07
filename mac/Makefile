@@ -1,5 +1,5 @@
 export DIST=dist
-export VERSION=0.36
+export VERSION=0.45
 export APPNAME=Datashare
 export BUNDLE_ID=org.icij.Datashare
 
