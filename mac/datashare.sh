@@ -54,7 +54,7 @@ function wait_datashare_is_up {
     echo "KO"
 }
 
-if [[ -z "$(docker ps -q 2>/dev/null)" ]]; then
+if [[ -z "\$(docker ps -q 2>/dev/null)" ]]; then
   echo -n "docker service is not running, launching it..."
   open --background -a Docker && while ! docker system info > /dev/null 2>&1; do sleep 1; done
   echo "OK"
