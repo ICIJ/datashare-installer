@@ -2,66 +2,9 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>AMIsApplet</key>
-	<true/>
-	<key>AMStayOpen</key>
-	<false/>
-	<key>BuildMachineOSBuild</key>
-	<string>16B2657</string>
-	<key>CFBundleAllowMixedLocalizations</key>
-	<true/>
-	<key>CFBundleDevelopmentRegion</key>
-	<string>English</string>
-
 	<key>CFBundleIconFile</key>
 	<string>Icij</string>
-
-	<key>CFBundleIdentifier</key>
-	<string>org.icij.Datashare</string>
 	<key>CFBundleName</key>
 	<string>Datashare</string>
-	<key>CFBundlePackageType</key>
-	<string>APPL</string>
-	<key>CFBundleSupportedPlatforms</key>
-	<array>
-		<string>MacOSX</string>
-	</array>
-	<key>CFBundleURLTypes</key>
-	<array/>
-	<key>CFBundleVersion</key>
-	<string>444.7</string>
-	<key>DTCompiler</key>
-	<string>com.apple.compilers.llvm.clang.1_0</string>
-	<key>DTPlatformBuild</key>
-	<string>9P107g</string>
-	<key>DTPlatformVersion</key>
-	<string>GM</string>
-	<key>DTSDKBuild</key>
-	<string>17F2</string>
-	<key>DTSDKName</key>
-	<string>macosx10.13internal</string>
-	<key>DTXcode</key>
-	<string>0930</string>
-	<key>DTXcodeBuild</key>
-	<string>9P107g</string>
-	<key>LSMinimumSystemVersion</key>
-	<string>10.5</string>
-	<key>LSMinimumSystemVersionByArchitecture</key>
-	<dict>
-		<key>x86_64</key>
-		<string>10.6</string>
-	</dict>
-	<key>LSUIElement</key>
-	<true/>
-	<key>NSAppleScriptEnabled</key>
-	<string>YES</string>
-	<key>NSPrincipalClass</key>
-	<string>NSApplication</string>
-	<key>NSServices</key>
-	<array/>
-	<key>UTExportedTypeDeclarations</key>
-	<array/>
-	<key>UTImportedTypeDeclarations</key>
-	<array/>
 </dict>
 </plist>

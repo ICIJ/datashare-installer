@@ -13,9 +13,9 @@ $(DIST)/${APPNAME}.pkg: $(DIST)/Icij.icns
 		./build/appify ${DIST}/datashare.sh "${APPNAME}"
 
 		# adds icon
-		mkdir -p "${APPNAME}.app"/Resources
-		cp $(DIST)/Icij.icns "${APPNAME}.app"/Resources/
-		cp $(RESOURCES)/Info.plist "${APPNAME}.app"
+		mkdir -p "${APPNAME}.app"/Contents/Resources
+		cp $(DIST)/Icij.icns "${APPNAME}.app"/Contents/Resources/
+		cp $(RESOURCES)/Info.plist "${APPNAME}.app"/Contents
 
 		mv "${APPNAME}.app" ${DIST}/root/Applications/
 
