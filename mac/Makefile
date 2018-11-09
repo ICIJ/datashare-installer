@@ -5,7 +5,7 @@ export APPNAME=Datashare
 export BUNDLE_ID=org.icij.Datashare
 
 $(DIST):
-		mkdir $(DIST)
+		mkdir -p $(DIST)
 
 $(DIST)/${APPNAME}.pkg: $(DIST)/Icij.icns
 		mkdir -p ${DIST}/flat/base.pkg ${DIST}/flat/Resources/en.lproj ${DIST}/root/Applications
