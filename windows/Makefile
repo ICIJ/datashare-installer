@@ -1,5 +1,5 @@
 export DIST=dist
-export VERSION=0.45
+export VERSION=${VERSION}
 export APPNAME=Datashare ${VERSION}
 
 $(DIST):
