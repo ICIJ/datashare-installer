@@ -1,13 +1,22 @@
 @echo off
 
-docker ps >NULL 2>&1 
+docker ps >NULL 2>&1
 if ERRORLEVEL 1 (
   echo docker is not running, launching it
   start "" "\Program Files\Docker\Docker\Docker for Windows.exe"
   call :wait_docker_is_up
 )
 
-docker-compose up -d
+set datashare_id=
+for /f "delims=" %%a in ('docker-compose -p datashare ps -q datashare') do @set datashare_id=%%a
+set datashare_status=
+for /f "delims=" %%a in ('docker inspect %datashare_id% -f "{{.State.Status}}"') do @set datashare_status=%%a
+
+if "%datashare_status%"=="running" (
+  docker-compose -p datashare restart datashare
+) else (
+  docker-compose -p datashare up -d
+)
 
 call :wait_idx_is_up
 
@@ -16,7 +25,6 @@ if not ERRORLEVEL 1 (
 )
 
 exit /B %ERRORLEVEL%
-
 
 :wait_docker_is_up
 echo|set /p="waiting for docker to be up"
