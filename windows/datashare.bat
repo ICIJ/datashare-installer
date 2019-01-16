@@ -1,6 +1,7 @@
 @echo off
 
-docker ps >NULL 2>&1
+docker info 2>NUL
+
 if ERRORLEVEL 1 (
   echo docker is not running, launching it
   start "" "\Program Files\Docker\Docker\Docker for Windows.exe"
@@ -29,7 +30,7 @@ exit /B %ERRORLEVEL%
 :wait_docker_is_up
 echo|set /p="waiting for docker to be up"
 for /l %%x in (1, 1, 60) do (
-  docker ps >NULL 2>&1
+  docker info 2>NUL
   if not ERRORLEVEL 1 (
       echo OK
       exit /B 0
