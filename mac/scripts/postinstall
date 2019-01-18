@@ -4,3 +4,4 @@ echo "post install"
 
 mkdir -p "${HOME}/Datashare"
 mkdir -p "/Users/${USER}/Library/Datashare_Models"
+chown "${USER}:staff" "/Users/${USER}/Library/Datashare_Models"
