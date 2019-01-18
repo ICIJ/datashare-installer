@@ -6,12 +6,19 @@ elasticsearch_image=docker.elastic.co/elasticsearch/elasticsearch:6.3.0
 data_path="\${HOME}/Datashare"
 dist_path="/Users/\${USER}/Library/Datashare_Models"
 
+if [[ -z "\${DS_JAVA_OPTS}" ]]; then
+    mem_allocated=\$(sysctl -a | grep hw.memsize | awk '{print \$2"/(2*1024^3)"}' | bc)
+    DS_JAVA_OPTS="-Xmx\${mem_allocated}G"
+fi
+
 function create_docker_compose_file {
 cat > /tmp/datashare.yml << EOF
 version: '2'
 services:
   datashare:
     image: icij/datashare:\${datashare_version}
+    environment:
+      - "DS_JAVA_OPTS=\${DS_JAVA_OPTS}"
     command: "-w"
     ports:
       - "8080:8080"
