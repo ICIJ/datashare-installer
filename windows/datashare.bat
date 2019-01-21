@@ -1,4 +1,4 @@
-@echo off
+@echo on
 
 docker info 2>NUL
 
@@ -12,6 +12,8 @@ set datashare_id=
 for /f "delims=" %%a in ('docker-compose -p datashare ps -q datashare') do @set datashare_id=%%a
 set datashare_status=
 for /f "delims=" %%a in ('docker inspect %datashare_id% -f "{{.State.Status}}"') do @set datashare_status=%%a
+set memory_size=
+for /f "skip=1" %%a in ('wmic os get totalvirtualmemorysize') do @set memory_size=%%a
 
 if "%datashare_status%"=="running" (
   docker-compose -p datashare restart datashare
