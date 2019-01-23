@@ -19,7 +19,7 @@ for /f "skip=1" %%a in ('wmic os get totalvirtualmemorysize') do (
 )
 :done
 set /a mem_allocated=mem_size/(2*1024)
-set DS_JAVA_OPTS="-Xmx%mem_allocated%m"
+set DS_JAVA_OPTS=-Xmx%mem_allocated%m
 
 if "%datashare_status%"=="running" (
   docker-compose -p datashare restart datashare
