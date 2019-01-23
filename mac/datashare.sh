@@ -33,6 +33,7 @@ services:
   elasticsearch:
     image: \${elasticsearch_image}
     environment:
+      - "ES_JAVA_OPTS=\${DS_JAVA_OPTS}"
       - "http.host=0.0.0.0"
       - "transport.host=0.0.0.0"
       - "cluster.name=datashare"
