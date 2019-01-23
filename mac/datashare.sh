@@ -7,8 +7,8 @@ data_path="\${HOME}/Datashare"
 dist_path="/Users/\${USER}/Library/Datashare_Models"
 
 if [[ -z "\${DS_JAVA_OPTS}" ]]; then
-    mem_allocated=\$(sysctl -a | grep hw.memsize | awk '{print \$2"/(2*1024^3)"}' | bc)
-    DS_JAVA_OPTS="-Xmx\${mem_allocated}G"
+    mem_allocated=\$(sysctl -a | grep hw.memsize | awk '{print \$2"/(2*1024^2)"}' | bc)
+    DS_JAVA_OPTS="-Xmx\${mem_allocated}m"
 fi
 
 function create_docker_compose_file {
