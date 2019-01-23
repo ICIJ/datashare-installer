@@ -2,8 +2,6 @@ version: '2'
 services:
   datashare:
     image: icij/datashare:${VERSION}
-    command:
-      -w
     ports:
       - "8080:8080"
     volumes:
