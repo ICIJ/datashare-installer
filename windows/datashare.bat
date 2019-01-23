@@ -1,12 +1,12 @@
-@echo on
+@echo off
 
 docker info 2>NUL
 
-REM if ERRORLEVEL 1 (
-REM   echo docker is not running, launching it
-REM   start "" "\Program Files\Docker\Docker\Docker for Windows.exe"
-REM   call :wait_docker_is_up
-REM )
+if ERRORLEVEL 1 (
+  echo docker is not running, launching it
+  start "" "\Program Files\Docker\Docker\Docker for Windows.exe"
+  call :wait_docker_is_up
+)
 
 set datashare_id=
 for /f "delims=" %%a in ('docker-compose -p datashare ps -q datashare') do @set datashare_id=%%a
