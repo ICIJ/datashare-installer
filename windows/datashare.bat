@@ -1,4 +1,4 @@
-@echo on
+@echo off
 
 docker info 2>NUL
 
