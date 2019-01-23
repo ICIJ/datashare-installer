@@ -8,6 +8,11 @@ MODELS_DIR=${MODELS_DIR:-${HOME}/.local/share/Datashare_Models}
 mkdir -p ${MODELS_DIR}
 DATA_DIR=${DATA_DIR:-${HOME}/Datashare}
 mkdir -p ${DATA_DIR}
+MEM_ALLOCATED=$(free|awk '/^Mem:/{print $2"/2"}'|bc)
+
+if [[ -z "${DS_JAVA_OPTS}" ]]; then
+  DS_JAVA_OPTS="-Xmx${MEM_ALLOCATED}"
+fi
 
 function create_docker_compose_file {
 cat > /tmp/datashare.yml << EOF
@@ -19,6 +24,7 @@ services:
   elasticsearch:
     image: ${elasticsearch_image}
     environment:
+      - ES_JAVA_OPTS=-Xmx${MEM_ALLOCATED}
       - "http.host=0.0.0.0"
       - "transport.host=0.0.0.0"
       - "cluster.name=datashare"
