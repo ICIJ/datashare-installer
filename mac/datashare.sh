@@ -19,6 +19,7 @@ services:
     image: icij/datashare:\${datashare_version}
     environment:
       - "DS_JAVA_OPTS=\${DS_JAVA_OPTS}"
+      - "DS_DOCKER_MOUNTED_DATA_DIR=\${data_path}"
     ports:
       - "8080:8080"
     volumes:
