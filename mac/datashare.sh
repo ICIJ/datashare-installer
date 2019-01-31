@@ -71,7 +71,9 @@ fi
 create_docker_compose_file
 
 datashare_id=\$(docker-compose -f /tmp/datashare.yml -p datashare ps -q datashare)
-datashare_status=\$(docker inspect ${datashare_id} -f "{{.State.Status}}")
+if [[ -n "\${datashare_id}" ]]; then
+    datashare_status=\$(docker inspect ${datashare_id} -f "{{.State.Status}}")
+fi
 
 if [[ "\${datashare_status}" == "running" ]]; then
     echo "datashare is \${datashare_status}, restarting it"
