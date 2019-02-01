@@ -17,6 +17,7 @@ version: '2'
 services:
   datashare:
     image: icij/datashare:\${datashare_version}
+    restart: on-failure
     environment:
       - "DS_JAVA_OPTS=\${DS_JAVA_OPTS}"
       - "DS_DOCKER_MOUNTED_DATA_DIR=\${data_path}"
@@ -28,11 +29,13 @@ services:
 
   redis:
     image: \${redis_image}
+    restart: on-failure
     ports:
       - 6379:6379
 
   elasticsearch:
     image: \${elasticsearch_image}
+    restart: on-failure
     environment:
       - "ES_JAVA_OPTS=\${DS_JAVA_OPTS}"
       - "http.host=0.0.0.0"
