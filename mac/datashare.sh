@@ -82,7 +82,7 @@ if [[ "\${datashare_status}" == "running" ]]; then
     echo "datashare is \${datashare_status}, restarting it"
     docker-compose -f /tmp/datashare.yml -p datashare restart datashare
 else
-    docker-compose -f /tmp/datashare.yml -p datashare up -d
+    docker-compose -f /tmp/datashare.yml -p datashare up
 fi
 
 wait_datashare_is_up

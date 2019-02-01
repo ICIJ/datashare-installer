@@ -26,7 +26,7 @@ set DS_JAVA_OPTS=-Xmx%mem_allocated%m
 if "%datashare_status%"=="running" (
   docker-compose -p datashare restart datashare
 ) else (
-  docker-compose -p datashare up -d
+  docker-compose -p datashare up
 )
 
 call :wait_idx_is_up
