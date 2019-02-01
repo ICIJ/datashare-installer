@@ -7,14 +7,14 @@ export BUNDLE_ID=org.icij.Datashare
 $(DIST):
 		mkdir -p $(DIST)
 
-$(DIST)/${APPNAME}.pkg: $(DIST)/Icij.icns
+$(DIST)/${APPNAME}.pkg: $(DIST)/Datashare.icns
 		mkdir -p ${DIST}/flat/base.pkg ${DIST}/flat/Resources/en.lproj ${DIST}/root/Applications
 		./build/gen_file datashare.sh ${DIST}/datashare.sh
 		./build/appify ${DIST}/datashare.sh "${APPNAME}"
 
 		# adds icon
 		mkdir -p "${APPNAME}.app"/Contents/Resources
-		cp $(DIST)/Icij.icns "${APPNAME}.app"/Contents/Resources/
+		cp $(DIST)/Datashare.icns "${APPNAME}.app"/Contents/Resources/
 		cp $(RESOURCES)/Info.plist "${APPNAME}.app"/Contents
 
 		mv "${APPNAME}.app" ${DIST}/root/Applications/
@@ -28,13 +28,13 @@ $(DIST)/${APPNAME}.pkg: $(DIST)/Icij.icns
 		( cd ${DIST}/flat && xar --compression none -cf "../${APPNAME}.pkg" * )
 		chmod +x "${DIST}/${APPNAME}.pkg"
 
-$(DIST)/Icij.icns: $(DIST)
-		convert -resize 256x256 $(RESOURCES)/icij.png $(DIST)/Icij_256px.png
-		convert -resize 128x128 $(RESOURCES)/icij.png $(DIST)/Icij_128px.png
-		convert -resize 48x48 $(RESOURCES)/icij.png $(DIST)/Icij_48px.png
-		convert -resize 32x32 $(RESOURCES)/icij.png $(DIST)/Icij_32px.png
-		convert -resize 16x16 $(RESOURCES)/icij.png $(DIST)/Icij_16px.png
-		png2icns $(DIST)/Icij.icns $(DIST)/Icij_*px.png
+$(DIST)/Datashare.icns: $(DIST)
+		convert -resize 256x256 $(RESOURCES)/datashare.png $(DIST)/Datashare_256px.png
+		convert -resize 128x128 $(RESOURCES)/datashare.png $(DIST)/Datashare_128px.png
+		convert -resize 48x48 $(RESOURCES)/datashare.png $(DIST)/Datashare_48px.png
+		convert -resize 32x32 $(RESOURCES)/datashare.png $(DIST)/Datashare_32px.png
+		convert -resize 16x16 $(RESOURCES)/datashare.png $(DIST)/Datashare_16px.png
+		png2icns $(DIST)/Datashare.icns $(DIST)/Datashare_*px.png
 
 PHONY: clean
 clean:
