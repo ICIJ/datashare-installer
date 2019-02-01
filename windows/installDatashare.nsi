@@ -11,7 +11,7 @@
 !define APPNAME "$%APPNAME%"
 
 Name "${COMPANYNAME} - ${APPNAME}"
-Icon "icij.ico"
+Icon "datashare.ico"
 
 !define DOCKER_FOR_WINDOWS_URL "https://download.docker.com/win/stable/Docker%20for%20Windows%20Installer.exe"
 !define DOCKER_FOR_WINDOWS_PATH "$TEMP\docker_for_windows.exe"
@@ -72,7 +72,7 @@ FunctionEnd
 Function InstallDatashare
   exch $R0
   SetOutPath "$INSTDIR"
-  file "icij.ico"
+  file "datashare.ico"
   File "datashare.bat"
   File /oname=docker-compose.yml "dist/docker-compose.yml"
 
