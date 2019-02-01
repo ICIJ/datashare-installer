@@ -51,5 +51,5 @@ if [[ -n "${image_running}" ]]; then
 fi
 
 docker run -p 8080:8080 --network datashare_default --name datashare --rm -e DS_JAVA_OPTS="${DS_JAVA_OPTS}" \
- -e DS_DOCKER_MOUNTED_DATA_DIR=${DATA_DIR} -v ${DATA_DIR}:/home/datashare/data:ro --restart on-failure \
+ -e DS_DOCKER_MOUNTED_DATA_DIR=${DATA_DIR} -v ${DATA_DIR}:/home/datashare/data:ro \
  -v ${MODELS_DIR}:/home/datashare/dist -ti icij/datashare:${datashare_version} "$@"
