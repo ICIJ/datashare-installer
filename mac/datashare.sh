@@ -30,8 +30,6 @@ services:
   redis:
     image: \${redis_image}
     restart: on-failure
-    ports:
-      - 6379:6379
 
   elasticsearch:
     image: \${elasticsearch_image}
@@ -75,7 +73,7 @@ create_docker_compose_file
 
 datashare_id=\$(docker-compose -f /tmp/datashare.yml -p datashare ps -q datashare)
 if [[ -n "\${datashare_id}" ]]; then
-    datashare_status=\$(docker inspect ${datashare_id} -f "{{.State.Status}}")
+    datashare_status=\$(docker inspect \${datashare_id} -f "{{.State.Status}}")
 fi
 
 if [[ "\${datashare_status}" == "running" ]]; then
