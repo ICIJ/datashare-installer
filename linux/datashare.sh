@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 datashare_version=1.10
 redis_image=redis:4.0.1-alpine
@@ -10,11 +10,11 @@ DATA_DIR=${DATA_DIR:-${HOME}/Datashare}
 mkdir -p ${DATA_DIR}
 MEM_ALLOCATED_MEGA=$(free|awk '/^Mem:/{print $2"/(2*1024)"}'|bc)
 
-if [[ -z "${DS_JAVA_OPTS}" ]]; then
+if [ -z "${DS_JAVA_OPTS}" ]; then
   DS_JAVA_OPTS="-Xmx${MEM_ALLOCATED_MEGA}m"
 fi
 
-function create_docker_compose_file {
+create_docker_compose_file () {
 cat > /tmp/datashare.yml << EOF
 version: '2'
 services:
@@ -46,7 +46,7 @@ echo "binding data directory to ${DATA_DIR}"
 echo "binding NER models directory to ${MODELS_DIR}"
 
 image_running=$(docker inspect --format='{{.Config.Image}}' datashare 2>/dev/null)
-if [[ -n "${image_running}" ]]; then
+if [ -n "${image_running}" ]; then
   docker rm -f datashare > /dev/null
 fi
 
