@@ -10,7 +10,7 @@ DATA_DIR=${DATA_DIR:-${HOME}/Datashare}
 mkdir -p ${DATA_DIR}
 MEM_ALLOCATED_MEGA=$(free|awk '/^Mem:/{print $2"/(2*1024)"}'|bc)
 
-if [ -z "${DS_JAVA_OPTS}" ]; then
+if [ -z "${DS_JAVA_OPTS}" ] && [ -n "${MEM_ALLOCATED_MEGA}" ]; then
   DS_JAVA_OPTS="-Xmx${MEM_ALLOCATED_MEGA}m"
 fi
 
@@ -26,7 +26,7 @@ services:
     image: ${elasticsearch_image}
     restart: on-failure
     environment:
-      - "ES_JAVA_OPTS=-Xmx${MEM_ALLOCATED_MEGA}m"
+      - "ES_JAVA_OPTS=${DS_JAVA_OPTS}"
       - "http.host=0.0.0.0"
       - "transport.host=0.0.0.0"
       - "cluster.name=datashare"
