@@ -15,7 +15,7 @@ function IsPortOpen {
     $socket = new-object Net.Sockets.TcpClient
 
     $ErrorActionPreference = 'SilentlyContinue'
-    $connection = $socket.Connect($h, $p)
+    $socket.Connect($h, $p)
     $ErrorActionPreference = 'Continue'
 
     if($socket.Connected) {
