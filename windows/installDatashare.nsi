@@ -73,6 +73,7 @@ Function InstallDatashare
   exch $R0
   SetOutPath "$INSTDIR"
   file "datashare.ico"
+  File "datashare.ps1"
   File "datashare.bat"
   File /oname=docker-compose.yml "dist/docker-compose.yml"
 
