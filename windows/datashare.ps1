@@ -8,18 +8,35 @@ function WaitDockerIsUp {
     }
 }
 
+# Test-NetConnection needs PWSH >= 3
+function IsPortOpen {
+    param([string]$h, [int]$p)
+
+    $socket = new-object Net.Sockets.TcpClient
+
+    $ErrorActionPreference = 'SilentlyContinue'
+    $connection = $socket.Connect($h, $p)
+    $ErrorActionPreference = 'Continue'
+
+    if($socket.Connected) {
+        $socket.Close()
+        return $true
+    }
+    return $false
+}
+
 function WaitDatashareIsUp {
     Write-Host "Waiting for datashare to be up." -NoNewLine
     foreach ($nb in 1..60) {
-        Start-Sleep 1
-        $Result = (Test-NetConnection "localhost" -Port 8080).TcpTestSucceeded
-        if ($Result) {
+        if ((& IsPortOpen "localhost" 8080) -eq $true) {
             Write-Host "OK"
+            Start-Sleep 2 # else page is blank :(
             return
         }
         Write-Host "." -NoNewLine
     }
 }
+
 
 docker info 2>($tmpFile=New-TemporaryFile)
 if ($LASTEXITCODE -ne 0) {
