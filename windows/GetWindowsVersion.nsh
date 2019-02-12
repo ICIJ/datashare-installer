@@ -114,7 +114,18 @@ Function GetWindowsVersion
   Goto lbl_done
 
   lbl_winnt_10:
+    ReadRegStr $0 HKLM \
+        "SOFTWARE\Microsoft\Windows NT\CurrentVersion" EditionID
+    DetailPrint "Detected EditionID $0"
+    StrCmp $0 'Enterprise' lbl_winnt_10_pro
+    StrCmp $0 'EnterpriseEval' lbl_winnt_10_pro
+    StrCmp $0 'Professional' lbl_winnt_10_pro
+    StrCmp $0 'Education' lbl_winnt_10_pro
     Strcpy $R0 '10.0'
+  Goto lbl_done
+
+  lbl_winnt_10_pro:
+    Strcpy $R0 '10.0 Pro'
   Goto lbl_done
 
   lbl_error:

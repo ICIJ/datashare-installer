@@ -102,7 +102,7 @@ Section "install"
   Pop $0
   ${If} $0 == "0"
      DetailPrint "Nice! Docker is already installed"
-  ${ElseIf} $R0 == "10.0"
+  ${ElseIf} $R0 == "10.0 Pro"
      Call InstallDockerForWindows
      StrCpy $shouldReboot "true"
   ${Else}
