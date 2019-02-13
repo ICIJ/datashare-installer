@@ -73,8 +73,8 @@ Function InstallDatashare
   exch $R0
   SetOutPath "$INSTDIR"
   file "datashare.ico"
-  File "datashare.ps1"
   File "datashare.bat"
+  File "PortQry.exe"
   File /oname=docker-compose.yml "dist/docker-compose.yml"
 
   # Start Menu

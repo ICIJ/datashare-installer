@@ -1,4 +1,3 @@
-*.exe
 .idea
 mac/dist
 windows/dist
