@@ -28,6 +28,14 @@ $(DIST)/${APPNAME}.pkg: $(DIST)/Datashare.icns
 		( cd ${DIST}/flat && xar --compression none -cf "../${APPNAME}.pkg" * )
 		chmod +x "${DIST}/${APPNAME}.pkg"
 
+		# signing cf http://users.wfu.edu/cottrell/productsign/productsign_linux.html
+		# : | openssl dgst -sign ${DATASHARE_PEM} -binary | wc -c > ${DIST}/siglen.txt
+		# openssl x509 -in ${ICIJ_CERT} -outform der -out ${DIST}/cert.der
+		# xar --sign -f "${DIST}/${APPNAME}.pkg" --digestinfo-to-sign ${DIST}/digestinfo.dat --sig-size `cat ${DIST}/siglen.txt` --cert-loc ${DIST}/cert.der
+		# openssl rsautl -sign -inkey key.pem -in ${DIST}/digestinfo.dat -out ${DIST}/signature.dat
+		# xar --inject-sig ${DIST}/signature.dat -f "${DIST}/${APPNAME}.pkg"
+
+
 $(DIST)/Datashare.icns: $(DIST)
 		convert -resize 256x256 $(RESOURCES)/datashare.png $(DIST)/Datashare_256px.png
 		convert -resize 128x128 $(RESOURCES)/datashare.png $(DIST)/Datashare_128px.png
