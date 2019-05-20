@@ -7,7 +7,7 @@ services:
       - "DS_JAVA_OPTS=\${DS_JAVA_OPTS}"
       - "DS_DOCKER_MOUNTED_DATA_DIR=\${APPDATA}/Datashare/data"
     ports:
-      - "8080:8080"
+      - "127.0.0.1:8080:8080"
     volumes:
       - "\${APPDATA}/Datashare/models:/home/datashare/dist"
       - "\${APPDATA}/Datashare/data:/home/datashare/data:ro"
@@ -15,8 +15,6 @@ services:
   redis:
     image: redis:4.0.1-alpine
     restart: on-failure
-    ports:
-      - 6379:6379
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:6.3.0
@@ -32,5 +30,3 @@ services:
       - "http.cors.enabled=true"
       - "http.cors.allow-origin=*"
       - "http.cors.allow-methods=OPTIONS, HEAD, GET, POST, PUT, DELETE"
-    ports:
-      - "9200:9200"

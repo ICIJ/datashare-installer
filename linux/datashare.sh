@@ -9,6 +9,7 @@ mkdir -p ${MODELS_DIR}
 DATA_DIR=${DATA_DIR:-${HOME}/Datashare}
 mkdir -p ${DATA_DIR}
 MEM_ALLOCATED_MEGA=$(free|awk '/^Mem:/{print $2"/(2*1024)"}'|bc)
+BIND_HOST=127.0.0.1
 
 if [ -z "${DS_JAVA_OPTS}" ] && [ -n "${MEM_ALLOCATED_MEGA}" ]; then
   DS_JAVA_OPTS="-Xmx${MEM_ALLOCATED_MEGA}m"
@@ -50,6 +51,6 @@ if [ -n "${image_running}" ]; then
   docker rm -f datashare > /dev/null
 fi
 
-docker run -p 8080:8080 --network datashare_default --name datashare --rm -e DS_JAVA_OPTS="${DS_JAVA_OPTS}" \
+docker run -p $BIND_HOST:8080:8080 --network datashare_default --name datashare --rm -e DS_JAVA_OPTS="${DS_JAVA_OPTS}" \
  -e DS_DOCKER_MOUNTED_DATA_DIR=${DATA_DIR} -v ${DATA_DIR}:/home/datashare/data:ro \
  -v ${MODELS_DIR}:/home/datashare/dist -ti icij/datashare:${datashare_version} "$@"

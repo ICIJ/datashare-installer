@@ -22,7 +22,7 @@ services:
       - "DS_JAVA_OPTS=\${DS_JAVA_OPTS}"
       - "DS_DOCKER_MOUNTED_DATA_DIR=\${data_path}"
     ports:
-      - "8080:8080"
+      - "127.0.0.1:8080:8080"
     volumes:
       - "\${dist_path}:/home/datashare/dist"
       - "\${data_path}:/home/datashare/data:ro"
@@ -45,8 +45,6 @@ services:
       - "http.cors.enabled=true"
       - "http.cors.allow-origin=*"
       - "http.cors.allow-methods=OPTIONS, HEAD, GET, POST, PUT, DELETE"
-    ports:
-      - "9200:9200"
 EOF
 }
 
