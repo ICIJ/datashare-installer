@@ -72,7 +72,7 @@ create_docker_compose_file
 datashare_id=\$(docker-compose -f /tmp/datashare.yml -p datashare ps -q datashare)
 if [[ -n "\${datashare_id}" ]]; then
     datashare_status=\$(docker inspect \${datashare_id} -f "{{.State.Status}}")
-    datashare_running_version=\$(docker inspect datashare -f '{{.Config.Image}}' | awk -F ':' '{print $2}')
+    datashare_running_version=\$(docker inspect datashare -f '{{.Config.Image}}' | awk -F ':' '{print \$2}')
 fi
 
 if [[ "\${datashare_status}" == "running" && "\${datashare_running_version}" == "\${datashare_version}" ]]; then
