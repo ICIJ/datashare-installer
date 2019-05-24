@@ -1,6 +1,6 @@
 #!/bin/sh
 
-datashare_version=1.10
+datashare_version=__version__
 redis_image=redis:4.0.1-alpine
 elasticsearch_image=docker.elastic.co/elasticsearch/elasticsearch:6.3.0
 

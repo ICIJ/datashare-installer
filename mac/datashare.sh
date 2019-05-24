@@ -1,14 +1,14 @@
 #!/bin/bash
 
-datashare_version=${VERSION}
+datashare_version=__version__
 redis_image=redis:4.0.1-alpine
 elasticsearch_image=docker.elastic.co/elasticsearch/elasticsearch:6.3.0
-data_path="\${HOME}/Datashare"
-dist_path="/Users/\${USER}/Library/Datashare_Models"
+data_path="${HOME}/Datashare"
+dist_path="/Users/${USER}/Library/Datashare_Models"
 
-if [[ -z "\${DS_JAVA_OPTS}" ]]; then
-    mem_allocated=\$(sysctl -a | grep hw.memsize | awk '{print \$2"/(2*1024^2)"}' | bc)
-    DS_JAVA_OPTS="-Xmx\${mem_allocated}m"
+if [[ -z "${DS_JAVA_OPTS}" ]]; then
+    mem_allocated=$(sysctl -a | grep hw.memsize | awk '{print $2"/(2*1024^2)"}' | bc)
+    DS_JAVA_OPTS="-Xmx${mem_allocated}m"
 fi
 
 function create_docker_compose_file {
@@ -16,26 +16,26 @@ cat > /tmp/datashare.yml << EOF
 version: '2'
 services:
   datashare:
-    image: icij/datashare:\${datashare_version}
+    image: icij/datashare:${datashare_version}
     restart: on-failure
     environment:
-      - "DS_JAVA_OPTS=\${DS_JAVA_OPTS}"
-      - "DS_DOCKER_MOUNTED_DATA_DIR=\${data_path}"
+      - "DS_JAVA_OPTS=${DS_JAVA_OPTS}"
+      - "DS_DOCKER_MOUNTED_DATA_DIR=${data_path}"
     ports:
       - "127.0.0.1:8080:8080"
     volumes:
-      - "\${dist_path}:/home/datashare/dist"
-      - "\${data_path}:/home/datashare/data:ro"
+      - "${dist_path}:/home/datashare/dist"
+      - "${data_path}:/home/datashare/data:ro"
 
   redis:
-    image: \${redis_image}
+    image: ${redis_image}
     restart: on-failure
 
   elasticsearch:
-    image: \${elasticsearch_image}
+    image: ${elasticsearch_image}
     restart: on-failure
     environment:
-      - "ES_JAVA_OPTS=\${DS_JAVA_OPTS}"
+      - "ES_JAVA_OPTS=${DS_JAVA_OPTS}"
       - "http.host=0.0.0.0"
       - "transport.host=0.0.0.0"
       - "cluster.name=datashare"
@@ -53,7 +53,7 @@ function wait_datashare_is_up {
     for i in \`seq 1 300\`; do
         sleep 0.1
         curl --silent localhost:8080 > /dev/null
-        if [ \$? -eq 0 ]; then
+        if [ $? -eq 0 ]; then
             echo "OK"
             return
         fi
@@ -61,7 +61,7 @@ function wait_datashare_is_up {
     echo "KO"
 }
 
-if [[ -z "\$(docker ps -q 2>/dev/null)" ]]; then
+if [[ -z "$(docker ps -q 2>/dev/null)" ]]; then
   echo -n "docker service is not running, launching it..."
   open --background -a Docker && while ! docker system info > /dev/null 2>&1; do sleep 1; done
   echo "OK"
@@ -69,14 +69,14 @@ fi
 
 create_docker_compose_file
 
-datashare_id=\$(docker-compose -f /tmp/datashare.yml -p datashare ps -q datashare)
-if [[ -n "\${datashare_id}" ]]; then
-    datashare_status=\$(docker inspect \${datashare_id} -f "{{.State.Status}}")
-    datashare_running_version=\$(docker inspect datashare -f '{{.Config.Image}}' | awk -F ':' '{print \$2}')
+datashare_id=$(docker-compose -f /tmp/datashare.yml -p datashare ps -q datashare)
+if [[ -n "${datashare_id}" ]]; then
+    datashare_status=$(docker inspect ${datashare_id} -f "{{.State.Status}}")
+    datashare_running_version=$(docker inspect ${datashare_id} -f '{{.Config.Image}}' | awk -F ':' '{print $2}')
 fi
 
-if [[ "\${datashare_status}" == "running" && "\${datashare_running_version}" == "\${datashare_version}" ]]; then
-    echo "datashare is \${datashare_status}, restarting it"
+if [[ "${datashare_status}" == "running" && "${datashare_running_version}" == "${datashare_version}" ]]; then
+    echo "datashare is ${datashare_status}, restarting it"
     docker-compose -f /tmp/datashare.yml -p datashare restart datashare
 else
     docker-compose -f /tmp/datashare.yml -p datashare up -d

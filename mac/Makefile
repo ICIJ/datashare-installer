@@ -9,7 +9,8 @@ $(DIST):
 
 $(DIST)/${APPNAME}.pkg: $(DIST)/Datashare.icns
 		mkdir -p ${DIST}/flat/base.pkg ${DIST}/flat/Resources/en.lproj ${DIST}/root/Applications
-		./build/gen_file datashare.sh ${DIST}/datashare.sh
+		cp datashare.sh ${DIST}/datashare.sh
+		sed -i 's/__version__/"${VERSION}"/g' ${DIST}/datashare.sh
 		./build/appify ${DIST}/datashare.sh "${APPNAME}"
 
 		# adds icon
