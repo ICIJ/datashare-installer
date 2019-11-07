@@ -1,4 +1,4 @@
-version: '2'
+version: '2.1'
 services:
   datashare:
     image: icij/datashare:${VERSION}
