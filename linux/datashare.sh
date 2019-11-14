@@ -26,6 +26,8 @@ services:
   elasticsearch:
     image: ${elasticsearch_image}
     restart: on-failure
+    volumes:
+      - /usr/share/elasticsearch/data
     environment:
       - "ES_JAVA_OPTS=${DS_JAVA_OPTS}"
       - "http.host=0.0.0.0"
