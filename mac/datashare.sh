@@ -23,6 +23,7 @@ services:
     environment:
       - "DS_JAVA_OPTS=${DS_JAVA_OPTS}"
       - "DS_DOCKER_MOUNTED_DATA_DIR=${data_path}"
+    command: --dataSourceUrl jdbc:sqlite:/home/datashare/dist/database.sqlite
     ports:
       - "127.0.0.1:8080:8080"
     volumes:

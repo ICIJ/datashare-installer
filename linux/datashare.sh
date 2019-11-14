@@ -57,4 +57,4 @@ fi
 
 docker run -p $BIND_HOST:8080:8080 --network datashare_default --name datashare --rm -e DS_JAVA_OPTS="${DS_JAVA_OPTS}" \
  -e DS_DOCKER_MOUNTED_DATA_DIR=${DATA_DIR} -v ${DATA_DIR}:/home/datashare/data:ro \
- -v ${MODELS_DIR}:/home/datashare/dist -ti icij/datashare:${datashare_version} "$@"
+ -v ${MODELS_DIR}:/home/datashare/dist -ti icij/datashare:${datashare_version} --dataSourceUrl jdbc:sqlite:/home/datashare/dist/database.sqlite "$@"
