@@ -54,7 +54,7 @@ EOF
 
 function wait_datashare_is_up {
     echo -n "waiting for datashare to be up..."
-    for i in \`seq 1 300\`; do
+    for i in `seq 1 300`; do
         sleep 0.1
         curl --silent localhost:8080 > /dev/null
         if [ $? -eq 0 ]; then
