@@ -5,6 +5,8 @@ redis_image=redis:4.0.1-alpine
 elasticsearch_image=docker.elastic.co/elasticsearch/elasticsearch:6.3.0
 data_path="${HOME}/Datashare"
 dist_path="/Users/${USER}/Library/Datashare_Models"
+index_path="/Users/${USER}/Library/Datashare_Index"
+mkdir -p "${index_path}"
 
 if [[ -z "${DS_JAVA_OPTS}" ]]; then
     mem_allocated=$(sysctl -a | grep hw.memsize | awk '{print $2"/(2*1024^2)"}' | bc)
@@ -35,7 +37,7 @@ services:
     image: ${elasticsearch_image}
     restart: on-failure
     volumes:
-      - /usr/share/elasticsearch/data
+      - ${index_path}:/usr/share/elasticsearch/data
     environment:
       - "ES_JAVA_OPTS=${DS_JAVA_OPTS}"
       - "http.host=0.0.0.0"

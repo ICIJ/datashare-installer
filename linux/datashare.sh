@@ -5,7 +5,9 @@ redis_image=redis:4.0.1-alpine
 elasticsearch_image=docker.elastic.co/elasticsearch/elasticsearch:6.3.0
 
 MODELS_DIR=${MODELS_DIR:-${HOME}/.local/share/Datashare_Models}
+INDEX_DIR=${INDEX_DIR:-${HOME}/.local/share/Datashare_Index}
 mkdir -p ${MODELS_DIR}
+mkdir -p ${INDEX_DIR}
 DATA_DIR=${DATA_DIR:-${HOME}/Datashare}
 mkdir -p ${DATA_DIR}
 MEM_ALLOCATED_MEGA=$(free|awk '/^Mem:/{print $2"/(2*1024)"}'|bc)
@@ -27,7 +29,7 @@ services:
     image: ${elasticsearch_image}
     restart: on-failure
     volumes:
-      - /usr/share/elasticsearch/data
+      - ${INDEX_DIR}:/usr/share/elasticsearch/data
     environment:
       - "ES_JAVA_OPTS=${DS_JAVA_OPTS}"
       - "http.host=0.0.0.0"

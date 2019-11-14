@@ -83,6 +83,7 @@ Function InstallDatashare
 
   # Data
   createDirectory "$APPDATA\Datashare\models"
+  createDirectory "$APPDATA\Datashare\index"
   createDirectory "$APPDATA\Datashare\data"
   CreateShortcut "$DESKTOP\Datashare Data.lnk" "$APPDATA\Datashare\data"
 
@@ -126,6 +127,7 @@ section "uninstall"
 
   # data
   rmDir /r "$APPDATA\Datashare\models"
+  rmDir /r "$APPDATA\Datashare\index"
   MessageBox MB_YESNO|MB_ICONQUESTION "Do you want to remove Datashare data directory ?" IDNO +3
     rmDir /r "$APPDATA\Datashare\data"
     delete "$DESKTOP\Datashare Data.lnk"
