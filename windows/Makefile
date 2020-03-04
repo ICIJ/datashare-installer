@@ -1,6 +1,6 @@
 export DIST=dist
 export VERSION=${VERSION}
-export APPNAME=Datashare ${VERSION}
+export APPNAME=Datashare-${VERSION}
 
 $(DIST):
 		mkdir -p $(DIST)
@@ -9,6 +9,9 @@ $(DIST):
 $(DIST)/installDatashare.exe: $(DIST)
 		../mac/build/gen_file docker-compose.yml $(DIST)/docker-compose.yml
 		makensis installDatashare.nsi
+
+$(DIST)/installDatashareLight.exe: $(DIST)
+		makensis installDatashareLight.nsi
 
 PHONY: clean
 clean:
