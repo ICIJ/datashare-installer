@@ -10,7 +10,6 @@ jobs:
           name: make windows
           command: |
             cd windows
-            make VERSION=5.8.16 clean
             make VERSION=5.8.16 dist/installDatashare.exe
             make VERSION=5.8.16 dist/installDatashareLight.exe
             cd ..
@@ -19,7 +18,6 @@ jobs:
           name: make linux
           command: |
             cd linux
-            make VERSION=5.8.16 clean
             make VERSION=5.8.16 dist/datashare.sh
             cd ..
 
@@ -27,7 +25,6 @@ jobs:
           name: make mac
           command: |
             cd mac
-            make VERSION=5.8.16 clean
-            make VERSION=5.8.16 dist/Datashare.pkg dist/Datashare.icns
+            make VERSION=5.8.16 dist/Datashare.pkg
             cd ..
 
