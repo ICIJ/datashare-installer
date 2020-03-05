@@ -64,7 +64,7 @@ Function InstallDatashareClient
     createDirectory "$INSTDIR\app"
 
     DetailPrint "Unpack datashare client in : $INSTDIR\app"
-    untgz::extract "-j" "-d" "$INSTDIR\app" "$TEMP\${APPNAME}.tgz"
+    untgz::extract "-d" "$INSTDIR\app" "$TEMP\${APPNAME}.tgz"
     StrCmp $R0 "success" +4
     	DetailPrint "Failed to extract $TEMP\${APPNAME}.tgz"
     	MessageBox MB_OK|MB_ICONEXCLAMATION|MB_DEFBUTTON1 "Failed to extract $TEMP\${APPNAME}.tgz"
