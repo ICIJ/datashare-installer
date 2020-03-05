@@ -1,0 +1,33 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/build-image
+
+    steps:
+      - checkout
+      - run:
+          name: make windows
+          command: |
+            cd windows
+            make VERSION=5.8.16 clean
+            make VERSION=5.8.16 dist/installDatashare.exe
+            make VERSION=5.8.16 dist/installDatashareLight.exe
+            cd ..
+
+      - run:
+          name: make linux
+          command: |
+            cd linux
+            make VERSION=5.8.16 clean
+            make VERSION=5.8.16 dist/datashare.sh
+            cd ..
+
+      - run:
+          name: make mac
+          command: |
+            cd mac
+            make VERSION=5.8.16 clean
+            make VERSION=5.8.16 dist/Datashare.pkg dist/Datashare.icns
+            cd ..
+
