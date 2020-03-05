@@ -50,3 +50,4 @@ $(DIST)/Datashare.icns: $(DIST)
 PHONY: clean
 clean:
 		rm -rf ${DIST}
+		rm -rf Datashare.app/
