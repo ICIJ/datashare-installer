@@ -14,8 +14,9 @@
 Name "${COMPANYNAME} - ${APPNAME}"
 Icon "datashare.ico"
 
+!define JAVA_REG_KEY "SOFTWARE\AdoptOpenJDK\JRE"
 !define DATASHARE_UNINSTALL_KEY "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}"
-!define TESSERACT_UNINSTALL_KEY "Computer\HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Tesseract-OCR"
+!define TESSERACT_UNINSTALL_KEY "SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Tesseract-OCR"
 !define TESSERACT_OCR_64_DOWNLOAD_URL "http://digi.bib.uni-mannheim.de/tesseract/tesseract-ocr-setup-4.00.00dev.exe"
 !define TESSERACT_OCR_64_PATH "$TEMP\tesseract-ocr-setup.exe"
 !define OPEN_JRE_64_DOWNLOAD_URL "https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk8u242-b08/OpenJDK8U-jre_x64_windows_hotspot_8u242b08.msi"
@@ -40,39 +41,48 @@ Function un.InstallDockerToolbox
 FunctionEnd
 
 Function DownloadDatashareJar
-    DetailPrint "Downloading datashare at : ${DATASHARE_JAR_DOWNLOAD_URL}"
-    inetc::get "${DATASHARE_JAR_DOWNLOAD_URL}" "$PROGRAMFILES64\${APPNAME}\${APPNAME}.jar" /end
-    Pop $0
-    DetailPrint "Download Status: $0"
-    ${If} $0 != "OK"
-        MessageBox MB_OK "Download Failed: $0"
-        Abort
-    ${EndIf}
+    IfFileExists $INSTDIR\app\* PathGood PathNotGood
+    PathNotGood:
+        DetailPrint "Downloading datashare at : ${DATASHARE_JAR_DOWNLOAD_URL}"
+            inetc::get "${DATASHARE_JAR_DOWNLOAD_URL}" "$PROGRAMFILES64\${APPNAME}\${APPNAME}.jar" /end
+            Pop $0
+            DetailPrint "Download Status: $0"
+            ${If} $0 != "OK"
+                MessageBox MB_OK "Download Failed: $0"
+                Abort
+            ${EndIf}
+    PathGood:
 FunctionEnd
 
 Function InstallDatashareClient
-    DetailPrint "Downloading datashare at : ${DATASHARE_FRONT_DOWNLOAD_URL}"
-    inetc::get "${DATASHARE_FRONT_DOWNLOAD_URL}" "$TEMP\${APPNAME}.tgz" /end
-    Pop $0
-    DetailPrint "Download Status: $0"
-    ${If} $0 != "OK"
-        MessageBox MB_OK "Download Failed: $0"
-        Abort
-    ${EndIf}
+    IfFileExists $INSTDIR\app* PathGood PathNotGood
+     PathNotGood:
+        DetailPrint "Downloading datashare at : ${DATASHARE_FRONT_DOWNLOAD_URL}"
+        inetc::get "${DATASHARE_FRONT_DOWNLOAD_URL}" "$TEMP\${APPNAME}.tgz" /end
+        Pop $0
+        DetailPrint "Download Status: $0"
+        ${If} $0 != "OK"
+            MessageBox MB_OK "Download Failed: $0"
+            Abort
+        ${EndIf}
 
-    DetailPrint "Create directory : $INSTDIR\app"
-    createDirectory "$INSTDIR\app"
+        DetailPrint "Create directory : $INSTDIR\app"
+        createDirectory "$INSTDIR\app"
 
-    DetailPrint "Unpack datashare client in : $INSTDIR\app"
-    untgz::extract "-d" "$INSTDIR\app" "$TEMP\${APPNAME}.tgz"
-    StrCmp $R0 "success" +4
-    	DetailPrint "Failed to extract $TEMP\${APPNAME}.tgz"
-    	MessageBox MB_OK|MB_ICONEXCLAMATION|MB_DEFBUTTON1 "Failed to extract $TEMP\${APPNAME}.tgz"
-    	Abort
+        DetailPrint "Unpack datashare client in : $INSTDIR\app"
+        untgz::extract "-d" "$INSTDIR\app" "$TEMP\${APPNAME}.tgz"
+        StrCmp $R0 "success" +4
+            DetailPrint "Failed to extract $TEMP\${APPNAME}.tgz"
+            MessageBox MB_OK|MB_ICONEXCLAMATION|MB_DEFBUTTON1 "Failed to extract $TEMP\${APPNAME}.tgz"
+            Abort
+        Goto PathDone
 
-    ; Delete temporary files
-    DetailPrint "Remove temporary file : $TEMP\${APPNAME}.tgz"
-    Delete "$TEMP\${APPNAME}.tgz"
+        ; Delete temporary files
+        DetailPrint "Remove temporary file : $TEMP\${APPNAME}.tgz"
+        Delete "$TEMP\${APPNAME}.tgz"
+     PathGood:
+        DetailPrint "Datashare already installed"
+     PathDone:
 FunctionEnd
 
 Function InstallDatashare
@@ -105,21 +115,30 @@ Function InstallDatashare
 FunctionEnd
 
 Function InstallOpenJre64
-    inetc::get "${OPEN_JRE_64_DOWNLOAD_URL}" "${OPEN_JRE_64_PATH}" /end
-    Pop $0
-    DetailPrint "Download Status: $0"
-    ${If} $0 != "OK"
-        MessageBox MB_OK "Download Failed: $0"
-        Abort
-    ${EndIf}
-    DetailPrint "Installing OpenJRE 8"
-    ExecWait 'msiexec.exe /i "${OPEN_JRE_64_PATH}" /QN /L*V "$TEMP\msilog.log"'
+    ReadRegStr $0 HKLM "${JAVA_REG_KEY}" ""  #JRE install location checking isn't working for some reason
+    DetailPrint "Open JRE uninstall registry read: $0"
+    StrCmp $0 "" JavaMissing JavaFound
+    JavaMissing:
+        inetc::get "${OPEN_JRE_64_DOWNLOAD_URL}" "${OPEN_JRE_64_PATH}" /end
+        Pop $0
+        DetailPrint "Download Status: $0"
+        ${If} $0 != "OK"
+            MessageBox MB_OK "Download Failed: $0"
+            Abort
+        ${EndIf}
+        DetailPrint "Installing OpenJRE 8"
+        ExecWait 'msiexec.exe /i "${OPEN_JRE_64_PATH}" /QN /L*V "$TEMP\msilog.log"'
+        Goto JavaDone
+    JavaFound:
+        DetailPrint "JRE already installed"
+    JavaDone:
 FunctionEnd
 
 Function InstallTesseractOCR64
-    ReadRegStr $0 HKLM "${TESSERACT_UNINSTALL_KEY}" "QuietUninstallString"
+    ReadRegStr $0 HKLM "${TESSERACT_UNINSTALL_KEY}" "UninstallString"
     DetailPrint "Tesseract uninstall registry read: $0"
-    ${If} $0 != "OK"
+    StrCmp $0 "" TessMissing TessFound
+    TessMissing:
         inetc::get "${TESSERACT_OCR_64_DOWNLOAD_URL}" "${TESSERACT_OCR_64_PATH}" /end
         Pop $0
         DetailPrint "Download Status: $0"
@@ -129,11 +148,25 @@ Function InstallTesseractOCR64
         ${EndIf}
         DetailPrint "Installing Tesseract"
         ExecWait '"${TESSERACT_OCR_64_PATH}"'
-    ${EndIf}
+        Goto TessDone
+    TessFound:
+        DetailPrint "Tesseract already installed"
+    TessDone:
 FunctionEnd
 
-Function un.InstallTesseractOCR64
-# TODO
+Function un.installTesseractOCR64
+    ReadRegStr $0 HKLM "${TESSERACT_UNINSTALL_KEY}" "QuietUninstallString"
+    StrCpy $1 $0
+    DetailPrint "Tesseract uninstall registry read: $0"
+    StrCmp $0 "" TessUniMissing TessUniFound
+    TessUniFound:
+        DetailPrint "Uninstalling Tesseract with: $1"
+        ExecWait $1
+        DetailPrint "Tesseract Uninstalled"
+        Goto TessDone
+    TessUniMissing:
+        DetailPrint "Tesseract uninstaller not found"
+    TessDone:
 FunctionEnd
 
 Section "install"
@@ -142,7 +175,7 @@ Section "install"
   DetailPrint "Detected Windows $R0"
 
   ${If} ${RunningX64}
-    Call InstallOpenJre64
+    #Call InstallOpenJre64
     Call InstallTesseractOCR64
 
   ${Else}
@@ -176,5 +209,5 @@ section "uninstall"
   # Remove uninstaller information from the registry
   DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}"
 
-  Call un.InstallTesseractOCR64
+  Call un.installTesseractOCR64
 SectionEnd
