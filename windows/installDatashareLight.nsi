@@ -115,22 +115,24 @@ Function InstallDatashare
 FunctionEnd
 
 Function InstallOpenJre64
-    ReadRegStr $0 HKLM "${JAVA_REG_KEY}" ""  #JRE install location checking isn't working for some reason
-    DetailPrint "Open JRE uninstall registry read: $0"
-    StrCmp $0 "" JavaMissing JavaFound
+    #Java lib test
+    nsExec::Exec "java -version"
+    Pop $0
+    StrCmp $0 "error" JavaMissing JavaFound
     JavaMissing:
         inetc::get "${OPEN_JRE_64_DOWNLOAD_URL}" "${OPEN_JRE_64_PATH}" /end
         Pop $0
         DetailPrint "Download Status: $0"
         ${If} $0 != "OK"
-            MessageBox MB_OK "Download Failed: $0"
+            DetailPrint "Download Failed: $0"
             Abort
         ${EndIf}
-        DetailPrint "Installing OpenJRE 8"
+        #DetailPrint "Installing OpenJRE 8"
+        MessageBox MB_OK "Installing OpenJRE 8"
         ExecWait 'msiexec.exe /i "${OPEN_JRE_64_PATH}" /QN /L*V "$TEMP\msilog.log"'
         Goto JavaDone
     JavaFound:
-        DetailPrint "JRE already installed"
+        DetailPrint "JRE already installed, version : $0"
     JavaDone:
 FunctionEnd
 
@@ -175,7 +177,7 @@ Section "install"
   DetailPrint "Detected Windows $R0"
 
   ${If} ${RunningX64}
-    #Call InstallOpenJre64
+    Call InstallOpenJre64
     Call InstallTesseractOCR64
 
   ${Else}
