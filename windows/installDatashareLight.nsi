@@ -37,9 +37,6 @@ Function .onInit
   ${EndIf}
 FunctionEnd
 
-Function un.InstallDockerToolbox
-FunctionEnd
-
 Function DownloadDatashareJar
     IfFileExists $INSTDIR\app\* PathGood PathNotGood
     PathNotGood:
@@ -90,11 +87,11 @@ Function InstallDatashare
   SetOutPath "$INSTDIR"
   File "datashare.ico"
   File "datashareLight.bat"
-  File "PortQry.exe"
+  File "datashareLight.ps1"
 
   # Start Menu
   createDirectory "$SMPROGRAMS\${COMPANYNAME}"
-  createShortCut "$SMPROGRAMS\${COMPANYNAME}\${APPNAME}.lnk" "$INSTDIR\datashareLight.bat" "" "$INSTDIR\logo.ico"
+  createShortCut "$SMPROGRAMS\${COMPANYNAME}\${APPNAME}.lnk" "$INSTDIR\datashareLight.bat" "" "$INSTDIR\datashare.ico"
 
   # Download Jar
   Call DownloadDatashareJar
