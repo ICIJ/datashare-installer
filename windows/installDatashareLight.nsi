@@ -116,9 +116,10 @@ FunctionEnd
 
 Function InstallOpenJre64
     #Java lib test
-    nsExec::Exec "java -version"
+    nsExec::ExecToStack "java -version"
     Pop $0
-    StrCmp $0 "error" JavaMissing JavaFound
+    Pop $1
+    StrCmp $0 "0" JavaFound JavaMissing
     JavaMissing:
         inetc::get "${OPEN_JRE_64_DOWNLOAD_URL}" "${OPEN_JRE_64_PATH}" /end
         Pop $0
@@ -127,12 +128,11 @@ Function InstallOpenJre64
             DetailPrint "Download Failed: $0"
             Abort
         ${EndIf}
-        #DetailPrint "Installing OpenJRE 8"
-        MessageBox MB_OK "Installing OpenJRE 8"
+        DetailPrint "Installing OpenJRE 8"
         ExecWait 'msiexec.exe /i "${OPEN_JRE_64_PATH}" /QN /L*V "$TEMP\msilog.log"'
         Goto JavaDone
     JavaFound:
-        DetailPrint "JRE already installed, version : $0"
+        DetailPrint "JRE already installed, version : $1"
     JavaDone:
 FunctionEnd
 
