@@ -10,7 +10,7 @@ services:
     ports:
       - "127.0.0.1:8080:8080"
     volumes:
-      - "\${APPDATA}/Datashare/models:/home/datashare/dist"
+      - "\${APPDATA}/Datashare/dist:/home/datashare/dist"
       - "\${APPDATA}/Datashare/data:/home/datashare/data:ro"
 
   redis:

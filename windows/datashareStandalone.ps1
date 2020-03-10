@@ -6,4 +6,4 @@ java -cp "dist;\Program Files\Datashare-$VERSION\Datashare-$VERSION.jar" -DPROD_
     -d $Env:APPDATA\Datashare\data\ --queueType memory --busType memory `
     --dataSourceUrl jdbc:sqlite:file:$Env:APPDATA\Datashare\dist\datashare.db `
     --configFile $Env:APPDATA\Datashare\dist\datashare.conf --mode EMBEDDED `
-    --elasticsearchDataPath $Env:APPDATA\Datashare\es\
+    --elasticsearchDataPath $Env:APPDATA\Datashare\index\

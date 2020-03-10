@@ -99,7 +99,7 @@ Function InstallDatashare
   Call InstallDatashareClient
 
   # Data
-  createDirectory "$APPDATA\Datashare\models"
+  createDirectory "$APPDATA\Datashare\dist"
   createDirectory "$APPDATA\Datashare\index"
   createDirectory "$APPDATA\Datashare\data"
 
@@ -204,7 +204,7 @@ section "uninstall"
   rmDir /r $INSTDIR # recursive
 
   # data
-  rmDir /r "$APPDATA\Datashare\models"
+  rmDir /r "$APPDATA\Datashare\dist"
   rmDir /r "$APPDATA\Datashare\index"
   rmDir /r "$APPDATA\Datashare\app"
   MessageBox MB_YESNO|MB_ICONQUESTION "Do you want to remove Datashare data directory ?" IDNO +3

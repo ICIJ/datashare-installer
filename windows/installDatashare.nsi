@@ -82,7 +82,7 @@ Function InstallDatashare
   createShortCut "$SMPROGRAMS\${COMPANYNAME}\${APPNAME}.lnk" "$INSTDIR\datashare.bat" "" "$INSTDIR\logo.ico"
 
   # Data
-  createDirectory "$APPDATA\Datashare\models"
+  createDirectory "$APPDATA\Datashare\dist"
   createDirectory "$APPDATA\Datashare\index"
   createDirectory "$APPDATA\Datashare\data"
   CreateShortcut "$DESKTOP\Datashare Data.lnk" "$APPDATA\Datashare\data"
@@ -126,7 +126,7 @@ section "uninstall"
   rmDir /r $INSTDIR # recursive
 
   # data
-  rmDir /r "$APPDATA\Datashare\models"
+  rmDir /r "$APPDATA\Datashare\dist"
   rmDir /r "$APPDATA\Datashare\index"
   MessageBox MB_YESNO|MB_ICONQUESTION "Do you want to remove Datashare data directory ?" IDNO +3
     rmDir /r "$APPDATA\Datashare\data"
