@@ -20,7 +20,7 @@ jobs:
           command: |
             cd windows
             make VERSION=5.8.16 dist/installDatashare.exe
-            make VERSION=5.8.16 dist/installDatashareLight.exe
+            make VERSION=5.8.16 dist/installDatashareStandalone.exe
             cd ..
 
       - run:

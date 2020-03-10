@@ -25,7 +25,7 @@ Icon "datashare.ico"
 !define DATASHARE_FRONT_DOWNLOAD_URL "https://github.com/ICIJ/datashare-client/releases/download/${VERSION}/datashare-client-${VERSION}.tgz"
 Var shouldReboot
 
-OutFile dist/installDatashareLight.exe
+OutFile dist/installDatashareStandalone.exe
 InstallDir "$PROGRAMFILES64\${APPNAME}"
 
 Function .onInit
@@ -86,12 +86,12 @@ Function InstallDatashare
   exch $R0
   SetOutPath "$INSTDIR"
   File "datashare.ico"
-  File "datashareLight.ps1"
-  File /oname=datashareLight.bat "dist/datashareLight.bat"
+  File "datashareStandalone.ps1"
+  File /oname=datashareStandalone.bat "dist/datashareStandalone.bat"
 
   # Start Menu
   createDirectory "$SMPROGRAMS\${COMPANYNAME}"
-  createShortCut "$SMPROGRAMS\${COMPANYNAME}\${APPNAME}.lnk" "$INSTDIR\datashareLight.bat" "" "$INSTDIR\datashare.ico"
+  createShortCut "$SMPROGRAMS\${COMPANYNAME}\${APPNAME}.lnk" "$INSTDIR\datashareStandalone.bat" "" "$INSTDIR\datashare.ico"
 
   # Download Jar
   Call DownloadDatashareJar
