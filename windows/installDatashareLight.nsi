@@ -104,11 +104,11 @@ Function InstallDatashare
   createDirectory "$APPDATA\Datashare\data"
 
   # Create symbolic links
-  rmDir /r "$DESKTOP\Datashare Data"
-  nsExec::ExecToStack 'cmd /c mklink /d "$DESKTOP\Datashare Data" "$APPDATA\Datashare\data"'
+  rmDir "$DESKTOP\Datashare Data"
+  nsExec::Exec 'cmd /c mklink /d "$DESKTOP\Datashare Data" "$APPDATA\Datashare\data"'
   DetailPrint 'Link created from "$APPDATA\Datashare\data" to "$DESKTOP\Datashare Data"'
-  rmDir /r "$APPDATA\Datashare\app"
-  nsExec::ExecToStack 'cmd /c mklink /d $APPDATA\Datashare\app "$INSTDIR\app"'
+  rmDir "$APPDATA\Datashare\app"
+  nsExec::Exec 'cmd /c mklink /d $APPDATA\Datashare\app "$INSTDIR\app"'
   DetailPrint 'Link created from "$INSTDIR\app" to "$APPDATA\Datashare\app"'
 
   writeUninstaller "$INSTDIR\uninstall.exe"
