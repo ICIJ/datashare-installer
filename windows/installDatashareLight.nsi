@@ -102,7 +102,13 @@ Function InstallDatashare
   createDirectory "$APPDATA\Datashare\models"
   createDirectory "$APPDATA\Datashare\index"
   createDirectory "$APPDATA\Datashare\data"
-  CreateShortcut "$DESKTOP\Datashare Data.lnk" "$APPDATA\Datashare\data"
+
+  #CreateShortcut "$DESKTOP\Datashare Data.lnk" "$APPDATA\Datashare\data"
+  nsExec::Exec 'cmd /c mklink /d "$DESKTOP\Datashare Data" "$APPDATA\Datashare\data"'
+  DetailPrint 'Link created from "$APPDATA\Datashare\data" to "$DESKTOP\Datashare Data"'
+
+  nsExec::Exec 'cmd /c mklink /d $APPDATA\Datashare\app "$INSTDIR\app"'
+  DetailPrint 'Link created from "$INSTDIR\app" to "$APPDATA\Datashare\app"'
 
   writeUninstaller "$INSTDIR\uninstall.exe"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" "DisplayName" "${APPNAME}"
