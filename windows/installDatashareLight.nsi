@@ -205,9 +205,10 @@ section "uninstall"
   # data
   rmDir /r "$APPDATA\Datashare\models"
   rmDir /r "$APPDATA\Datashare\index"
-  MessageBox MB_YESNO|MB_ICONQUESTION "Do you want to remove Datashare data directory ?" IDNO +3
+  rmDir /r "$APPDATA\Datashare\app"
+  MessageBox MB_YESNO|MB_ICxONQUESTION "Do you want to remove Datashare data directory ?" IDNO +3
     rmDir /r "$APPDATA\Datashare\data"
-    delete "$DESKTOP\Datashare Data.lnk"
+    rmDir /r "$DESKTOP\Datashare Data"
   rmDir "$APPDATA\Datashare" # only if empty
 
   ReadRegStr $0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" "GetWindowsVersion"
