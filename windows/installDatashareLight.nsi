@@ -86,8 +86,8 @@ Function InstallDatashare
   exch $R0
   SetOutPath "$INSTDIR"
   File "datashare.ico"
-  File "datashareLight.bat"
   File "datashareLight.ps1"
+  File /oname=datashareLight.bat "dist/datashareLight.bat"
 
   # Start Menu
   createDirectory "$SMPROGRAMS\${COMPANYNAME}"

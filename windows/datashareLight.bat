@@ -1,3 +1,3 @@
 @echo off
 
-powershell -noexit "& "".\datashareLight.ps1"""
+powershell -noexit "& "".\\datashareLight.ps1 ${VERSION}"""

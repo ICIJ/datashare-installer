@@ -11,6 +11,7 @@ $(DIST)/installDatashare.exe: $(DIST)
 		makensis installDatashare.nsi
 
 $(DIST)/installDatashareLight.exe: $(DIST)
+		../mac/build/gen_file datashareLight.bat $(DIST)/datashareLight.bat
 		makensis installDatashareLight.nsi
 
 PHONY: clean
