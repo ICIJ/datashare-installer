@@ -1,0 +1,15 @@
+#!/bin/bash
+
+DS_LOG=/tmp/datashare_install.log
+echo "post-install" >> ${DS_LOG}
+
+DS_VERSION=5.8.23
+
+# install Datashare backend
+curl -L -o /Applications/Datashare/Contents/Resources/datashare-dist-${DS_VERSION}.jar \
+ https://github.com/ICIJ/datashare/releases/download/${DS_VERSION}/datashare-dist-${DS_VERSION}.jar
+
+# install Datashare frontend
+curl -L -o /tmp/datashare-client-${DS_VERSION}.tgz https://github.com/ICIJ/datashare-client/releases/download/${DS_VERSION}/datashare-client-${DS_VERSION}.tgz
+mkdir -p "/Applications/Datashare.app/Contents/Resources/app"
+tar xzf /tmp/datashare-client-${DS_VERSION}.tgz --directory /Applications/Datashare.app/Contents/Resources/app
