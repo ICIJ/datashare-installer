@@ -1,18 +1,25 @@
 #!/bin/bash
 
-DS_LOG=/tmp/datashare_install.log
-echo "pre-install" >> ${DS_LOG}
+echo "pre-install"
 
 JAVA_PKG=OpenJDK8U-jre_x64_mac_hotspot_8u242b08.pkg
 
-command -v brew >/dev/null 2>&1 || { echo >&2 "I require brew but it's not installed. Aborting."; exit 1; }
+command -v /usr/local/bin/brew  || { echo >&2 "I require brew but it's not installed. Aborting."; exit 1; }
 
 # install tesseractOCR
-brew install imagemagick
-brew install leptonica
-brew install tesseract
-brew install tesseract-lang
+if command tesseract 2>/dev/null; then
+  echo "tesseractOCR is installed"
+else
+  brew install imagemagick
+  brew install leptonica
+  brew install tesseract
+  brew install tesseract-lang
+fi
 
 # install JRE
-curl -o /tmp/$JAVA_PKG https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk8u242-b08/$JAVA_PKG
-installer -pkg /tmp/$JAVA_PKG -target /
+if [ -d /Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk ]; then
+  echo "$JAVA_PKG is installed"
+else
+  curl -o /tmp/$JAVA_PKG https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk8u242-b08/$JAVA_PKG
+  installer -pkg /tmp/$JAVA_PKG -target /
+fi

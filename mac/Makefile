@@ -10,7 +10,7 @@ $(DIST):
 		mkdir -p $(DIST)/images
 
 $(DIST)/%.pkg: %.sh $(DIST)/Datashare.icns
-		mkdir -p $(DIST)/$*/flat/base.pkg $(DIST)/$*/flat/Resources/en.lproj $(DIST)/$*/root/Applications
+		mkdir -p $(DIST)/$*/flat/base.pkg $(DIST)/$*/flat/Resources/en.lproj $(DIST)/$*/root/Applications $(DIST)/scripts
 		cp $*.sh $(DIST)/$*
 		sed -i 's/__version__/"${VERSION}"/g' $(DIST)/$*/$*.sh
 		./build/appify $(DIST)/$*/$*.sh "${APPNAME}"
@@ -25,9 +25,11 @@ $(DIST)/%.pkg: %.sh $(DIST)/Datashare.icns
 		# cf http://bomutils.dyndns.org/tutorial.html
 		$(eval export PREINSTALL=pre$*)
 		$(eval export POSTINSTALL=post$*)
+		cp -a scripts $(DIST)
+		sed -i 's/__version__/"${VERSION}"/g' $(DIST)/scripts/postdatashareStandalone
+		( find $(DIST)/scripts/ | cpio -o --format odc --owner 0:80 | gzip -c ) > $(DIST)/$*/flat/base.pkg/Scripts
 		( cd $(DIST)/$*/root && find . | cpio -o --format odc --owner 0:80 | gzip -c ) > $(DIST)/$*/flat/base.pkg/Payload
 		./build/gen_file PackageInfo $(DIST)/$*/flat/base.pkg/PackageInfo $(DIST)/$*
-		( cd scripts && find * | cpio -o --format odc --owner 0:80 | gzip -c ) > $(DIST)/$*/flat/base.pkg/Scripts
 		( cd $(DIST)/$* && mkbom -u 0 -g 80 root flat/base.pkg/Bom )
 		./build/gen_file Distribution $(DIST)/$*/flat/Distribution
 		( cd $(DIST)/$*/flat && xar --compression none -cf "../${APPNAME}.pkg" * )
