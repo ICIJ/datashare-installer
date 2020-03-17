@@ -27,7 +27,7 @@ $(DIST)/%.pkg: %.sh $(DIST)/Datashare.icns
 		$(eval export POSTINSTALL=post$*)
 		cp -a scripts $(DIST)
 		sed -i 's/__version__/"${VERSION}"/g' $(DIST)/scripts/postdatashareStandalone
-		( find $(DIST)/scripts/ | cpio -o --format odc --owner 0:80 | gzip -c ) > $(DIST)/$*/flat/base.pkg/Scripts
+		( cd $(DIST)/scripts/ && find . | cpio -o --format odc --owner 0:80 | gzip -c ) > $(DIST)/$*/flat/base.pkg/Scripts
 		( cd $(DIST)/$*/root && find . | cpio -o --format odc --owner 0:80 | gzip -c ) > $(DIST)/$*/flat/base.pkg/Payload
 		./build/gen_file PackageInfo $(DIST)/$*/flat/base.pkg/PackageInfo $(DIST)/$*
 		( cd $(DIST)/$* && mkbom -u 0 -g 80 root flat/base.pkg/Bom )
