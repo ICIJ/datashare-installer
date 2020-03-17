@@ -23,7 +23,6 @@ Icon "datashare.ico"
 !define OPEN_JRE_64_PATH "$TEMP\OpenJDK8U-jre_x64_windows_hotspot_8u242b08.msi"
 !define DATASHARE_JAR_DOWNLOAD_URL "https://github.com/ICIJ/datashare/releases/download/${VERSION}/datashare-dist-${VERSION}.jar"
 !define DATASHARE_FRONT_DOWNLOAD_URL "https://github.com/ICIJ/datashare-client/releases/download/${VERSION}/datashare-client-${VERSION}.tgz"
-Var shouldReboot
 
 OutFile dist/installDatashareStandalone.exe
 InstallDir "$PROGRAMFILES64\${APPNAME}"
@@ -176,7 +175,6 @@ Function un.installTesseractOCR64
 FunctionEnd
 
 Section "install"
-  StrCpy $shouldReboot "false"
   ${GetWindowsVersion} $R0
   DetailPrint "Detected Windows $R0"
 
@@ -191,11 +189,6 @@ Section "install"
 
   Push $R0
   Call InstallDatashare
-
-  ${If} $shouldReboot == "true"
-    MessageBox MB_YESNO|MB_ICONQUESTION "System needs to reboot. Do you wish to reboot now ?" IDNO +2
-    Reboot
-  ${EndIf}
 SectionEnd
 
 section "uninstall"
