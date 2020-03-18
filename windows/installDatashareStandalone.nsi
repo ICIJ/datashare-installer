@@ -117,6 +117,21 @@ Function InstallDatashare
   pop $R0
 FunctionEnd
 
+Function UninstallPreviousDatashare
+  ClearErrors
+  FindFirst $0 $1 "$PROGRAMFILES64\Datashare*"
+  loop:
+    IfErrors done
+    DetailPrint "found previous datashare $1 calling uninstall"
+    ExecWait "$PROGRAMFILES64\$1\uninstall.exe /S"
+    IfErrors 0 +2
+    DetailPrint "uninstall of $1 failed"
+    FindNext $0 $1
+    Goto loop
+  done:
+    FindClose $0
+FunctionEnd
+
 Function InstallOpenJre64
     #Java lib test
     nsExec::ExecToStack "java -version"
@@ -177,6 +192,7 @@ FunctionEnd
 Section "install"
   ${GetWindowsVersion} $R0
   DetailPrint "Detected Windows $R0"
+  Call UninstallPreviousDatashare
 
   ${If} ${RunningX64}
     Call InstallOpenJre64
@@ -200,14 +216,16 @@ section "uninstall"
   rmDir /r "$APPDATA\Datashare\dist"
   rmDir /r "$APPDATA\Datashare\index"
   rmDir /r "$APPDATA\Datashare\app"
-  MessageBox MB_YESNO|MB_ICONQUESTION "Do you want to remove Datashare data directory ?" IDNO +3
-    rmDir /r "$APPDATA\Datashare\data"
-    rmDir /r "$DESKTOP\Datashare Data"
-  rmDir "$APPDATA\Datashare" # only if empty
+
+  IfSilent +5
+    MessageBox MB_YESNO|MB_ICONQUESTION "Do you want to remove Datashare data directory ?" IDNO +3
+      rmDir /r "$APPDATA\Datashare\data"
+      rmDir /r "$DESKTOP\Datashare Data"
+    rmDir "$APPDATA\Datashare" # only if empty
 
   ReadRegStr $0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" "GetWindowsVersion"
   # Remove uninstaller information from the registry
   DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}"
-
-  Call un.installTesseractOCR64
+  IfSilent +2
+    Call un.installTesseractOCR64
 SectionEnd
