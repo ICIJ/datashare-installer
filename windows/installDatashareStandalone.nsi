@@ -21,8 +21,7 @@ Icon "datashare.ico"
 !define TESSERACT_OCR_64_PATH "$TEMP\tesseract-ocr-setup.exe"
 !define OPEN_JRE_64_DOWNLOAD_URL "https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk8u242-b08/OpenJDK8U-jre_x64_windows_hotspot_8u242b08.msi"
 !define OPEN_JRE_64_PATH "$TEMP\OpenJDK8U-jre_x64_windows_hotspot_8u242b08.msi"
-!define DATASHARE_JAR_DOWNLOAD_URL "https://github.com/ICIJ/datashare/releases/download/${VERSION}/datashare-dist-${VERSION}.jar"
-!define DATASHARE_FRONT_DOWNLOAD_URL "https://github.com/ICIJ/datashare-client/releases/download/${VERSION}/datashare-client-${VERSION}.tgz"
+!define DATASHARE_JAR_DOWNLOAD_URL "https://github.com/ICIJ/datashare/releases/download/${VERSION}/datashare-dist-${VERSION}-all.jar"
 
 OutFile dist/installDatashareStandalone.exe
 InstallDir "$PROGRAMFILES64\${APPNAME}"
@@ -50,37 +49,6 @@ Function DownloadDatashareJar
     PathGood:
 FunctionEnd
 
-Function InstallDatashareClient
-    IfFileExists $INSTDIR\app* PathGood PathNotGood
-     PathNotGood:
-        DetailPrint "Downloading datashare at : ${DATASHARE_FRONT_DOWNLOAD_URL}"
-        inetc::get "${DATASHARE_FRONT_DOWNLOAD_URL}" "$TEMP\${APPNAME}.tgz" /end
-        Pop $0
-        DetailPrint "Download Status: $0"
-        ${If} $0 != "OK"
-            MessageBox MB_OK "Download Failed: $0"
-            Abort
-        ${EndIf}
-
-        DetailPrint "Create directory : $INSTDIR\app"
-        createDirectory "$INSTDIR\app"
-
-        DetailPrint "Unpack datashare client in : $INSTDIR\app"
-        untgz::extract "-d" "$INSTDIR\app" "$TEMP\${APPNAME}.tgz"
-        StrCmp $R0 "success" +4
-            DetailPrint "Failed to extract $TEMP\${APPNAME}.tgz"
-            MessageBox MB_OK|MB_ICONEXCLAMATION|MB_DEFBUTTON1 "Failed to extract $TEMP\${APPNAME}.tgz"
-            Abort
-        Goto PathDone
-
-        ; Delete temporary files
-        DetailPrint "Remove temporary file : $TEMP\${APPNAME}.tgz"
-        Delete "$TEMP\${APPNAME}.tgz"
-     PathGood:
-        DetailPrint "Datashare already installed"
-     PathDone:
-FunctionEnd
-
 Function InstallDatashare
   exch $R0
   SetOutPath "$INSTDIR"
@@ -94,8 +62,6 @@ Function InstallDatashare
 
   # Download Jar
   Call DownloadDatashareJar
-  # download and unpack client
-  Call InstallDatashareClient
 
   # Data
   createDirectory "$APPDATA\Datashare\dist"
@@ -106,9 +72,6 @@ Function InstallDatashare
   rmDir "$DESKTOP\Datashare Data"
   nsExec::Exec 'cmd /c mklink /d "$DESKTOP\Datashare Data" "$APPDATA\Datashare\data"'
   DetailPrint 'Link created from "$APPDATA\Datashare\data" to "$DESKTOP\Datashare Data"'
-  rmDir "$APPDATA\Datashare\app"
-  nsExec::Exec 'cmd /c mklink /d $APPDATA\Datashare\app "$INSTDIR\app"'
-  DetailPrint 'Link created from "$INSTDIR\app" to "$APPDATA\Datashare\app"'
 
   writeUninstaller "$INSTDIR\uninstall.exe"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" "DisplayName" "${APPNAME}"
@@ -215,7 +178,6 @@ section "uninstall"
   # data
   rmDir /r "$APPDATA\Datashare\dist"
   rmDir /r "$APPDATA\Datashare\index"
-  rmDir /r "$APPDATA\Datashare\app"
 
   IfSilent +5
     MessageBox MB_YESNO|MB_ICONQUESTION "Do you want to remove Datashare data directory ?" IDNO +3
