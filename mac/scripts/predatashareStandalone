@@ -10,10 +10,10 @@ command -v /usr/local/bin/brew  || { echo >&2 "I require brew but it's not insta
 if command tesseract 2>/dev/null; then
   echo "tesseractOCR is installed"
 else
-  /usr/local/bin/brew install imagemagick
-  /usr/local/bin/brew install leptonica
-  /usr/local/bin/brew install tesseract
-  /usr/local/bin/brew install tesseract-lang
+  /usr/bin/sudo -i -u "${USER}" /usr/local/bin/brew install imagemagick
+  /usr/bin/sudo -i -u "${USER}" /usr/local/bin/brew install leptonica
+  /usr/bin/sudo -i -u "${USER}" /usr/local/bin/brew install tesseract
+  /usr/bin/sudo -i -u "${USER}" /usr/local/bin/brew install tesseract-lang
 fi
 
 # install JRE
