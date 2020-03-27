@@ -39,7 +39,7 @@ Function DownloadDatashareJar
     IfFileExists "$INSTDIR\${APPNAME}.jar" PathGood PathNotGood
     PathNotGood:
         DetailPrint "Downloading datashare at : ${DATASHARE_JAR_DOWNLOAD_URL}"
-            inetc::get "${DATASHARE_JAR_DOWNLOAD_URL}" "$INSTDIR\${APPNAME}.jar" /end
+            inetc::get "${DATASHARE_JAR_DOWNLOAD_URL}" "$INSTDIR\${APPNAME}-all.jar" /end
             Pop $0
             DetailPrint "Download Status: $0"
             ${If} $0 != "OK"
