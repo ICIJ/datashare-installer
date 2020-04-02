@@ -17,9 +17,9 @@ else
 fi
 
 # install JRE
-if [ -d /Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk ]; then
+if [ -d /Library/Java/JavaVirtualMachines/adoptopenjdk-8.jre ]; then
   echo "$JAVA_PKG is installed"
 else
-  curl -o /tmp/$JAVA_PKG https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk8u242-b08/$JAVA_PKG
+  curl -L -o /tmp/$JAVA_PKG https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk8u242-b08/$JAVA_PKG
   installer -pkg /tmp/$JAVA_PKG -target /
 fi
