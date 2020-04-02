@@ -4,7 +4,7 @@ DATASHARE_VERSION=__version__
 
 DATA_PATH="/Users/${USER}/Datashare"
 INDEX_PATH="/Users/${USER}/Library/Datashare/index"
-JAVA=/Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home/bin/java
+JAVA=/Library/Java/JavaVirtualMachines/adoptopenjdk-8.jre/Contents/Home/bin/java
 
 mkdir -p "${INDEX_PATH}"
 
