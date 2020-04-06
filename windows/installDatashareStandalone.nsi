@@ -53,7 +53,6 @@ Function InstallDatashare
   exch $R0
   SetOutPath "$INSTDIR"
   File "datashare.ico"
-  File "datashareStandalone.ps1"
   File /oname=datashareStandalone.bat "dist/datashareStandalone.bat"
 
   # Start Menu
