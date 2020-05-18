@@ -5,7 +5,7 @@ There are two ways for running datashare :
 * with [docker](https://www.docker.com/) usually more for server setups
 * with [java](https://www.java.com) we call it "standalone" : it includes elasticsearch in the JVM and has a smaller footprint than the docker version
 
-So you will find 6 assets in [release list]():
+So you will find 6 assets in [release list](https://github.com/ICIJ/datashare-installer/releases):
 * `datashare-dist_6.5.0_all.deb` : installer for ubuntu/debian without docker
 * `datashare.sh` :  bash shell script to run datashare with `docker-compose`
 * `Datashare.pkg` : installer for mac with docker 
