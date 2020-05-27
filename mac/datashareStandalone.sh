@@ -16,7 +16,8 @@ fi
 cd "/Users/${USER}/Library/Datashare" || exit # needed for /dist
 
 $JAVA -cp "./dist:/Applications/Datashare.app/Contents/Resources/datashare-dist-${DATASHARE_VERSION}-all.jar" \
-    -DPROD_MODE=true org.icij.datashare.Main -d "$DATA_PATH" --queueType memory --busType memory \
+    -DPROD_MODE=true -Djava.system.class.loader=org.icij.datashare.DynamicClassLoader \
+    org.icij.datashare.Main -d "$DATA_PATH" --queueType memory --busType memory \
     --dataSourceUrl jdbc:sqlite:file:"/Users/${USER}/Library/Datashare/dist/datashare.db" \
     --settings ./dist/datashare.conf --mode EMBEDDED --browserOpenLink true \
     --elasticsearchDataPath "$INDEX_PATH"
