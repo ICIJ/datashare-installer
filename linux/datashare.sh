@@ -4,12 +4,9 @@ datashare_version=__version__
 redis_image=redis:4.0.1-alpine
 elasticsearch_image=docker.elastic.co/elasticsearch/elasticsearch:6.3.0
 
-MODELS_DIR=${MODELS_DIR:-${HOME}/.local/share/Datashare_Models}
-INDEX_DIR=${INDEX_DIR:-${HOME}/.local/share/Datashare_Index}
-mkdir -p ${MODELS_DIR}
-mkdir -p ${INDEX_DIR}
-DATA_DIR=${DATA_DIR:-${HOME}/Datashare}
-mkdir -p ${DATA_DIR}
+DATASHARE_HOME="${HOME}"/.local/share/datashare
+mkdir -p "${DATASHARE_HOME}"/dist "${DATASHARE_HOME}"/index "${DATASHARE_HOME}"/plugins "${DATASHARE_HOME}"/extensions "${HOME}"/Datashare
+
 MEM_ALLOCATED_MEGA=$(free|awk '/^Mem:/{print $2"/(2*1024)"}'|bc)
 BIND_HOST=127.0.0.1
 
@@ -29,7 +26,7 @@ services:
     image: ${elasticsearch_image}
     restart: on-failure
     volumes:
-      - ${INDEX_DIR}:/usr/share/elasticsearch/data
+      - ${DATASHARE_HOME}/index:/usr/share/elasticsearch/data
     environment:
       - "ES_JAVA_OPTS=${DS_JAVA_OPTS}"
       - "http.host=0.0.0.0"
@@ -48,7 +45,7 @@ create_docker_compose_file
 docker-compose -f /tmp/datashare.yml -p datashare up -d
 
 echo "binding data directory to ${DATA_DIR}"
-echo "binding NER models directory to ${MODELS_DIR}"
+echo "binding NER models directory to ${DATASHARE_HOME}/dist"
 
 image_running=$(docker inspect --format='{{.Config.Image}}' datashare 2>/dev/null)
 if [ -n "${image_running}" ]; then
@@ -56,5 +53,7 @@ if [ -n "${image_running}" ]; then
 fi
 
 docker run -p $BIND_HOST:8080:8080 --network datashare_default --name datashare --rm -e DS_JAVA_OPTS="${DS_JAVA_OPTS}" \
- -e DS_DOCKER_MOUNTED_DATA_DIR=${DATA_DIR} -v ${DATA_DIR}:/home/datashare/data:ro \
- -v ${MODELS_DIR}:/home/datashare/dist -ti icij/datashare:${datashare_version} --dataSourceUrl jdbc:sqlite:/home/datashare/dist/database.sqlite "$@"
+ -e DS_DOCKER_MOUNTED_DATA_DIR=${HOME}/Datashare -v ${HOME}/Datashare:/home/datashare/data:ro \
+ -v ${DATASHARE_HOME}/plugins:/home/datashare/plugins -v ${DATASHARE_HOME}/extensions:/home/datashare/extensions \
+ -v ${DATASHARE_HOME}/dist:/home/datashare/dist -ti icij/datashare:${datashare_version} --dataSourceUrl jdbc:sqlite:/home/datashare/dist/database.sqlite \
+ --pluginsDir /home/datashare/plugins  --extensionsDir /home/datashare/extensions "$@"
