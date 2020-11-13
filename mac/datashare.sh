@@ -6,7 +6,9 @@ elasticsearch_image=docker.elastic.co/elasticsearch/elasticsearch:6.3.0
 data_path="${HOME}/Datashare"
 dist_path="/Users/${USER}/Library/Datashare_Models"
 index_path="/Users/${USER}/Library/Datashare_Index"
-mkdir -p "${index_path}"
+plugins_path="/Users/${USER}/Library/datashare/plugins"
+extensions_path="/Users/${USER}/Library/datashare/extensions"
+mkdir -p "${index_path}" "${plugins_path}" "${extensions_path}"
 
 if [[ -z "${DS_JAVA_OPTS}" ]]; then
     mem_allocated=$(sysctl -a | grep hw.memsize | awk '{print $2"/(2*1024^2)"}' | bc)
@@ -23,12 +25,14 @@ services:
     environment:
       - "DS_JAVA_OPTS=${DS_JAVA_OPTS}"
       - "DS_DOCKER_MOUNTED_DATA_DIR=${data_path}"
-    command: --dataSourceUrl jdbc:sqlite:/home/datashare/dist/database.sqlite
+    command: --dataSourceUrl jdbc:sqlite:/home/datashare/dist/database.sqlite --pluginsDir /home/datashare/plugins --extensionsDir /home/datashare/extensions
     ports:
       - "127.0.0.1:8080:8080"
     volumes:
       - "${dist_path}:/home/datashare/dist"
       - "${data_path}:/home/datashare/data:ro"
+      - "{plugins_path}:/home/datashare/plugins"
+      - "{extensions_path}:/home/datashare/extensions"
 
   redis:
     image: ${redis_image}
