@@ -6,12 +6,14 @@ services:
     environment:
       - "DS_JAVA_OPTS=\${DS_JAVA_OPTS}"
       - "DS_DOCKER_MOUNTED_DATA_DIR=\${APPDATA}/Datashare/data"
-    command: --dataSourceUrl jdbc:sqlite:/home/datashare/dist/database.sqlite
+    command: --dataSourceUrl jdbc:sqlite:/home/datashare/dist/database.sqlite --pluginsDir /home/datashare/plugins --extensionsDir /home/datashare/extensions
     ports:
       - "127.0.0.1:8080:8080"
     volumes:
       - "\${APPDATA}/Datashare/dist:/home/datashare/dist"
       - "\${APPDATA}/Datashare/data:/home/datashare/data:ro"
+      - "\${APPDATA}/Datashare/plugins:/home/datashare/plugins"
+      - "\${APPDATA}/Datashare/extensions:/home/datashare/extensions"
 
   redis:
     image: redis:4.0.1-alpine

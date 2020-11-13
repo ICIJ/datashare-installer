@@ -66,6 +66,8 @@ Function InstallDatashare
   createDirectory "$APPDATA\Datashare\dist"
   createDirectory "$APPDATA\Datashare\index"
   createDirectory "$APPDATA\Datashare\data"
+  createDirectory "$APPDATA\Datashare\plugins"
+  createDirectory "$APPDATA\Datashare\extensions"
 
   # Create symbolic links
   rmDir "$DESKTOP\Datashare Data"
@@ -177,6 +179,8 @@ section "uninstall"
   # data
   rmDir /r "$APPDATA\Datashare\dist"
   rmDir /r "$APPDATA\Datashare\index"
+  rmDir /r "$APPDATA\Datashare\plugins"
+  rmDir /r "$APPDATA\Datashare\extensions"
 
   IfSilent +5
     MessageBox MB_YESNO|MB_ICONQUESTION "Do you want to remove Datashare data directory ?" IDNO +3
