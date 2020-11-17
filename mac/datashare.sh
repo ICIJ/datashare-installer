@@ -31,8 +31,8 @@ services:
     volumes:
       - "${dist_path}:/home/datashare/dist"
       - "${data_path}:/home/datashare/data:ro"
-      - "{plugins_path}:/home/datashare/plugins"
-      - "{extensions_path}:/home/datashare/extensions"
+      - "${plugins_path}:/home/datashare/plugins"
+      - "${extensions_path}:/home/datashare/extensions"
 
   redis:
     image: ${redis_image}
