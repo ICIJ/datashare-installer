@@ -13,7 +13,7 @@
 Name "${COMPANYNAME} - ${APPNAME}"
 Icon "datashare.ico"
 
-!define DOCKER_FOR_WINDOWS_URL "https://download.docker.com/win/stable/Docker%20for%20Windows%20Installer.exe"
+!define DOCKER_FOR_WINDOWS_URL "https://desktop.docker.com/win/stable/Docker%20Desktop%20Installer.exe"
 !define DOCKER_FOR_WINDOWS_PATH "$TEMP\docker_for_windows.exe"
 !define DOCKER_TOOLBOX_URL "https://download.docker.com/win/stable/DockerToolbox.exe"
 !define DOCKER_TOOLBOX_PATH "$TEMP\docker_toolbox.exe"
