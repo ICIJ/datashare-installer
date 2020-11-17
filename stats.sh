@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-curl 'https://api.github.com/repos/ICIJ/datashare-installer/releases?per_page=30&page=0' | jq -r '.[]|[.tag_name, .created_at, .assets[].download_count] | @csv' > /tmp/ds_stats.csv
+curl 'https://api.github.com/repos/ICIJ/datashare-installer/releases?per_page=30&page=0' | jq -r '.[]|[.tag_name, .published_at, .assets[].download_count] | @csv' > /tmp/ds_stats.csv
 sed  -i '1i release,date,mac,windows,linux' /tmp/ds_stats.csv
 
 function create_plot_file {
