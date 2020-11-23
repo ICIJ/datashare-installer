@@ -4,7 +4,12 @@ docker info 2>NUL
 
 if ERRORLEVEL 1 (
   echo docker is not running, launching it
-  start "" "\Program Files\Docker\Docker\Docker for Windows.exe"
+  wmic os get Caption | findstr /i "10" > nul
+  if ERRORLEVEL 1 (
+  start "" "\Program Files\Docker Toolbox\docker.exe"
+  ) else (
+  start "" "\Program Files\Docker\Docker\Docker Desktop.exe"
+  )
   call :wait_docker_is_up
 )
 

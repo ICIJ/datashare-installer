@@ -14,10 +14,12 @@ Name "${COMPANYNAME} - ${APPNAME}"
 Icon "datashare.ico"
 
 !define DOCKER_FOR_WINDOWS_URL "https://desktop.docker.com/win/stable/Docker%20Desktop%20Installer.exe"
-!define DOCKER_FOR_WINDOWS_PATH "$TEMP\docker_for_windows.exe"
-!define DOCKER_TOOLBOX_URL "https://download.docker.com/win/stable/DockerToolbox.exe"
+!define DOCKER_FOR_WINDOWS_PATH "$TEMP\docker_desktop.exe"
+!define WSL_URL "https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi"
+!define WSL_PATH "$TEMP\wsl_update_x64.msi"
+!define DOCKER_TOOLBOX_URL " https://github.com/docker/toolbox/releases/download/v19.03.1/DockerToolbox-19.03.1.exe"
 !define DOCKER_TOOLBOX_PATH "$TEMP\docker_toolbox.exe"
-!define DOCKER_UNINSTALL_KEY "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Docker for Windows"
+!define DOCKER_UNINSTALL_KEY "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Docker Desktop"
 !define DATASHARE_UNINSTALL_KEY "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}"
 Var shouldReboot
 
@@ -34,7 +36,7 @@ Function .onInit
 FunctionEnd
 
 Function InstallDockerToolbox
-  DetailPrint "Installing docker toolbox for windows"
+  DetailPrint "Installing docker toolbox desktop"
   inetc::get "${DOCKER_TOOLBOX_URL}" "${DOCKER_TOOLBOX_PATH}" /end
     Pop $0
     DetailPrint "Download Status: $0"
@@ -45,8 +47,20 @@ Function InstallDockerToolbox
     ExecWait '"${DOCKER_TOOLBOX_PATH}" install --quiet'
 FunctionEnd
 
-Function InstallDockerForWindows
-  DetailPrint "Datashare uses Docker, downloading and installing docker for windows"
+Function InstallWSL
+  DetailPrint "Windows 10 Home needs Windows Subsystem for Linux (WSL)"
+  inetc::get "${WSL_URL}" "${WSL_PATH}" /end
+  Pop $0
+  DetailPrint "Download Status: $0"
+  ${If} $0 != "OK"
+    MessageBox MB_OK "Download Failed: $0"
+    Abort
+  ${EndIf}
+  ExecWait '"${WSL_PATH}" install --quiet'
+FunctionEnd
+
+Function InstallDockerDesktop
+  DetailPrint "Datashare uses Docker, downloading and installing docker desktop"
   inetc::get "${DOCKER_FOR_WINDOWS_URL}" "${DOCKER_FOR_WINDOWS_PATH}" /end
   Pop $0
   DetailPrint "Download Status: $0"
@@ -57,8 +71,8 @@ Function InstallDockerForWindows
   ExecWait '"${DOCKER_FOR_WINDOWS_PATH}" install --quiet'
 FunctionEnd
 
-Function un.InstallDockerForWindows
-  MessageBox MB_YESNO|MB_ICONQUESTION "Do you wish to remove docker for windows ?" IDNO +6
+Function un.InstallDockerDesktop
+  MessageBox MB_YESNO|MB_ICONQUESTION "Do you wish to remove docker desktop ?" IDNO +6
     SetRegView 64
     ReadRegStr $0 HKLM "${DOCKER_UNINSTALL_KEY}" "UninstallString"
     SetRegView 32
@@ -106,7 +120,11 @@ Section "install"
   ${If} $0 == "0"
      DetailPrint "Nice! Docker is already installed"
   ${ElseIf} $R0 == "10.0 Pro"
-     Call InstallDockerForWindows
+     Call InstallDockerDesktop
+     StrCpy $shouldReboot "true"
+  ${ElseIf} $R0 == "10.0"
+     Call InstallDockerDesktop
+     Call InstallWSL
      StrCpy $shouldReboot "true"
   ${Else}
      Call InstallDockerToolbox
@@ -141,8 +159,10 @@ section "uninstall"
   # Remove uninstaller information from the registry
   DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}"
 
-  ${If} $0 == "10.0"
-    Call un.InstallDockerForWindows
+  ${If} $0 == "10.0 Pro"
+    Call un.InstallDockerDesktop
+  ${ElseIf} $0 == "10.0"
+    Call un.InstallDockerDesktop
   ${Else}
     Call un.InstallDockerToolbox
   ${EndIf}

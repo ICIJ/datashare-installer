@@ -40,7 +40,12 @@ function WaitDatashareIsUp {
 
 docker info 2>($tmpFile=New-TemporaryFile)
 if ($LASTEXITCODE -ne 0) {
-    Start-Process 'C:\Program Files\Docker\Docker\Docker for Windows.exe'
+    wmic os get Caption | findstr /i "10" | out-null
+    if ($LASTEXITCODE -ne 0) {
+        Start-Process 'C:\Program Files\Docker\Docker\Docker Desktop.exe'
+    } else{
+        Start-Process 'C:\Program Files\Docker Toolbox\docker.exe'
+    }
     & WaitDockerIsUp
 }
 
