@@ -2,7 +2,7 @@
 
 datashare_version=__version__
 redis_image=redis:4.0.1-alpine
-elasticsearch_image=docker.elastic.co/elasticsearch/elasticsearch:6.8.0
+elasticsearch_image=docker.elastic.co/elasticsearch/elasticsearch:7.9.1
 
 DATASHARE_HOME="${HOME}"/.local/share/datashare
 mkdir -p "${DATASHARE_HOME}"/dist "${DATASHARE_HOME}"/index "${DATASHARE_HOME}"/plugins "${DATASHARE_HOME}"/extensions "${HOME}"/Datashare

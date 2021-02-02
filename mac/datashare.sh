@@ -2,7 +2,7 @@
 
 datashare_version=__version__
 redis_image=redis:4.0.1-alpine
-elasticsearch_image=docker.elastic.co/elasticsearch/elasticsearch:6.3.0
+elasticsearch_image=docker.elastic.co/elasticsearch/elasticsearch:7.9.1
 data_path="${HOME}/Datashare"
 dist_path="/Users/${USER}/Library/Datashare_Models"
 index_path="/Users/${USER}/Library/Datashare_Index"
