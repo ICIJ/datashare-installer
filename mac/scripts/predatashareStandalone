@@ -4,16 +4,27 @@ echo "pre-install"
 
 JAVA_PKG=OpenJDK8U-jre_x64_mac_hotspot_8u242b08.pkg
 
-command -v /usr/local/bin/brew  || { echo >&2 "I require brew but it's not installed. Aborting."; exit 1; }
+echo "path : $PATH"
+PATH_WITH_SPACES=$(echo $PATH | sed 's/:/ /g')
+BREW_PATHS="/usr/local/bin /opt/homebrew/bin $PATH_WITH_SPACES"
+BREW=""
+echo "searching brew in : $BREW_PATHS"
+for path in $BREW_PATHS
+do
+  if [[ -x "$path/brew" ]]; then
+    BREW="$path/brew"
+  fi
+done
+command -v "$BREW"  || { echo >&2 "I require brew but it's not installed. Aborting."; exit 1; }
 
 # install tesseractOCR
-if command tesseract 2>/dev/null; then
+if command /usr/local/bin/tesseract 2>/dev/null; then
   echo "tesseractOCR is installed"
 else
-  /usr/bin/sudo -i -u "${USER}" /usr/local/bin/brew install imagemagick
-  /usr/bin/sudo -i -u "${USER}" /usr/local/bin/brew install leptonica
-  /usr/bin/sudo -i -u "${USER}" /usr/local/bin/brew install tesseract
-  /usr/bin/sudo -i -u "${USER}" /usr/local/bin/brew install tesseract-lang
+  /usr/bin/sudo -i -u "${USER}" "$BREW" install imagemagick
+  /usr/bin/sudo -i -u "${USER}" "$BREW" install leptonica
+  /usr/bin/sudo -i -u "${USER}" "$BREW" install tesseract
+  /usr/bin/sudo -i -u "${USER}" "$BREW" install tesseract-lang
 fi
 
 # install JRE
