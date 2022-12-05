@@ -36,8 +36,8 @@ $(DIST)/%.pkg: %.sh $(DIST)/Datashare.icns
 		chmod +x "$(DIST)/$*/${APPNAME}.pkg"
 
 		# signing cf http://users.wfu.edu/cottrell/productsign/productsign_linux.html
-		@echo "$$DATASHARE_PEM" > /tmp/datashare.pem
-		@echo "$$ICIJ_CERT" > /tmp/icij.crt
+		@echo "$$DATASHARE_PEM_B64" | base64 --decode > /tmp/datashare.pem
+		@echo "$$ICIJ_CERT_B64" | base64 --decode > /tmp/icij.crt
 		: | openssl dgst -sign /tmp/datashare.pem -binary | wc -c > $(DIST)/$*/siglen.txt
 		openssl x509 -in /tmp/icij.crt -outform der -out $(DIST)/$*/cert.der
 		xar --sign -f "$(DIST)/$*/${APPNAME}.pkg" --digestinfo-to-sign $(DIST)/$*/digestinfo.dat --sig-size `cat $(DIST)/$*/siglen.txt` --cert-loc $(DIST)/$*/cert.der
