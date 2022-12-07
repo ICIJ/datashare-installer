@@ -3,6 +3,7 @@ export RESOURCES=resources
 export VERSION=${VERSION}
 export APPNAME=Datashare
 export BUNDLE_ID=org.icij.Datashare
+export P12_PASSWORD=password
 
 all: $(DIST)/datashare.pkg $(DIST)/datashareStandalone.pkg
 
@@ -35,15 +36,16 @@ $(DIST)/%.pkg: %.sh $(DIST)/Datashare.icns
 		( cd $(DIST)/$*/flat && xar --compression none -cf "../${APPNAME}.pkg" * )
 		chmod +x "$(DIST)/$*/${APPNAME}.pkg"
 
-		# signing cf http://users.wfu.edu/cottrell/productsign/productsign_linux.html
-		@echo "$$DATASHARE_PEM_B64" | base64 --decode > /tmp/datashare.pem
-		@echo "$$ICIJ_CERT_B64" | base64 --decode > /tmp/icij.crt
-		: | openssl dgst -sign /tmp/datashare.pem -binary | wc -c > $(DIST)/$*/siglen.txt
-		openssl x509 -in /tmp/icij.crt -outform der -out $(DIST)/$*/cert.der
-		xar --sign -f "$(DIST)/$*/${APPNAME}.pkg" --digestinfo-to-sign $(DIST)/$*/digestinfo.dat --sig-size `cat $(DIST)/$*/siglen.txt` --cert-loc $(DIST)/$*/cert.der
-		openssl rsautl -sign -inkey /tmp/datashare.pem -in $(DIST)/$*/digestinfo.dat -out $(DIST)/$*/signature.dat
-		xar --inject-sig $(DIST)/$*/signature.dat -f "$(DIST)/$*/${APPNAME}.pkg"
-		rm -f /tmp/datashare.pem /tmp/icij.crt
+		# signing cf http://users.wfu.edu/cottrell/productsign/productsign_linux.html	
+		@echo "$$DATASHARE_PEM" > /tmp/datashare.pem
+		@echo "$$ICIJ_CERT" > /tmp/icij.crt
+		@echo "$$P12_PASSWORD" > /tmp/key.p12.password
+		@echo "$$APPSTORE_PRIVATE_KEY" > /tmp/appstore_private_key.asc
+		openssl pkcs12 -export -password pass:$(P12_PASSWORD) -in /tmp/icij.crt -inkey /tmp/datashare.pem -name 'Datashare' -out /tmp/key.p12
+		rcodesign sign --p12-file /tmp/key.p12 --p12-password-file /tmp/key.p12.password "$(DIST)/$*/${APPNAME}.pkg"
+		rcodesign encode-app-store-connect-api-key -o /tmp/api.json $(APPSTORE_ISSUER_ID) $(APPSTORE_KEY_ID) /tmp/appstore_private_key.asc
+		rcodesign notary-submit --api-key-path /tmp/api.json --staple "$(DIST)/$*/${APPNAME}.pkg"	
+		rm -f /tmp/datashare.pem /tmp/icij.crt /tmp/key.p12 /tmp/key.p12.password /tmp/e.json
 		mv $(DIST)/$*/$(APPNAME).pkg $@
 
 $(DIST)/Datashare.icns: $(DIST)
