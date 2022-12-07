@@ -37,10 +37,10 @@ $(DIST)/%.pkg: %.sh $(DIST)/Datashare.icns
 		chmod +x "$(DIST)/$*/${APPNAME}.pkg"
 
 		# signing cf http://users.wfu.edu/cottrell/productsign/productsign_linux.html	
-		@echo "$$DATASHARE_PEM" > /tmp/datashare.pem
-		@echo "$$ICIJ_CERT" > /tmp/icij.crt
+		@echo "$$DATASHARE_PEM_B64" | base64 --decode > /tmp/datashare.pem
+		@echo "$$ICIJ_CERT_B64" | base64 --decode > /tmp/icij.crt
 		@echo "$$P12_PASSWORD" > /tmp/key.p12.password
-		@echo "$$APPSTORE_PRIVATE_KEY" > /tmp/appstore_private_key.asc
+		@echo "$$APPSTORE_PRIVATE_KEY_B64" | base64 --decode > /tmp/appstore_private_key.asc
 		openssl pkcs12 -export -password pass:$(P12_PASSWORD) -in /tmp/icij.crt -inkey /tmp/datashare.pem -name 'Datashare' -out /tmp/key.p12
 		rcodesign sign --p12-file /tmp/key.p12 --p12-password-file /tmp/key.p12.password "$(DIST)/$*/${APPNAME}.pkg"
 		rcodesign encode-app-store-connect-api-key -o /tmp/api.json $(APPSTORE_ISSUER_ID) $(APPSTORE_KEY_ID) /tmp/appstore_private_key.asc
