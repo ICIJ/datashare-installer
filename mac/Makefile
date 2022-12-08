@@ -7,6 +7,7 @@ export P12_PASSWORD=password
 
 all: $(DIST)/datashare.pkg $(DIST)/datashareStandalone.pkg
 
+
 $(DIST):
 		mkdir -p $(DIST)/images
 
@@ -16,14 +17,14 @@ $(DIST)/%.pkg: %.sh $(DIST)/Datashare.icns
 		sed -i 's/__version__/"${VERSION}"/g' $(DIST)/$*/$*.sh
 		./build/appify $(DIST)/$*/$*.sh "${APPNAME}"
 
-		# adds icon
+		# Adds icon
 		mkdir -p "${APPNAME}.app"/Contents/Resources
 		cp $(DIST)/Datashare.icns "${APPNAME}.app"/Contents/Resources/
 		cp $(RESOURCES)/Info.plist "${APPNAME}.app"/Contents
 
 		mv "${APPNAME}.app" $(DIST)/$*/root/Applications/
 
-		# cf http://bomutils.dyndns.org/tutorial.html
+		# CF http://bomutils.dyndns.org/tutorial.html
 		$(eval export PREINSTALL=pre$*)
 		$(eval export POSTINSTALL=post$*)
 		cp -a scripts $(DIST)
@@ -36,16 +37,27 @@ $(DIST)/%.pkg: %.sh $(DIST)/Datashare.icns
 		( cd $(DIST)/$*/flat && xar --compression none -cf "../${APPNAME}.pkg" * )
 		chmod +x "$(DIST)/$*/${APPNAME}.pkg"
 
-		# signing cf http://users.wfu.edu/cottrell/productsign/productsign_linux.html	
+		# Create transient files based on environment variables
 		@echo "$$DATASHARE_PEM_B64" | base64 --decode > /tmp/datashare.pem
 		@echo "$$ICIJ_CERT_B64" | base64 --decode > /tmp/icij.crt
 		@echo "$$P12_PASSWORD" > /tmp/key.p12.password
 		@echo "$$APPSTORE_PRIVATE_KEY_B64" | base64 --decode > /tmp/appstore_private_key.asc
+
+		# Generate the p12 file with a dummy password
 		openssl pkcs12 -export -password pass:$(P12_PASSWORD) -in /tmp/icij.crt -inkey /tmp/datashare.pem -name 'Datashare' -out /tmp/key.p12
+
+		# Sign the package
 		rcodesign sign --p12-file /tmp/key.p12 --p12-password-file /tmp/key.p12.password "$(DIST)/$*/${APPNAME}.pkg"
+
+		# Generate the APP Store Connect API Key
 		rcodesign encode-app-store-connect-api-key -o /tmp/api.json $(APPSTORE_ISSUER_ID) $(APPSTORE_KEY_ID) /tmp/appstore_private_key.asc
+
+		# Submity the package for notarization and staple it
 		rcodesign notary-submit --api-key-path /tmp/api.json --staple "$(DIST)/$*/${APPNAME}.pkg"	
-		rm -f /tmp/datashare.pem /tmp/icij.crt /tmp/key.p12 /tmp/key.p12.password /tmp/e.json
+
+		# Remove keys
+		rm -f /tmp/datashare.pem /tmp/icij.crt /tmp/key.p12 /tmp/key.p12.password /tmp/key.json
+
 		mv $(DIST)/$*/$(APPNAME).pkg $@
 
 $(DIST)/Datashare.icns: $(DIST)
