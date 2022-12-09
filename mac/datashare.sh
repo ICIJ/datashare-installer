@@ -15,6 +15,15 @@ if [[ -z "${DS_JAVA_OPTS}" ]]; then
     DS_JAVA_OPTS="-Xmx${mem_allocated}m"
 fi
 
+function docker_compose {
+  if ! command -v docker-compose &> /dev/null
+  then
+    docker compose --compatibility $@
+  else
+    docker-compose $@
+  fi
+}
+
 function create_docker_compose_file {
 cat > /tmp/datashare.yml << EOF
 version: '2'
@@ -78,7 +87,7 @@ fi
 
 create_docker_compose_file
 
-datashare_id=$(docker-compose -f /tmp/datashare.yml -p datashare ps -q datashare)
+datashare_id=$(docker_compose -f /tmp/datashare.yml -p datashare ps -q datashare)
 if [[ -n "${datashare_id}" ]]; then
     datashare_status=$(docker inspect ${datashare_id} -f "{{.State.Status}}")
     datashare_running_version=$(docker inspect ${datashare_id} -f '{{.Config.Image}}' | awk -F ':' '{print $2}')
@@ -86,9 +95,9 @@ fi
 
 if [[ "${datashare_status}" == "running" && "${datashare_running_version}" == "${datashare_version}" ]]; then
     echo "datashare is ${datashare_status}, restarting it"
-    docker-compose -f /tmp/datashare.yml -p datashare restart datashare
+    docker_compose -f /tmp/datashare.yml -p datashare restart datashare
 else
-    docker-compose -f /tmp/datashare.yml -p datashare up -d
+    docker_compose -f /tmp/datashare.yml -p datashare up -d
 fi
 
 wait_datashare_is_up

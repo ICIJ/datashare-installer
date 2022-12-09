@@ -14,6 +14,15 @@ if [ -z "${DS_JAVA_OPTS}" ] && [ -n "${MEM_ALLOCATED_MEGA}" ]; then
   DS_JAVA_OPTS="-Xmx${MEM_ALLOCATED_MEGA}m"
 fi
 
+docker_compose () {
+  if ! command -v docker-compose &> /dev/null
+  then
+    docker compose --compatibility $@
+  else
+    docker-compose $@
+  fi
+}
+
 create_docker_compose_file () {
 cat > /tmp/datashare.yml << EOF
 version: '2'
@@ -42,7 +51,7 @@ EOF
 }
 
 create_docker_compose_file
-docker-compose -f /tmp/datashare.yml -p datashare up -d
+docker_compose -f /tmp/datashare.yml -p datashare up -d
 
 echo "binding data directory to ${DATA_DIR}"
 echo "binding NER models directory to ${DATASHARE_HOME}/dist"
