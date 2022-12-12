@@ -20,8 +20,7 @@ jobs:
           command: |
             cd windows
             # The version here does not matter
-            make VERSION=5.8.16 dist/installDatashare.exe
-            make VERSION=5.8.16 dist/installDatashareStandalone.exe
+            make VERSION=10.15.0 all
             cd ..
 
       - run:
@@ -29,5 +28,5 @@ jobs:
           command: |
             cd linux
             # The version here does not matter
-            make VERSION=5.8.16 dist/datashare.sh
+            make VERSION=10.15.0 all
             cd ..
