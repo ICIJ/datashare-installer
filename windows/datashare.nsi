@@ -11,7 +11,7 @@
 !define COMPANYNAME "ICIJ"
 !define APPNAME "$%APPNAME%"
 
-Name "${APPNAME}"
+Name "${APPNAME} ${VERSION}"
 Icon "datashare.ico"
 
 !define JAVA_REG_KEY "SOFTWARE\AdoptOpenJDK\JRE"
@@ -21,7 +21,9 @@ Icon "datashare.ico"
 !define TESSERACT_OCR_64_PATH "$TEMP\tesseract-ocr-setup.exe"
 !define OPEN_JRE_64_DOWNLOAD_URL "https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk8u242-b08/OpenJDK8U-jre_x64_windows_hotspot_8u242b08.msi"
 !define OPEN_JRE_64_PATH "$TEMP\OpenJDK8U-jre_x64_windows_hotspot_8u242b08.msi"
-!define DATASHARE_JAR_DOWNLOAD_URL "https://github.com/ICIJ/datashare/releases/download/${VERSION}/datashare-dist-${VERSION}-all.jar"
+!define DATASHARE_JAR_FILENAME "datashare-dist-${VERSION}-all.jar"
+!define DATASHARE_JAR_DOWNLOAD_URL "https://github.com/ICIJ/datashare/releases/download/${VERSION}/${DATASHARE_JAR_FILENAME}"
+
 
 OutFile "dist/datashare-${VERSION}.exe"
 InstallDir "$PROGRAMFILES64\${APPNAME}"
@@ -36,10 +38,10 @@ Function .onInit
 FunctionEnd
 
 Function DownloadDatashareJar
-    IfFileExists "$INSTDIR\${APPNAME}.jar" PathGood PathNotGood
+    IfFileExists "$INSTDIR\${DATASHARE_JAR_FILENAME}" PathGood PathNotGood
     PathNotGood:
-        DetailPrint "Downloading datashare at : ${DATASHARE_JAR_DOWNLOAD_URL}"
-            inetc::get "${DATASHARE_JAR_DOWNLOAD_URL}" "$INSTDIR\${APPNAME}-all.jar" /end
+        DetailPrint "Downloading Datashare from: ${DATASHARE_JAR_DOWNLOAD_URL}"
+            inetc::get "${DATASHARE_JAR_DOWNLOAD_URL}" "$INSTDIR\${DATASHARE_JAR_FILENAME}" /end
             Pop $0
             DetailPrint "Download Status: $0"
             ${If} $0 != "OK"
@@ -163,7 +165,7 @@ Section "install"
     Call InstallTesseractOCR64
 
   ${Else}
-    MessageBox MB_OK "Sorry, datashare can only be installed on a 64 bits machine"
+    MessageBox MB_OK "Sorry, datashare² can only be installed on a 64 bits machine"
     Abort
   ${EndIf}
 

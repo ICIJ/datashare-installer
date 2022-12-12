@@ -1,6 +1,6 @@
 export DIST=dist
 export VERSION=${VERSION}
-export APPNAME=Datashare ${VERSION}
+export APPNAME=Datashare
 export INSTALLER_NAME=datashare-${VERSION}.exe
 
 all: $(DIST)/$(INSTALLER_NAME)
