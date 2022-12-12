@@ -2,7 +2,7 @@
 
 ds_version=__version__
 ds_jar=datashare-dist-$ds_version-all.jar
-ds_jar_dir=/Applications/Datashare.app/Contents/Resources/
+ds_jar_dir=/Applications/Datashare.app/Contents/Resources
 ds_jar_path=$ds_jar_dir/$ds_jar
 ds_jar_url=https://github.com/ICIJ/datashare/releases/download/$ds_version/$ds_jar
 
