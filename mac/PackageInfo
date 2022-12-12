@@ -5,7 +5,7 @@
     <preinstall file="./${PREINSTALL}"/>
     <postinstall file="./${POSTINSTALL}"/>
   </scripts>
-<bundle-version>
+  <bundle-version>
     <bundle id="${BUNDLE_ID}.base.pkg" CFBundleIdentifier="${BUNDLE_ID}" path="./Applications/${APPNAME}.app" CFBundleVersion="${VERSION}"/>
-</bundle-version>
+  </bundle-version>
 </pkg-info>
