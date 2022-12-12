@@ -2,40 +2,41 @@ export DIST=dist
 export RESOURCES=resources
 export VERSION=${VERSION}
 export APPNAME=Datashare
-export BUNDLE_ID=org.icij.Datashare
+export FLAT_PACKAGE_INSTALLER_NAME=datashare-${VERSION}.pkg
 export P12_PASSWORD=password
 
-all: $(DIST)/datashare.pkg $(DIST)/datashareStandalone.pkg
-
+all: $(DIST)/$(FLAT_PACKAGE_INSTALLER_NAME)
 
 $(DIST):
 		mkdir -p $(DIST)/images
 
-$(DIST)/%.pkg: %.sh $(DIST)/Datashare.icns
-		mkdir -p $(DIST)/$*/flat/base.pkg $(DIST)/$*/flat/Resources/en.lproj $(DIST)/$*/root/Applications $(DIST)/scripts
-		cp $*.sh $(DIST)/$*
-		sed -i 's/__version__/"${VERSION}"/g' $(DIST)/$*/$*.sh
-		./build/appify $(DIST)/$*/$*.sh "${APPNAME}"
+$(DIST)/$(FLAT_PACKAGE_INSTALLER_NAME): start.sh $(DIST)/Datashare.icns
+		mkdir -p $(DIST)/flat/base.pkg $(DIST)/flat/Resources/en.lproj 
+		mkdir -p $(DIST)/root/Applications 
+		mkdir -p $(DIST)/scripts
+		cp start.sh $(DIST)/
+		sed -i 's/__version__/"${VERSION}"/g' $(DIST)/start.sh
+		./build/appify $(DIST)/start.sh "${APPNAME}"
 
 		# Adds icon
 		mkdir -p "${APPNAME}.app"/Contents/Resources
 		cp $(DIST)/Datashare.icns "${APPNAME}.app"/Contents/Resources/
 		cp $(RESOURCES)/Info.plist "${APPNAME}.app"/Contents
 
-		mv "${APPNAME}.app" $(DIST)/$*/root/Applications/
+		mv "${APPNAME}.app" $(DIST)/root/Applications/
 
 		# CF http://bomutils.dyndns.org/tutorial.html
-		$(eval export PREINSTALL=pre$*)
-		$(eval export POSTINSTALL=post$*)
+		$(eval export PREINSTALL=preinstall)
+		$(eval export POSTINSTALL=postinstall)
 		cp -a scripts $(DIST)
-		sed -i 's/__version__/"${VERSION}"/g' $(DIST)/scripts/postdatashareStandalone
-		( cd $(DIST)/scripts/ && find . | cpio -o --format odc --owner 0:80 | gzip -c ) > $(DIST)/$*/flat/base.pkg/Scripts
-		( cd $(DIST)/$*/root && find . | cpio -o --format odc --owner 0:80 | gzip -c ) > $(DIST)/$*/flat/base.pkg/Payload
-		./build/gen_file PackageInfo $(DIST)/$*/flat/base.pkg/PackageInfo $(DIST)/$*
-		( cd $(DIST)/$* && mkbom -u 0 -g 80 root flat/base.pkg/Bom )
-		./build/gen_file Distribution $(DIST)/$*/flat/Distribution
-		( cd $(DIST)/$*/flat && xar --compression none -cf "../${APPNAME}.pkg" * )
-		chmod +x "$(DIST)/$*/${APPNAME}.pkg"
+		sed -i 's/__version__/"${VERSION}"/g' $(DIST)/scripts/postinstall
+		( cd $(DIST)/scripts/ && find . | cpio -o --format odc --owner 0:80 | gzip -c ) > $(DIST)/flat/base.pkg/Scripts
+		( cd $(DIST)/root && find . | cpio -o --format odc --owner 0:80 | gzip -c ) > $(DIST)/flat/base.pkg/Payload
+		./build/gen_file PackageInfo $(DIST)/flat/base.pkg/PackageInfo $(DIST)
+		( cd $(DIST) && mkbom -u 0 -g 80 root flat/base.pkg/Bom )
+		./build/gen_file Distribution $(DIST)/flat/Distribution
+		( cd $(DIST)/flat && xar --compression none -cf "../$(FLAT_PACKAGE_INSTALLER_NAME)" * )
+		chmod +x "$(DIST)/$(FLAT_PACKAGE_INSTALLER_NAME)"
 
 		# Create transient files based on environment variables
 		@echo "$$DATASHARE_PEM_B64" | base64 --decode > /tmp/datashare.pem
@@ -47,18 +48,16 @@ $(DIST)/%.pkg: %.sh $(DIST)/Datashare.icns
 		openssl pkcs12 -export -password pass:$(P12_PASSWORD) -in /tmp/icij.crt -inkey /tmp/datashare.pem -name 'Datashare' -out /tmp/key.p12
 
 		# Sign the package
-		rcodesign sign --p12-file /tmp/key.p12 --p12-password-file /tmp/key.p12.password "$(DIST)/$*/${APPNAME}.pkg"
+		rcodesign sign --p12-file /tmp/key.p12 --p12-password-file /tmp/key.p12.password "$(DIST)/$(FLAT_PACKAGE_INSTALLER_NAME)"
 
 		# Generate the APP Store Connect API Key
 		rcodesign encode-app-store-connect-api-key -o /tmp/api.json $(APPSTORE_ISSUER_ID) $(APPSTORE_KEY_ID) /tmp/appstore_private_key.asc
 
 		# Submity the package for notarization and staple it
-		rcodesign notary-submit --api-key-path /tmp/api.json --staple "$(DIST)/$*/${APPNAME}.pkg"	
+		rcodesign notary-submit --api-key-path /tmp/api.json --staple "$(DIST)/$(FLAT_PACKAGE_INSTALLER_NAME)"
 
 		# Remove keys
 		rm -f /tmp/datashare.pem /tmp/icij.crt /tmp/key.p12 /tmp/key.p12.password /tmp/key.json
-
-		mv $(DIST)/$*/$(APPNAME).pkg $@
 
 $(DIST)/Datashare.icns: $(DIST)
 		convert -resize 256x256 $(RESOURCES)/datashare.png $(DIST)/images/Datashare_256px.png

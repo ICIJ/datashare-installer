@@ -1,6 +1,0 @@
-#!/bin/bash
-
-mkdir -p "${HOME}/Datashare"
-mkdir -p "/Users/${USER}/Library/Datashare_Models"
-chown "${USER}:staff" "${HOME}/Datashare"
-chown "${USER}:staff" "/Users/${USER}/Library/Datashare_Models"
