@@ -1,25 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<installer-script minSpecVersion="1.000000" authoringTool="com.apple.PackageMaker" authoringToolVersion="3.0.3" authoringToolBuild="174">
-    <title>${APPNAME}</title>
-    <options customize="never" allow-external-scripts="no"/>
-    <domains enable_anywhere="true"/>
-    <installation-check script="pm_install_check();"/>
-    <script>
-function pm_install_check() {
-  if(!(system.compareVersions(system.version.ProductVersion,'10.11') >= 0)) {
-    my.result.title = 'Failure';
-    my.result.message = 'You need at least Mac OS X 10.11 El Capitan to install Datashare.';
-    my.result.type = 'Fatal';
-    return false;
-  }
-  return true;
-}
-    </script>
-    <choices-outline>
-        <line choice="choice1"/>
-    </choices-outline>
-    <choice id="choice1" title="base">
-        <pkg-ref id="${BUNDLE_ID}.base.pkg"/>
-    </choice>
-    <pkg-ref id="${BUNDLE_ID}.base.pkg" installKBytes="${SIZE}" version="${VERSION}" auth="Root">#base.pkg</pkg-ref>
-</installer-script>
+<installer-gui-script minSpecVersion="1.000000" authoringTool="com.apple.PackageMaker" authoringToolVersion="3.0.3" authoringToolBuild="174">
+  <title>${APPNAME} ${VERSION}</title>
+  <options customize="never" allow-external-scripts="no"/>
+  <domains enable_anywhere="true"/>
+  <installation-check script="pm_install_check();"/>
+  <script>
+    <![CDATA[
+    function pm_install_check() {
+      if(system.compareVersions(system.version.ProductVersion,'10.15') < 0) {
+        my.result.title = 'Failure';
+        my.result.message = 'You need at least Mac OS X 10.15 Catalina to install Datashare.';
+        my.result.type = 'Fatal';
+        return false;
+      }
+      return true;
+    }
+    ]]>
+  </script>
+  <choices-outline>
+    <line choice="choice1" />
+  </choices-outline>
+  <choice id="choice1" title="base">
+    <pkg-ref id="${BUNDLE_ID}.base.pkg"/>
+  </choice>
+  <pkg-ref id="${BUNDLE_ID}.base.pkg" installKBytes="${SIZE}" version="${VERSION}" auth="Root">#base.pkg</pkg-ref>
+</installer-gui-script>
