@@ -1,41 +1,24 @@
-# Datashare installers for mac, windows and linux
+# Datashare installers for Mac, Windows and Linux
 
-There are two ways for running datashare : 
+You will find several assets in [release list](https://github.com/ICIJ/datashare-installer/releases):
 
-* with [docker](https://www.docker.com/) usually more for server setups
-* with [java](https://www.java.com) we call it "standalone" : it includes elasticsearch in the JVM and has a smaller footprint than the docker version
+* `datashare-6.5.0.pkg` : installer for MacOS
+* `datashare-6.5.0.exe` : installer for Windows
+* `datashare-6.5.0.deb` : installer for Ubuntu/Debian
+* `datashare-6.5.0.sh` :  bash shell script to run datashare with `Docker`/`docker-compose`
 
-So you will find 6 assets in [release list](https://github.com/ICIJ/datashare-installer/releases):
-* `datashare-dist_6.5.0_all.deb` : installer for ubuntu/debian without docker
-* `datashare.sh` :  bash shell script to run datashare with `docker-compose`
-* `Datashare.pkg` : installer for mac with docker 
-* `DatashareStandalone.pkg` : installer for mac with java
-* `installDatashare.exe` : installer for windows with docker
-* `installDatashareStandalone.exe` : installer for windows with java
+To compile installers, just run `make VERSION=10.15.0 clean all`.
 
-To compile installers, just type `make clean dist` under mac or windows.
+# What installers do?
 
-The installers are compiled under linux (ubuntu 16.04 tested).
-
-# What installers are doing?
-
-## Docker
-
-Basically installer with docker are : 
-* testing the OS version to choose between docker for OS supporting virtualization or docker toolbox (including virtualbox)
-* installing the right version of docker
-* installing datashare run script based on docker-compose
-* providing an uninstaller (for windows)
-
-## Java
-
-With java the installers are: 
-
-* checking if the JVM is installed and if not install it
-* checking if the computer has tesseract OCR library installed and install it
-* installing a launcher script that uses java and sets the right runtime options for datashare.
+* **Mac only**: ensure either XCode Command Line Tools or XCode are installed
+* **Mac only**: ensure either MacPorts or Homebrew are installed
+* check if the JVM is installed and if not install it
+* check if the computer has tesseract OCR library installed and install it
+* installing a launcher script that uses -Jjava and sets the right runtime options for Datashare.
 
 # How they are built?
+
 ## Windows
 
 It is based on [Nullsoft Scriptable Install System](http://nsis.sourceforge.net). 
