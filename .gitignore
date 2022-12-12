@@ -3,3 +3,4 @@ mac/dist
 windows/dist
 linux/dist
 ds_stats.png
+.DS_Store
