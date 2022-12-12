@@ -42,7 +42,7 @@ It is based on [Nullsoft Scriptable Install System](http://nsis.sourceforge.net)
 
 You will need to install the package [nsis](https://packages.ubuntu.com/search?keywords=nsis) 
 
-You will also need the [inetc plugin](http://nsis.sourceforge.net/Inetc_plug-in). Just copy the `Plugin/x86-ansi/INetC.dll` under `/usr/share/nsis/Plugins`  
+You will also need the [inetc plugin](http://nsis.sourceforge.net/Inetc_plug-in). Just copy the `Plugin/x86-ansi/INetC.dll` under `/usr/share/nsis/Plugins/x86-ansi/`  
 
 ## MacOS 
 
