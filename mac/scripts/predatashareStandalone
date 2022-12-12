@@ -1,36 +1,226 @@
 #!/bin/bash
 
-echo "pre-install"
+macports_version=2.8.0
+macports_prefix=/opt/local/bin
+macports_bin=$macports_prefix/port
+homebrew_prefixies="/usr/local/bin:/opt/homebrew/bin"
 
-JAVA_PKG=OpenJDK8U-jre_x64_mac_hotspot_8u242b08.pkg
+log_error () {
+  # This function takes a single argument, which is the message to log.
+  # The logger command is used to log the message to the install facility 
+  # at the error level.
+  logger -t DatashareInstaller -p install.error "$1"
+}
 
-echo "path : $PATH"
-PATH_WITH_SPACES=$(echo $PATH | sed 's/:/ /g')
-BREW_PATHS="/usr/local/bin /opt/homebrew/bin $PATH_WITH_SPACES"
-BREW=""
-echo "searching brew in : $BREW_PATHS"
-for path in $BREW_PATHS
-do
-  if [[ -x "$path/brew" ]]; then
-    BREW="$path/brew"
+log_info () {
+  # This function takes a single argument, which is the message to log.
+  # The logger command is used to log the message to the install facility 
+  # at the info level.
+  logger -t DatashareInstaller -p install.info "$1"
+}
+
+is_xcode_installed () {
+  # Note that this function only checks for the existence of the xcode-select command, 
+  # which is a command-line utility included with Xcode. It does not actually verify 
+  # that Xcode is properly installed and functioning.
+  if ! [ -x "$(command -v xcode-select -p)" ] || ! [ -d "/Application/Xcode.app" ]; then
+    return 1
   fi
-done
-command -v "$BREW"  || { echo >&2 "I require brew but it's not installed. Aborting."; exit 1; }
+  log_info 'Xcode is already installed.'
+  return
+}
 
-# install tesseractOCR
-if command /usr/local/bin/tesseract 2>/dev/null; then
-  echo "tesseractOCR is installed"
-else
-  /usr/bin/sudo -i -u "${USER}" "$BREW" install imagemagick
-  /usr/bin/sudo -i -u "${USER}" "$BREW" install leptonica
-  /usr/bin/sudo -i -u "${USER}" "$BREW" install tesseract
-  /usr/bin/sudo -i -u "${USER}" "$BREW" install tesseract-lang
-fi
+is_xcode_cli_tools_installed () {
+  # Note that this function checks for the existence of the gcc command, 
+  # which is a compiler that is included with the Xcode Command Line Tools. 
+  # If the gcc command is found, the function assumes that the Xcode Command Line Tools 
+  # are installed. However, this may not always be the case, as the gcc command can be 
+  # installed separately from the Xcode Command Line Tools, and the Xcode Command Line Tools 
+  # may be installed without the gcc command.
+  if ! [ -x "$(command -v xcode-select -p)" ] || ! [ -d "/Library/Developer/CommandLineTools" ]; then
+    return 1
+  fi
+  log_info 'Xcode Command Line Tools are already installed.'
+  return
+}
 
-# install JRE
-if [ -d /Library/Java/JavaVirtualMachines/adoptopenjdk-8.jre ]; then
-  echo "$JAVA_PKG is installed"
-else
-  curl -L -o /tmp/$JAVA_PKG https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk8u242-b08/$JAVA_PKG
-  installer -pkg /tmp/$JAVA_PKG -target /
-fi
+is_homebrew_installed () {
+  # Note that this function only checks for the existence of the brew command, 
+  # which is the command-line interface for Homebrew. It does not actually verify
+  # that Homebrew is properly installed and functioning.
+  if ! [ -x "$(command -v brew)" ]; then
+    return 1
+  fi
+  log_info 'Homebrew is already installed.'
+  return
+}
+
+is_macports_installed () {
+  # Note that this function only checks for the existence of the port command, 
+  # which is the command-line interface for MacPorts. It does not actually verify
+  # that MacPorts is properly installed and functioning.
+  if ! [ -x "$(command -v $macports_bin)" ]; then
+    return 1
+  fi
+  log_info 'MacPorts is already installed.'
+  return
+}
+
+is_tesseract_installed () {
+  # Note that this function only checks for the existence of the tesseract 
+  # command and verifies that it is working correctly. It does not provide any 
+  # information about the other components of Tesseract or whether they are 
+  # installed and functioning properly. Additionally, this function does not check 
+  # for the existence of any other tools or libraries that may be required for 
+  # Tesseract to work correctly on MacOS.
+  if ! [ -x "$(command -v tesseract)" ]; then
+    return 1
+  fi
+
+  # Check if the 'tesseract' command works correctly
+  tesseract --version
+  if [ $? -ne 0 ]; then
+    log_info 'Tesseract is installed but not working properly.'
+    return 1
+  fi
+
+  log_info 'Tesseract is already installed and working.'
+  return
+}
+
+is_jre8_installed () {
+  # The directory containing JRE8 was not found
+  if ! [ -d /Library/Java/JavaVirtualMachines/adoptopenjdk-8.jre ]; then
+    return 1
+  fi
+
+  log_info 'JRE 8 is already installed.'
+}
+
+get_os_version () {
+  sw_vers -productVersion
+}
+
+get_macports_package_url () {
+  os_version=$(get_os_version)
+  base_url="https://github.com/macports/macports-base/releases/download/v$macports_version/MacPorts-$macports_version"
+  
+  if [[ $os_version == 13.* ]]; then
+    echo "$base_url-13-Ventura.pkg"
+  elif [[ $os_version == 12.* ]]; then
+    echo "$base_url-12-Monterey.pkg"
+  elif [[ $os_version == 11.* ]]; then
+    echo "$base_url-11-BigSur.pkg"
+  elif [[ $os_version == 10.15.* ]]; then
+    echo "$base_url-10.15-Catalina.pkg"
+  else
+    log_error "This version of Mac is not supported"
+    exit 1
+  fi
+}
+
+install_xcode_cli_tools () {
+  log_info 'Installing Xcode Command Line Tools...'
+  touch /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
+  software=$(softwareupdate -l | grep "\*.*Command Line Tools" | tail -n 1 | sed 's/^[^C]* //')
+  softwareupdate -i "$software" --verbose
+  if [ $? -ne 0 ]; then
+    # The Xcode Command Line Tools installation failed
+    log_error 'Failed to install the Xcode Command Line Tools.'
+    exit 1
+  fi
+  # The Xcode Command Line Tools were installed successfully
+  log_info 'Successfully installed the Xcode Command Line Tools.'
+}
+
+install_macports () {
+  log_info 'Installing MacPorts...'
+  macports_package_url=$(get_macports_package_url)
+  macports_package_path=/tmp/MacPorts.pkg  
+  sudo rm -f $macports_package_path
+  # Download the MacPorts installation script
+  curl -fsSL $macports_package_url -o $macports_package_path
+  # Install the downloaded package
+  sudo installer -pkg $macports_package_path -target /
+  if [ $? -ne 0 ]; then
+    log_info 'Failed to install MacPorts.'
+    exit 1
+  fi
+  # Ensure MacPorts prefix is in PATH
+  sudo sh -c "echo $macports_prefix > /etc/paths.d/macports"
+  # Update the MacPorts package database
+  sudo "$macports_bin" -v selfupdate
+  # MacPorts was installed successfully
+  log_info 'Successfully installed MacPorts.'
+}
+
+install_tesseract () {
+  if is_homebrew_installed ; then
+    install_tesseract_with_homebrew ; 
+  elif is_macports_installed ; then
+    install_tesseract_with_macports ; 
+  else
+    log_error 'Neither Homebrew or MacPorts can be used to install Tesseract.'
+    exit 1
+  fi
+}
+
+install_tesseract_with_homebrew () {
+  log_info 'Installing Tesseract, imagemagick, and leptonica with Homebrew...'
+  # Ensure Homebrew prefixes are in PATH
+  PATH=$homebrew_prefixies:$PATH
+  sudo -i -u "${USER}" brew install tesseract tesseract-lang imagemagick leptonica
+  if [ $? -ne 0 ]; then
+    # The installation failed
+    log_error 'Failed to install Tesseract, imagemagick and leptonica with Homebrew.'
+    exit 1
+  fi
+
+  # The installation was successful
+  log_info 'Successfully installed Tesseract, imagemagick and leptonica with Homebrew.'
+}
+
+install_tesseract_with_macports () {
+  log_info 'Installing Tesseract and leptonica with MacPorts...'
+  sudo "$macports_bin" -N install tesseract tesseract-eng tesseract-spa tesseract-fra leptonica
+  if [ $? -ne 0 ]; then
+    # The installation failed
+    log_error 'Failed to install Tesseract and leptonica with MacPorts.'
+    exit 1
+  fi
+  log_info 'Installing imagemagick with MacPorts...'
+  # We don't check the installation of imagemagick because 
+  # Datashare can run without it.
+  sudo "$macports_bin" -N install imagemagick
+  # The installation was successful
+  log_info 'Successfully installed Tesseract, imagemagick and leptonica with MacPorts.'
+}
+
+install_jre8 () {
+  log_info 'Installing JRE 8.'
+  java_pkg=OpenJDK8U-jre_x64_mac_hotspot_8u242b08.pkg
+  java_pkg_url=https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk8u242-b08/$java_pkg
+  curl -L -o /tmp/$java_pkg $java_pkg_url
+  sudo installer -pkg /tmp/$java_pkg -target /
+  if [ $? -ne 0 ]; then
+    # The brew update command failed
+    log_info 'Failed to install JRE 8.'
+    exit 1
+  fi
+  # The installation was successful
+  log_info 'Successfully installed JRE 8.'
+}
+
+# Ensure MacPorts prefix is in PATH
+PATH=$macports_prefix:$PATH
+# Ensure Homebrew prefixes are in PATH
+PATH=$homebrew_prefixies:$PATH
+
+# Neither XCode or XCode Command Line Tools are installed
+if ! is_xcode_cli_tools_installed && ! is_xcode_installed ; then install_xcode_cli_tools ; fi
+# Neither Homebrew or MacPorts are not installed
+if ! is_macports_installed && ! is_homebrew_installed ; then install_macports ; fi
+# Tesseract is not installed
+if ! is_tesseract_installed ; then install_tesseract ; fi
+# Java JR8 is not installed
+if ! is_jre8_installed ; then install_jre8 ; fi

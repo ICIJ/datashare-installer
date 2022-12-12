@@ -1,21 +1,61 @@
 #!/bin/bash
 
-echo "post-install"
+ds_version=__version__
+ds_jar=datashare-dist-$ds_version-all.jar
+ds_jar_dir=/Applications/Datashare.app/Contents/Resources/
+ds_jar_path=$ds_jar_dir/$ds_jar
+ds_jar_url=https://github.com/ICIJ/datashare/releases/download/$ds_version/$ds_jar
 
-DS_VERSION=__version__
+log_error () {
+  # This function takes a single argument, which is the message to log.
+  # The logger command is used to log the message to the install facility 
+  # at the error level.
+  logger -t DatashareInstaller -p install.error "$1"
+}
 
-# install Datashare
-if [ -f /Applications/Datashare.app/Contents/Resources/datashare-dist-${DS_VERSION}-all.jar ]; then
-  echo "datashare backend is already downloaded"
-else
-  echo "downloading datashare backend"
-  curl -L -o /Applications/Datashare.app/Contents/Resources/datashare-dist-${DS_VERSION}-all.jar \
-    https://github.com/ICIJ/datashare/releases/download/${DS_VERSION}/datashare-dist-${DS_VERSION}-all.jar
+log_info () {
+  # This function takes a single argument, which is the message to log.
+  # The logger command is used to log the message to the install facility 
+  # at the info level.
+  logger -t DatashareInstaller -p install.info "$1"
+}
+
+is_datashare_installed () {
+  # Datashare Jar was not found
+  if ! [ -f $ds_jar_path ]; then
+    return 1
+  fi
+
+  log_info "Datashare $ds_version is already installed."
+}
+
+download_datashare () {
+  log_info "Downloading Datashare to: $ds_jar_path"
+  mkdir -p $ds_jar_dir
+  rm -f $ds_jar_path
+  curl -s --fail -L $ds_jar_url -o $ds_jar_path
+  # If curl returns an exit code different than 0, the download failed
+  if [ $? -ne 0 ]; then
+    log_error "Unable to download Datashare from: $ds_jar_url"
+    return 1
+  fi
+  log_info 'Successfully installed Datashare.'
+}
+
+
+setup_user_directories () {
+  mkdir -p "$HOME/Datashare"
+  mkdir -p "$HOME/Library/Datashare/dist"
+  mkdir -p "$HOME/Library/Datashare/index"
+  chown -R "$USER:staff" "$HOME/Datashare"
+  chown -R "$USER:staff" "$HOME/Library/Datashare"
+}
+
+# Download Datashare, regardless of the current installation.
+# If the download doesnt success, we exit the script.
+if ! is_datashare_installed && ! download_datashare ; then
+  log_error 'The installation cannot be done.'
+  exit 1
 fi
-
-# create user folders
-mkdir -p "${HOME}/Datashare"
-mkdir -p "/Users/${USER}/Library/Datashare/dist"
-mkdir -p "/Users/${USER}/Library/Datashare/index"
-chown -R "${USER}:staff" "${HOME}/Datashare"
-chown -R "${USER}:staff" "/Users/${USER}/Library/Datashare"
+# Finally, setup user directories
+setup_user_directories
