@@ -1,18 +1,16 @@
 export DIST=dist
 export VERSION=${VERSION}
-export APPNAME=Datashare-${VERSION}
+export APPNAME=Datashare ${VERSION}
+export INSTALLER_NAME=datashare-${VERSION}.exe
+
+all: $(DIST)/$(INSTALLER_NAME)
 
 $(DIST):
 		mkdir -p $(DIST)
 
-# cf http://bomutils.dyndns.org/tutorial.html
-$(DIST)/installDatashare.exe: $(DIST)
-		../mac/build/gen_file docker-compose.yml $(DIST)/docker-compose.yml
-		makensis installDatashare.nsi
-
-$(DIST)/installDatashareStandalone.exe: $(DIST)
-		../mac/build/gen_file datashareStandalone.bat $(DIST)/datashareStandalone.bat
-		makensis installDatashareStandalone.nsi
+$(DIST)/$(INSTALLER_NAME): $(DIST)
+		../mac/build/gen_file datashare.bat $(DIST)/datashare.bat
+		makensis datashare.nsi
 
 PHONY: clean
 clean:

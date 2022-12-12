@@ -11,7 +11,7 @@
 !define COMPANYNAME "ICIJ"
 !define APPNAME "$%APPNAME%"
 
-Name "${COMPANYNAME} - ${APPNAME}"
+Name "${APPNAME}"
 Icon "datashare.ico"
 
 !define JAVA_REG_KEY "SOFTWARE\AdoptOpenJDK\JRE"
@@ -23,7 +23,7 @@ Icon "datashare.ico"
 !define OPEN_JRE_64_PATH "$TEMP\OpenJDK8U-jre_x64_windows_hotspot_8u242b08.msi"
 !define DATASHARE_JAR_DOWNLOAD_URL "https://github.com/ICIJ/datashare/releases/download/${VERSION}/datashare-dist-${VERSION}-all.jar"
 
-OutFile dist/installDatashareStandalone.exe
+OutFile "dist/datashare-${VERSION}.exe"
 InstallDir "$PROGRAMFILES64\${APPNAME}"
 
 Function .onInit
@@ -53,11 +53,11 @@ Function InstallDatashare
   exch $R0
   SetOutPath "$INSTDIR"
   File "datashare.ico"
-  File /oname=datashareStandalone.bat "dist/datashareStandalone.bat"
+  File /oname=datashare.bat "dist/datashare.bat"
 
   # Start Menu
   createDirectory "$SMPROGRAMS\${COMPANYNAME}"
-  createShortCut "$SMPROGRAMS\${COMPANYNAME}\${APPNAME}.lnk" "$INSTDIR\datashareStandalone.bat" "" "$INSTDIR\datashare.ico"
+  createShortCut "$SMPROGRAMS\${COMPANYNAME}\${APPNAME}.lnk" "$INSTDIR\datashare.bat" "" "$INSTDIR\datashare.ico"
 
   # Download Jar
   Call DownloadDatashareJar
