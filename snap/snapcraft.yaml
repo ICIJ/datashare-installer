@@ -1,10 +1,10 @@
 name: datashare 
 base: core20
-version: '10.15.2'
+version: '10.15.3-beta0'
 summary: Datashare is a self-hosted search engine for documents.
 website: https://datashare.icij.org
 description: |
-  Datasgare is a self-hosted search engine for documents, 
+  Datashare is a self-hosted search engine for documents, 
   using Apache Tika and Apache Tesseract to read hundreds
   of file formats. Datashare is developed by the 
   International Consortium of Investigative Journalists (ICIJ), 
@@ -20,17 +20,23 @@ parts:
     stage-packages:
       - openjdk-11-jre
       - tesseract-ocr
+      - ca-certificates-java
+    build-packages:
+      - ca-certificates-java
+    override-build: |
+      mv $SNAPCRAFT_PART_INSTALL/usr/lib/jvm/java-11-openjdk-* $SNAPCRAFT_PART_INSTALL/usr/lib/jvm/java-11-openjdk
+      rm -f $SNAPCRAFT_PART_INSTALL/usr/lib/jvm/java-11-openjdk/lib/security/blacklisted.certs
+      snapcraftctl build
     override-prime: |
       snapcraftctl prime
-      sed -i 's|/usr/share/java/datashare.jar|$SNAP/datashare-dist-$SNAPCRAFT_PROJECT_VERSION-all.jar|' datashare
       chmod +x datashare
-      
+
 apps:
   datashare:
     command: datashare
-    plugs:
-      - home
     environment:
-      JAVA_HOME: "$SNAP/usr/lib/jvm/java-11-openjdk-amd64"
-      JAVA: "$JAVA_HOME/bin/java"
+      DATASHARE_HOME: $SNAP_USER_COMMON
+      DATASHARE_JAR: $SNAP/datashare-dist-$SNAPCRAFT_PROJECT_VERSION-all.jar
+      JAVA_HOME: "$SNAP/usr/lib/jvm/java-11-openjdk"
+      JAVA_BIN: "$JAVA_HOME/bin/java"
       PATH: "$SNAP/bin:$JAVA_HOME/bin:$PATH"
