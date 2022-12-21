@@ -1,0 +1,36 @@
+name: datashare 
+base: core20
+version: '10.15.2'
+summary: Datashare is a self-hosted search engine for documents.
+website: https://datashare.icij.org
+description: |
+  Datasgare is a self-hosted search engine for documents, 
+  using Apache Tika and Apache Tesseract to read hundreds
+  of file formats. Datashare is developed by the 
+  International Consortium of Investigative Journalists (ICIJ), 
+  famously known for its groundbreaking investigations
+  into the offshore world (Pandora Papers, Panama Papers, etc).
+grade: stable
+confinement: classic
+
+parts:
+  datashare:
+    plugin: dump
+    source: https://github.com/ICIJ/datashare-installer/releases/download/$SNAPCRAFT_PROJECT_VERSION/datashare-$SNAPCRAFT_PROJECT_VERSION.tgz
+    stage-packages:
+      - openjdk-11-jre
+      - tesseract-ocr
+    override-prime: |
+      snapcraftctl prime
+      sed -i 's|/usr/share/java/datashare.jar|$SNAP/datashare-dist-$SNAPCRAFT_PROJECT_VERSION-all.jar|' datashare
+      chmod +x datashare
+      
+apps:
+  datashare:
+    command: datashare
+    plugs:
+      - home
+    environment:
+      JAVA_HOME: "$SNAP/usr/lib/jvm/java-11-openjdk-amd64"
+      JAVA: "$JAVA_HOME/bin/java"
+      PATH: "$SNAP/bin:$JAVA_HOME/bin:$PATH"
