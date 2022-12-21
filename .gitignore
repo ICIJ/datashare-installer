@@ -4,3 +4,7 @@ windows/dist
 linux/dist
 ds_stats.png
 .DS_Store
+# Snapcraft directories and files
+logs
+prime
+*.snap
