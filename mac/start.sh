@@ -30,12 +30,21 @@ function start_datashare {
 
     cd "/Users/${USER}/Library/Datashare" || exit # needed for /dist
 
-    $java_bin -cp "./dist:/Applications/Datashare.app/Contents/Resources/datashare-dist-${datashare_version}-all.jar" \
-        -DPROD_MODE=true -Dfile.encoding=UTF-8 -Djava.system.class.loader=org.icij.datashare.DynamicClassLoader \
-        org.icij.datashare.Main -d "$datashare_data_path" --queueType memory --busType memory \
+    $java_bin \
+        -DPROD_MODE=true \
+        -Dfile.encoding=UTF-8 \
+        -Djava.system.class.loader=org.icij.datashare.DynamicClassLoader \
+        -cp "./dist:/Applications/Datashare.app/Contents/Resources/datashare-dist-${datashare_version}-all.jar" org.icij.datashare.Main \
+        --data-dir "$datashare_data_path" \
+        --queueType memory \
+        --busType memory \
         --dataSourceUrl jdbc:sqlite:file:"/Users/${USER}/Library/Datashare/dist/datashare.db" \
-        --settings ./dist/datashare.conf --mode EMBEDDED --browserOpenLink true \
-        --elasticsearchDataPath "$datashare_index_path" --pluginsDir "${datashare_plugins_path}" --extensionsDir "${datashare_extensions_path}"
+        --settings ./dist/datashare.conf \
+        --mode EMBEDDED \
+        --browserOpenLink true \
+        --elasticsearchDataPath "$datashare_index_path" \
+        --pluginsDir "${datashare_plugins_path}" \
+        --extensionsDir "${datashare_extensions_path}"
 }
 
 # Ensure the PID file is removed when the script exits
