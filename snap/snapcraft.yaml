@@ -1,6 +1,6 @@
 name: datashare 
 base: core20
-version: '10.15.3-beta0'
+adopt-info: datashare
 summary: Datashare is a self-hosted search engine for documents.
 website: https://datashare.icij.org
 description: |
@@ -15,16 +15,32 @@ confinement: classic
 
 parts:
   datashare:
-    plugin: dump
-    source: https://github.com/ICIJ/datashare-installer/releases/download/$SNAPCRAFT_PROJECT_VERSION/datashare-$SNAPCRAFT_PROJECT_VERSION.tgz
+    plugin: nil
+    source: .
     stage-packages:
       - openjdk-11-jre
       - tesseract-ocr
       - ca-certificates-java
     build-packages:
+      - wget
+      - git
       - ca-certificates-java
+    override-pull: |
+      snapcraftctl pull
+      version="$(git describe --tags --abbrev=0)"
+      tgz_url="https://github.com/ICIJ/datashare-installer/releases/download/$version/datashare-$version.tgz"
+      snapcraftctl set-version "$(echo $version)"
+      # Download and extract the release tgz to a "release" folder
+      wget $tgz_url -O datashare.tgz
+      tar -xvzf datashare.tgz --one-top-level=release
     override-build: |
+      # Move the release's artifacts out of the part's src folder
+      mv $SNAPCRAFT_PART_SRC/release/* $SNAPCRAFT_PART_INSTALL
+      # Simplify the jar path to strip-out the version
+      mv $SNAPCRAFT_PART_INSTALL/datashare-dist-*-all.jar $SNAPCRAFT_PART_INSTALL.jar
+      # Remove the arch part of the openjdk directory
       mv $SNAPCRAFT_PART_INSTALL/usr/lib/jvm/java-11-openjdk-* $SNAPCRAFT_PART_INSTALL/usr/lib/jvm/java-11-openjdk
+      # Remove errored symlink to the blacklist certificates
       rm -f $SNAPCRAFT_PART_INSTALL/usr/lib/jvm/java-11-openjdk/lib/security/blacklisted.certs
       snapcraftctl build
     override-prime: |
@@ -36,7 +52,7 @@ apps:
     command: datashare
     environment:
       DATASHARE_HOME: $SNAP_USER_COMMON
-      DATASHARE_JAR: $SNAP/datashare-dist-$SNAPCRAFT_PROJECT_VERSION-all.jar
+      DATASHARE_JAR: $SNAP/datashare.jar
       JAVA_HOME: "$SNAP/usr/lib/jvm/java-11-openjdk"
       JAVA_BIN: "$JAVA_HOME/bin/java"
       PATH: "$SNAP/bin:$JAVA_HOME/bin:$PATH"
