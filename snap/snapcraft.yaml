@@ -13,6 +13,9 @@ description: |
 grade: stable
 confinement: classic
 
+architectures:
+  - build-on: amd64
+
 parts:
   datashare:
     plugin: nil
