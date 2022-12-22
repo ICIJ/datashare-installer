@@ -27,17 +27,19 @@ parts:
       - ca-certificates-java
     override-pull: |
       snapcraftctl pull
-      version="$(git describe --tags --abbrev=0)"
-      tgz_url="https://github.com/ICIJ/datashare-installer/releases/download/$version/datashare-$version.tgz"
+      # Get the latest tag on the latest tagged commit (one commit can have several tags)
+      last_tag="$(git describe --tags --abbrev=0)"
+      version="$(git tag --sort=committerdate --points-at $last_tag | tail -1)"
       snapcraftctl set-version "$(echo $version)"
       # Download and extract the release tgz to a "release" folder
+      tgz_url="https://github.com/ICIJ/datashare-installer/releases/download/$version/datashare-$version.tgz"
       wget $tgz_url -O datashare.tgz
       tar -xvzf datashare.tgz --one-top-level=release
     override-build: |
       # Move the release's artifacts out of the part's src folder
       mv $SNAPCRAFT_PART_SRC/release/* $SNAPCRAFT_PART_INSTALL
       # Simplify the jar path to strip-out the version
-      mv $SNAPCRAFT_PART_INSTALL/datashare-dist-*-all.jar $SNAPCRAFT_PART_INSTALL.jar
+      mv $SNAPCRAFT_PART_INSTALL/datashare-dist-*-all.jar $SNAPCRAFT_PART_INSTALL/datashare.jar
       # Remove the arch part of the openjdk directory
       mv $SNAPCRAFT_PART_INSTALL/usr/lib/jvm/java-11-openjdk-* $SNAPCRAFT_PART_INSTALL/usr/lib/jvm/java-11-openjdk
       # Remove errored symlink to the blacklist certificates
