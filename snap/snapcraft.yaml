@@ -11,7 +11,7 @@ description: |
   famously known for its groundbreaking investigations
   into the offshore world (Pandora Papers, Panama Papers, etc).
 grade: stable
-confinement: classic
+confinement: strict
 
 architectures:
   - build-on: amd64
@@ -55,9 +55,17 @@ parts:
 apps:
   datashare:
     command: datashare
+    plugs:
+      - home
+      - x11
+      - network
+      - network-bind
+      - system-observe
+      - mount-observe
     environment:
+      DATASHARE_DATA_DIR: /home/$USER/Datashare
       DATASHARE_HOME: $SNAP_USER_COMMON
       DATASHARE_JAR: $SNAP/datashare.jar
-      JAVA_HOME: "$SNAP/usr/lib/jvm/java-11-openjdk"
       JAVA_BIN: "$JAVA_HOME/bin/java"
+      JAVA_HOME: "$SNAP/usr/lib/jvm/java-11-openjdk"
       PATH: "$SNAP/bin:$JAVA_HOME/bin:$PATH"
