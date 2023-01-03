@@ -23,6 +23,10 @@ parts:
     stage-packages:
       - openjdk-11-jre
       - tesseract-ocr
+      - tesseract-ocr-eng
+      - tesseract-ocr-fra
+      - tesseract-ocr-deu
+      - tesseract-ocr-spa
       - ca-certificates-java
     build-packages:
       - wget
