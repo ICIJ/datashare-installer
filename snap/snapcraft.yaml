@@ -66,7 +66,7 @@ apps:
       - network-bind
       - mount-observe
     environment:
-      DATASHARE_DATA_DIR: /home/$USER/Datashare
+      DATASHARE_DATA_DIR: $SNAP_REAL_HOME/Datashare
       DATASHARE_HOME: $SNAP_USER_COMMON
       DATASHARE_JAR: $SNAP/datashare.jar
       JAVA_BIN: "$JAVA_HOME/bin/java"
