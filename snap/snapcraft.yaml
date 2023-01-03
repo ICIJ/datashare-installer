@@ -60,7 +60,6 @@ apps:
       - x11
       - network
       - network-bind
-      - system-observe
       - mount-observe
     environment:
       DATASHARE_DATA_DIR: /home/$USER/Datashare
