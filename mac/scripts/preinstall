@@ -88,13 +88,13 @@ is_tesseract_installed () {
   return
 }
 
-is_jre8_installed () {
-  # The directory containing JRE8 was not found
-  if ! [ -d /Library/Java/JavaVirtualMachines/adoptopenjdk-8.jre ]; then
+is_jre11_installed () {
+  # The directory containing JRE11 was not found
+  if ! [ -d /Library/Java/JavaVirtualMachines/adoptopenjdk-11.jre ]; then
     return 1
   fi
 
-  log_info 'JRE 8 is already installed.'
+  log_info 'JRE 11 is already installed.'
 }
 
 get_os_version () {
@@ -196,19 +196,19 @@ install_tesseract_with_macports () {
   log_info 'Successfully installed Tesseract, imagemagick and leptonica with MacPorts.'
 }
 
-install_jre8 () {
-  log_info 'Installing JRE 8.'
-  java_pkg=OpenJDK8U-jre_x64_mac_hotspot_8u242b08.pkg
-  java_pkg_url=https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk8u242-b08/$java_pkg
+install_jre11 () {
+  log_info 'Installing JRE 11.'
+  java_pkg=OpenJDK11U-jre_x64_mac_hotspot_11.0.9.1_1.pkg
+  java_pkg_url=https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.9.1%2B1/$java_pkg
   curl -L -o /tmp/$java_pkg $java_pkg_url
   sudo installer -pkg /tmp/$java_pkg -target /
   if [ $? -ne 0 ]; then
     # The brew update command failed
-    log_info 'Failed to install JRE 8.'
+    log_info 'Failed to install JRE 11.'
     exit 1
   fi
   # The installation was successful
-  log_info 'Successfully installed JRE 8.'
+  log_info 'Successfully installed JRE 11.'
 }
 
 # Ensure MacPorts prefix is in PATH
@@ -223,4 +223,4 @@ if ! is_macports_installed && ! is_homebrew_installed ; then install_macports ; 
 # Tesseract is not installed
 if ! is_tesseract_installed ; then install_tesseract ; fi
 # Java JR8 is not installed
-if ! is_jre8_installed ; then install_jre8 ; fi
+if ! is_jre11_installed ; then install_jre11 ; fi
