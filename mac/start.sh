@@ -36,8 +36,8 @@ function start_datashare {
         -Djava.system.class.loader=org.icij.datashare.DynamicClassLoader \
         -cp "./dist:/Applications/Datashare.app/Contents/Resources/datashare-dist-${datashare_version}-all.jar" org.icij.datashare.Main \
         --data-dir "$datashare_data_path" \
-        --queueType memory \
-        --busType memory \
+        --queueType MEMORY \
+        --busType MEMORY \
         --dataSourceUrl jdbc:sqlite:file:"/Users/${USER}/Library/Datashare/dist/datashare.db" \
         --settings ./dist/datashare.conf \
         --mode EMBEDDED \
