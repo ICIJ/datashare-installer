@@ -17,9 +17,9 @@ Icon "datashare.ico"
 !define JAVA_REG_KEY "SOFTWARE\AdoptOpenJDK\JRE"
 !define DATASHARE_UNINSTALL_KEY "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}"
 !define TESSERACT_UNINSTALL_KEY "SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Tesseract-OCR"
-!define TESSERACT_OCR_64_DOWNLOAD_URL "http://digi.bib.uni-mannheim.de/tesseract/tesseract-ocr-setup-4.00.00dev.exe"
+!define TESSERACT_OCR_64_DOWNLOAD_URL "https://digi.bib.uni-mannheim.de/tesseract/tesseract-ocr-setup-4.00.00dev.exe"
 !define TESSERACT_OCR_64_PATH "$TEMP\tesseract-ocr-setup.exe"
-!define OPEN_JRE_64_DOWNLOAD_URL "https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.9.1%2B1/OpenJDK11U-jre_x64_windows_hotspot_11.0.9.1_1.msi"
+!define OPEN_JRE_64_DOWNLOAD_URL "https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.9.1+1/OpenJDK11U-jre_x64_windows_hotspot_11.0.9.1_1.msi"
 !define OPEN_JRE_64_PATH "$TEMP\OpenJDK11U-jre_x64_windows_hotspot_11.0.9.1_1.msi"
 !define DATASHARE_JAR_FILENAME "datashare-dist-${VERSION}-all.jar"
 !define DATASHARE_JAR_DOWNLOAD_URL "https://github.com/ICIJ/datashare/releases/download/${VERSION}/${DATASHARE_JAR_FILENAME}"
@@ -41,13 +41,13 @@ Function DownloadDatashareJar
     IfFileExists "$INSTDIR\${DATASHARE_JAR_FILENAME}" PathGood PathNotGood
     PathNotGood:
         DetailPrint "Downloading Datashare from: ${DATASHARE_JAR_DOWNLOAD_URL}"
-            inetc::get "${DATASHARE_JAR_DOWNLOAD_URL}" "$INSTDIR\${DATASHARE_JAR_FILENAME}" /end
-            Pop $0
-            DetailPrint "Download Status: $0"
-            ${If} $0 != "OK"
-                MessageBox MB_OK "Download Failed: $0"
-                Abort
-            ${EndIf}
+        inetc::get "${DATASHARE_JAR_DOWNLOAD_URL}" "$INSTDIR\${DATASHARE_JAR_FILENAME}" /end
+        Pop $0
+        DetailPrint "Download Status: $0"
+        ${If} $0 != "OK"
+            MessageBox MB_OK "Download Failed: $0"
+            Abort
+        ${EndIf}
     PathGood:
 FunctionEnd
 
@@ -105,6 +105,7 @@ Function InstallOpenJre64
     Pop $1
     StrCmp $0 "0" JavaFound JavaMissing
     JavaMissing:
+        DetailPrint "Downloading JRE 11 from: ${OPEN_JRE_64_DOWNLOAD_URL}"
         inetc::get "${OPEN_JRE_64_DOWNLOAD_URL}" "${OPEN_JRE_64_PATH}" /end
         Pop $0
         DetailPrint "Download Status: $0"
@@ -125,6 +126,7 @@ Function InstallTesseractOCR64
     DetailPrint "Tesseract uninstall registry read: $0"
     StrCmp $0 "" TessMissing TessFound
     TessMissing:
+        DetailPrint "Downloading Tesseract from: ${TESSERACT_OCR_64_DOWNLOAD_URL}"
         inetc::get "${TESSERACT_OCR_64_DOWNLOAD_URL}" "${TESSERACT_OCR_64_PATH}" /end
         Pop $0
         DetailPrint "Download Status: $0"
