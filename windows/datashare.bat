@@ -15,4 +15,3 @@ java -cp "dist;\Program Files\Datashare\datashare-dist-${VERSION}-all.jar" ^
   --elasticsearchDataPath "%APPDATA%"\Datashare\index ^
   --pluginsDir "%APPDATA%"\Datashare\plugins ^
   --extensionsDir "%APPDATA%"\Datashare\extensions
-
