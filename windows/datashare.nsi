@@ -77,9 +77,9 @@ Function InstallDatashare
   DetailPrint 'Link created from "$APPDATA\Datashare\data" to "$DESKTOP\Datashare Data"'
 
   writeUninstaller "$INSTDIR\uninstall.exe"
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" "DisplayName" "${APPNAME}"
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" "UninstallString" "$\"$INSTDIR\uninstall.exe$\""
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" "GetWindowsVersion" "$R0"
+  WriteRegStr HKLM "${DATASHARE_UNINSTALL_KEY}" "DisplayName" "${APPNAME}"
+  WriteRegStr HKLM "${DATASHARE_UNINSTALL_KEY}" "UninstallString" "$\"$INSTDIR\uninstall.exe$\""
+  WriteRegStr HKLM "${DATASHARE_UNINSTALL_KEY}" "GetWindowsVersion" "$R0"
   pop $R0
 FunctionEnd
 
