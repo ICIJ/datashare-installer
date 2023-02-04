@@ -28,6 +28,33 @@ Icon "datashare.ico"
 OutFile "dist/datashare-${VERSION}.exe"
 InstallDir "$PROGRAMFILES64\${APPNAME}"
 
+!macro GetParent UN
+Function ${UN}GetParent
+  Exch $R0
+  Push $R1
+  Push $R2
+  Push $R3
+
+  StrCpy $R1 0
+  StrLen $R2 $R0
+  loop:
+    IntOp $R1 $R1 + 1
+    IntCmp $R1 $R2 get 0 get
+    StrCpy $R3 $R0 1 -$R1
+    StrCmp $R3 "\" get
+  Goto loop
+  get:
+    StrCpy $R0 $R0 -$R1
+
+    Pop $R3
+    Pop $R2
+    Pop $R1
+    Exch $R0
+FunctionEnd
+!macroend
+!insertmacro GetParent ""
+!insertmacro GetParent "un."
+
 Function .onInit
   System::Call 'kernel32::CreateMutex(p 0, i 0, t "dsMutex") p .r1 ?e'
   Pop $R0
@@ -136,6 +163,22 @@ Function InstallTesseractOCR64
         ${EndIf}
         DetailPrint "Installing Tesseract"
         ExecWait '"${TESSERACT_OCR_64_PATH}"'
+
+        # Chack and add to PATH
+        ReadRegStr $1 HKLM "${TESSERACT_UNINSTALL_KEY}" "UninstallString"
+        Push $1
+        Call GetParent
+        Pop $R0
+        EnVar::Check "Path" $R0
+        Pop $0
+        ${If} $0 != 0
+           DetailPrint "Adding Tesseract to Environment Variable Path : $R0"
+           EnVar::AddValue "Path" $R0
+           Pop $0
+           DetailPrint "Tesseract added to PATH"
+        ${Else}
+           DetailPrint "Tesseract already in PATH"
+        ${EndIf}
         Goto TessDone
     TessFound:
         DetailPrint "Tesseract already installed"
@@ -151,6 +194,19 @@ Function un.installTesseractOCR64
         DetailPrint "Uninstalling Tesseract with: $1"
         ExecWait $1
         DetailPrint "Tesseract Uninstalled"
+
+        # Check and delete to PATH
+        ReadRegStr $0 HKLM "${TESSERACT_UNINSTALL_KEY}" "UninstallString"
+        Push $0
+        Call un.GetParent
+        Pop $R0
+        EnVar::Check "Path" $R0
+        Pop $0
+        ${If} $0 == 0
+           DetailPrint "Deleting Tesseract to Environment Variable Path : $R0"
+           EnVar::DeleteValue "Path" $R0
+           DetailPrint "Tesseract deleted from Path"
+        ${EndIf}
         Goto TessDone
     TessUniMissing:
         DetailPrint "Tesseract uninstaller not found"
