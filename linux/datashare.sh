@@ -7,7 +7,7 @@ elasticsearch_image=docker.elastic.co/elasticsearch/elasticsearch:7.9.1
 DATASHARE_HOME="${HOME}"/.local/share/datashare
 mkdir -p "${DATASHARE_HOME}"/dist "${DATASHARE_HOME}"/index "${DATASHARE_HOME}"/plugins "${DATASHARE_HOME}"/extensions "${HOME}"/Datashare
 
-MEM_ALLOCATED_MEGA=$(free|awk '/^Mem:/{print $2"/(2*1024)"}'|bc)
+MEM_ALLOCATED_MEGA=$(LC_ALL=C free|awk '/^M[^:]+:/{print $2"/(2*1024)"}'|bc)
 BIND_HOST=127.0.0.1
 
 if [ -z "${DS_JAVA_OPTS}" ] && [ -n "${MEM_ALLOCATED_MEGA}" ]; then
