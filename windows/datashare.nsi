@@ -237,12 +237,12 @@ section "uninstall"
   rmDir /r $INSTDIR # recursive
 
   # data
-  rmDir /r "$APPDATA\Datashare\dist"
-  rmDir /r "$APPDATA\Datashare\index"
-  rmDir /r "$APPDATA\Datashare\plugins"
-  rmDir /r "$APPDATA\Datashare\extensions"
+  IfSilent +9
+    rmDir /r "$APPDATA\Datashare\dist"
+    rmDir /r "$APPDATA\Datashare\index"
+    rmDir /r "$APPDATA\Datashare\plugins"
+    rmDir /r "$APPDATA\Datashare\extensions"
 
-  IfSilent +5
     MessageBox MB_YESNO|MB_ICONQUESTION "Do you want to remove Datashare data directory ?" IDNO +3
       rmDir /r "$APPDATA\Datashare\data"
       rmDir /r "$DESKTOP\Datashare Data"
