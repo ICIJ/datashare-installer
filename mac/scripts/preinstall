@@ -3,7 +3,7 @@
 macports_version=2.8.0
 macports_prefix=/opt/local/bin
 macports_bin=$macports_prefix/port
-homebrew_prefixies="/usr/local/bin:/opt/homebrew/bin"
+homebrew_prefixes="/usr/local/bin:/opt/homebrew/bin"
 
 log_error () {
   # This function takes a single argument, which is the message to log.
@@ -168,7 +168,7 @@ install_tesseract () {
 install_tesseract_with_homebrew () {
   log_info 'Installing Tesseract, imagemagick, and leptonica with Homebrew...'
   # Ensure Homebrew prefixes are in PATH
-  PATH=$homebrew_prefixies:$PATH
+  PATH=$homebrew_prefixes:$PATH
   sudo -i -u "${USER}" brew install tesseract tesseract-lang imagemagick leptonica
   if [ $? -ne 0 ]; then
     # The installation failed
@@ -214,7 +214,7 @@ install_jre11 () {
 # Ensure MacPorts prefix is in PATH
 PATH=$macports_prefix:$PATH
 # Ensure Homebrew prefixes are in PATH
-PATH=$homebrew_prefixies:$PATH
+PATH=$homebrew_prefixes:$PATH
 
 # Neither XCode or XCode Command Line Tools are installed
 if ! is_xcode_cli_tools_installed && ! is_xcode_installed ; then install_xcode_cli_tools ; fi
@@ -222,5 +222,5 @@ if ! is_xcode_cli_tools_installed && ! is_xcode_installed ; then install_xcode_c
 if ! is_macports_installed && ! is_homebrew_installed ; then install_macports ; fi
 # Tesseract is not installed
 if ! is_tesseract_installed ; then install_tesseract ; fi
-# Java JR8 is not installed
+# Java JRE11 is not installed
 if ! is_jre11_installed ; then install_jre11 ; fi
