@@ -4,6 +4,9 @@ macports_version=2.8.0
 macports_prefix=/opt/local/bin
 macports_bin=$macports_prefix/port
 homebrew_prefixes="/usr/local/bin:/opt/homebrew/bin"
+jre_version=11
+jre_brew_package=openjdk@$jre_version
+jre_macports_package=openjdk$jre_version
 
 log_error () {
   # This function takes a single argument, which is the message to log.
@@ -88,14 +91,14 @@ is_tesseract_installed () {
   return
 }
 
-is_jre11_installed () {
-  # This command returns JRE11 directory if it exists
-  /usr/libexec/java_home -F -v 11
+is_jre_installed () {
+  # This command returns JRE directory for the correct version if it exists
+  /usr/libexec/java_home -F -v $jre_version
   if [ $? -ne 0  ]; then
     return 1
   fi
 
-  log_info 'JRE 11 is already installed.'
+  log_info "OpenJDK $jre_version is already installed."
 }
 
 get_os_version () {
@@ -197,43 +200,43 @@ install_tesseract_with_macports () {
   log_info 'Successfully installed Tesseract, imagemagick and leptonica with MacPorts.'
 }
 
-install_jre11 () {
+install_jre () {
   if is_homebrew_installed ; then
-      install_jre11_with_homebrew ;
+      install_jre_with_homebrew ;
     elif is_macports_installed ; then
-      install_jre11_with_macports ;
+      install_jre_with_macports ;
     else
-      log_error 'Neither Homebrew or MacPorts can be used to install openJDK 11. You can try to install it manually'
+      log_error "Neither Homebrew or MacPorts can be used to install OpenJDK $jre_version . You can try to install it manually"
       exit 1
     fi
 }
 
-install_jre11_with_homebrew () {
-  log_info 'Installing openJDK 11...'
+install_jre_with_homebrew () {
+  log_info "Installing OpenJDK $jre_version..."
   # Ensure Homebrew prefixes are in PATH
   PATH=$homebrew_prefixes:$PATH
-  sudo -i -u "${USER}" brew install openjdk@11
+  sudo -i -u "${USER}" brew install $jre_brew_package
   if [ $? -ne 0 ]; then
     # The installation failed
-    log_error 'Failed to install openJDK 11 with Homebrew. You can try to install it manually.'
+    log_error "Failed to install OpenJDK $jre_version with Brew. You can try to install it manually."
     exit 1
   fi
   # Add symlink as brew suggests
-  ln -sfn /usr/local/opt/openjdk@11/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk-11.jdk
+  ln -sfn /usr/local/opt/$jre_brew_package/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk-$jre_version.jdk
   # The installation was successful
-  log_info 'Successfully installed openJDK 11 with Brew.'
+  log_info "Successfully installed OpenJDK $jre_version with Brew."
 }
 
-install_jre11_with_macports () {
-  log_info 'Installing openJDK 11...'
-  sudo "$macports_bin" -N install openjdk11
+install_jre_with_macports () {
+  log_info "Installing OpenJDK $jre_version..."
+  sudo "$macports_bin" -N install $jre_macports_package
   if [ $? -ne 0 ]; then
     # The installation failed
-    log_error 'Failed to install openJDK 11 with MacPorts. You can try to install it manually'
+    log_error "Failed to install OpenJDK $jre_version with MacPorts. You can try to install it manually"
     exit 1
   fi
   # The installation was successful
-  log_info 'Successfully installed openJDK 11 with MacPorts.'
+  log_info "Successfully installed OpenJDK $jre_version with MacPorts."
 }
 
 # Ensure MacPorts prefix is in PATH
@@ -247,5 +250,5 @@ if ! is_xcode_cli_tools_installed && ! is_xcode_installed ; then install_xcode_c
 if ! is_macports_installed && ! is_homebrew_installed ; then install_macports ; fi
 # Tesseract is not installed
 if ! is_tesseract_installed ; then install_tesseract ; fi
-# Java JRE11 is not installed
-if ! is_jre11_installed ; then install_jre11 ; fi
+# Java JRE is not installed
+if ! is_jre_installed ; then install_jre ; fi

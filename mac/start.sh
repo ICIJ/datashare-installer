@@ -10,7 +10,8 @@ datashare_index_path="/Users/${USER}/Library/Datashare/index"
 datashare_plugins_path="/Users/${USER}/Library/datashare/plugins"
 datashare_extensions_path="/Users/${USER}/Library/datashare/extensions"
 # Java binary to use to start Datashare
-java_bin="$(/usr/libexec/java_home -F -v 11)/bin/java"
+jre_version=11
+java_bin="$(/usr/libexec/java_home -F -v $jre_version)/bin/java"
 
 function on_exit_remove_pid_file {
     rm -f $pid_file
