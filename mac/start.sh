@@ -10,7 +10,7 @@ datashare_index_path="/Users/${USER}/Library/Datashare/index"
 datashare_plugins_path="/Users/${USER}/Library/datashare/plugins"
 datashare_extensions_path="/Users/${USER}/Library/datashare/extensions"
 # Java binary to use to start Datashare
-java_bin=/Library/Java/JavaVirtualMachines/adoptopenjdk-11.jre/Contents/Home/bin/java
+java_bin="$(/usr/libexec/java_home -F -v 11)/bin/java"
 
 function on_exit_remove_pid_file {
     rm -f $pid_file
