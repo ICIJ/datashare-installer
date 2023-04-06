@@ -6,5 +6,7 @@
 		<string>Datashare</string>
 		<key>CFBundleName</key>
 		<string>Datashare</string>
+		<key>LSRequiresNativeExecution</key>
+		<string>YES</string>
 	</dict>
 </plist>
