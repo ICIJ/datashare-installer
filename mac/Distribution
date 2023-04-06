@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <installer-gui-script minSpecVersion="1.000000" authoringTool="com.apple.PackageMaker" authoringToolVersion="3.0.3" authoringToolBuild="174">
   <title>${APPNAME} ${VERSION}</title>
-  <options customize="never" allow-external-scripts="no"/>
+  <options customize="never" hostArchitectures="i386,x86_64,arm64" allow-external-scripts="no"/>
   <domains enable_anywhere="true"/>
   <installation-check script="pm_install_check();"/>
   <script>
