@@ -89,8 +89,9 @@ is_tesseract_installed () {
 }
 
 is_jre11_installed () {
-  # The directory containing JRE11 was not found
-  if ! [ -d /Library/Java/JavaVirtualMachines/adoptopenjdk-11.jre ]; then
+  # This command returns JRE11 directory if it exists
+  /usr/libexec/java_home -F -v 11
+  if [ $? -ne 0  ]; then
     return 1
   fi
 
@@ -197,18 +198,42 @@ install_tesseract_with_macports () {
 }
 
 install_jre11 () {
-  log_info 'Installing JRE 11.'
-  java_pkg=OpenJDK11U-jre_x64_mac_hotspot_11.0.9.1_1.pkg
-  java_pkg_url=https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.9.1%2B1/$java_pkg
-  curl -L -o /tmp/$java_pkg $java_pkg_url
-  sudo installer -pkg /tmp/$java_pkg -target /
+  if is_homebrew_installed ; then
+      install_jre11_with_homebrew ;
+    elif is_macports_installed ; then
+      install_jre11_with_macports ;
+    else
+      log_error 'Neither Homebrew or MacPorts can be used to install openJDK 11. You can try to install it manually'
+      exit 1
+    fi
+}
+
+install_jre11_with_homebrew () {
+  log_info 'Installing openJDK 11...'
+  # Ensure Homebrew prefixes are in PATH
+  PATH=$homebrew_prefixes:$PATH
+  sudo -i -u "${USER}" brew install openjdk@11
   if [ $? -ne 0 ]; then
-    # The brew update command failed
-    log_info 'Failed to install JRE 11.'
+    # The installation failed
+    log_error 'Failed to install openJDK 11 with Homebrew. You can try to install it manually.'
+    exit 1
+  fi
+  # Add symlink as brew suggests
+  ln -sfn /usr/local/opt/openjdk@11/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk-11.jdk
+  # The installation was successful
+  log_info 'Successfully installed openJDK 11 with Brew.'
+}
+
+install_jre11_with_macports () {
+  log_info 'Installing openJDK 11...'
+  sudo "$macports_bin" -N install openjdk11
+  if [ $? -ne 0 ]; then
+    # The installation failed
+    log_error 'Failed to install openJDK 11 with MacPorts. You can try to install it manually'
     exit 1
   fi
   # The installation was successful
-  log_info 'Successfully installed JRE 11.'
+  log_info 'Successfully installed openJDK 11 with MacPorts.'
 }
 
 # Ensure MacPorts prefix is in PATH
