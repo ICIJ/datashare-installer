@@ -32,6 +32,7 @@ function start_datashare {
     cd "/Users/${USER}/Library/Datashare" || exit # needed for /dist
 
     $java_bin \
+        --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED \
         -DPROD_MODE=true \
         -Dfile.encoding=UTF-8 \
         -Djava.system.class.loader=org.icij.datashare.DynamicClassLoader \
