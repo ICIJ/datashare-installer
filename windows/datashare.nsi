@@ -127,10 +127,12 @@ FunctionEnd
 
 Function InstallOpenJre64
     #Java lib test
-    nsExec::ExecToStack '"$SYSDIR\cmd.exe" /c where -f java | findstr -R "[jdk|jre]-11" | cmd /e /v /q /c"set/p.=&&echo(^!.^!"'
+    nsExec::ExecToStack '"$SYSDIR\cmd.exe" /c where -f java | findstr -R "[jdk|jre]-" | findstr -R -v "[jdk|jre]-[0-9]\. [jdk|jre]-10"'
     Pop $0
     Pop $1
-    StrCmp $1 "" JavaMissing JavaFound
+    DetailPrint "Dollar 0 : $0"
+    DetailPrint "Dollar 1 : $1"
+    StrCmp $0 1 JavaMissing JavaFound
     JavaMissing:
         DetailPrint "Downloading OpenJRE 11 from: ${OPEN_JRE_64_DOWNLOAD_URL}"
         inetc::get "${OPEN_JRE_64_DOWNLOAD_URL}" "${OPEN_JRE_64_PATH}" /end
@@ -144,7 +146,7 @@ Function InstallOpenJre64
         ExecWait 'msiexec.exe /i "${OPEN_JRE_64_PATH}" /QN /L*V "$TEMP\msilog.log"'
         Goto JavaDone
     JavaFound:
-        DetailPrint "Java 11 already installed"
+        DetailPrint "Java already installed"
     JavaDone:
 FunctionEnd
 
