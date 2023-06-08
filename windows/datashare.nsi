@@ -130,8 +130,6 @@ Function InstallOpenJre64
     nsExec::ExecToStack '"$SYSDIR\cmd.exe" /c where -f java | findstr -R "[jdk|jre]-" | findstr -R -v "[jdk|jre]-[0-9]\. [jdk|jre]-10"'
     Pop $0
     Pop $1
-    DetailPrint "Dollar 0 : $0"
-    DetailPrint "Dollar 1 : $1"
     StrCmp $0 1 JavaMissing JavaFound
     JavaMissing:
         DetailPrint "Downloading OpenJRE 11 from: ${OPEN_JRE_64_DOWNLOAD_URL}"
