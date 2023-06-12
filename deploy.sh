@@ -7,7 +7,7 @@ if [[ -z "$release" ]]; then
   exit 1
 fi
 
-upload_url=$(curl -s -H "Authorization: token $GITHUB_TOKEN" -d "{\"tag_name\":\"${release}\", \"name\":\"${release}\",\"body\":\"release ${release}\"}" "https://api.github.com/repos/$repo/releases" | jq -r '.upload_url')
+upload_url=$(curl -s -H "Accept: application/vnd.github.v3+json" "https://api.github.com/repos/$repo/releases/tags/${release}" | jq -r '.upload_url')
 upload_url="${upload_url%\{*}"
 
 echo "uploading asset to release to url : $upload_url"
