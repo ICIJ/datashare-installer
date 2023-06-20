@@ -9,7 +9,7 @@ You will find several assets in [release list](https://github.com/ICIJ/datashare
 
 To compile installers, just run `make VERSION=10.15.0 clean all` in each OS directory.
 
-# What installers do?
+## What installers do?
 
 * **MacOS only**: ensure either XCode Command Line Tools or XCode are installed
 * **MacOS only**: ensure either MacPorts or Homebrew are installed
@@ -17,9 +17,9 @@ To compile installers, just run `make VERSION=10.15.0 clean all` in each OS dire
 * check if the computer has tesseract OCR library installed and install it
 * installing a launcher script that uses -Jjava and sets the right runtime options for Datashare.
 
-# How they are built?
+## How they are built?
 
-## Windows
+### Windows
 
 It is based on [Nullsoft Scriptable Install System](http://nsis.sourceforge.net). 
 
@@ -29,12 +29,12 @@ You will also need the [inetc plugin](http://nsis.sourceforge.net/Inetc_plug-in)
 
 You will also need the [EnVar plugin](https://nsis.sourceforge.io/EnVar_plug-in). Just copy the `Plugin/x86-ansi/EnVar.dll` under `/usr/share/nsis/Plugins/x86-ansi/`
 
-## MacOS 
+### MacOS 
 
 Based on [this tutorial](http://bomutils.dyndns.org/tutorial.html) (cf the [Makefile](mac/Makefile))
 
 You have to install the `cpio` package, [bomutils](https://github.com/hogliux/bomutils) and the [xar tarball](https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/xar/xar-1.5.2.tar.gz).
 
-## Linux
+### Linux
 
 It's a simple shell script that just runs docker-compose.
