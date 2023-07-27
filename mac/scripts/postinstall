@@ -34,9 +34,11 @@ create_datashare_cli () {
         sudo ln -s /Applications/Datashare.app/Contents/MacOS/Datashare.command /usr/local/bin/datashare
         if [ $? -ne 0 ]; then
             log_error "Unable to create Datashare CLI"
-            return 1
+            # TODO: uncomment this to exit here in case of failure
+#            return 1
+        else
+            log_info 'Successfully create datashare CLI'
         fi
-        log_info 'Successfully create datashare CLI'
     fi
 }
 
