@@ -36,6 +36,7 @@ function start_datashare {
         -DPROD_MODE=true \
         -Dfile.encoding=UTF-8 \
         -Djava.system.class.loader=org.icij.datashare.DynamicClassLoader \
+        -Djava.net.preferIPv4Stack=true \
         -cp "./dist:/Applications/Datashare.app/Contents/Resources/datashare-dist-${datashare_version}-all.jar" org.icij.datashare.Main \
         --dataDir "$datashare_data_path" \
         --queueType MEMORY \
