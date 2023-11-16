@@ -109,7 +109,9 @@ get_macports_package_url () {
   os_version=$(get_os_version)
   base_url="https://github.com/macports/macports-base/releases/download/v$macports_version/MacPorts-$macports_version"
   
-  if [[ $os_version == 13.* ]]; then
+  if [[ $os_version == 14.* ]]; then
+    echo "$base_url-14-Sonoma.pkg"
+  elif [[ $os_version == 13.* ]]; then
     echo "$base_url-13-Ventura.pkg"
   elif [[ $os_version == 12.* ]]; then
     echo "$base_url-12-Monterey.pkg"
