@@ -9,9 +9,12 @@ datashare_data_path="/Users/${USER}/Datashare"
 datashare_index_path="/Users/${USER}/Library/Datashare/index"
 datashare_plugins_path="/Users/${USER}/Library/datashare/plugins"
 datashare_extensions_path="/Users/${USER}/Library/datashare/extensions"
-# Java binary to use to start Datashare
-jre_version=11
-java_bin="$(/usr/libexec/java_home -F -v $jre_version)/bin/java"
+# Array of preferred Java versions in order
+preferred_java_versions=("17" "11" "8")
+
+function get_java_home() {
+    /usr/libexec/java_home -F -v $1 2>/dev/null
+}
 
 function on_exit_remove_pid_file {
     rm -f $pid_file
@@ -49,6 +52,22 @@ function start_datashare {
         --pluginsDir "${datashare_plugins_path}" \
         --extensionsDir "${datashare_extensions_path}"
 }
+
+# Loop through the preferred versions
+for version in "${preferred_java_versions[@]}"; do
+    java_home=$(get_java_home "$version")
+    if [ -n "$java_home" ]; then
+        java_bin="$java_home/bin/java"
+        echo "Using Java at $java_bin"
+        break
+    fi
+done
+
+# Check if Java was found
+if [ -z "$java_bin" ]; then
+    echo "None of the preferred Java versions (Java ${preferred_java_versions[*]}) are installed."
+    exit 1
+fi
 
 # Ensure the PID file is removed when the script exits
 trap on_exit_remove_pid_file EXIT
