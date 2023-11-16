@@ -5,15 +5,15 @@ pid_file="/tmp/datashare.pid"
 pid=$(cat $pid_file 2>/dev/null)
 # Collect Datashare conviguration env
 datashare_version=__version__
-datashare_data_path="/Users/${USER}/Datashare"
-datashare_home_path="/Users/${USER}/Library/Datashare"
-datashare_dist_path="$datashare_home_path/dist"
-datashare_settings_path="$datashare_dist_path/datashare.conf"
-datashare_data_source_url="jdbc:sqlite:file:$datashare_dist_path/datashare.db"
-datashare_index_path="$datashare_home_path/index"
-datashare_plugins_path="$datashare_home_path/plugins"
-datashare_extensions_path="$datashare_home_path/extensions"
-datashare_jna_tmpdir="/Users/${USER}/Library/Caches/JNA/temp/"
+datashare_data_path="${DATASHARE_DATA_PATH:-"${HOME}/Datashare"}"
+datashare_home_path="${DATASHARE_HOME_PATH:-"${HOME}/Library/Datashare"}"
+datashare_dist_path="${DATASHARE_DIST_PATH:-"$datashare_home_path/dist"}"
+datashare_settings_path="${DATASHARE_SETTINGS_PATH:-"$datashare_dist_path/datashare.conf"}"
+datashare_data_source_url="${DATASHARE_DATA_SOURCE_URL:-"jdbc:sqlite:file:$datashare_dist_path/datashare.db"}"
+datashare_index_path="${DATASHARE_INDEX_PATH:-"$datashare_home_path/index"}"
+datashare_plugins_path="${DATASHARE_PLUGINS_PATH:-"$datashare_home_path/plugins"}"
+datashare_extensions_path="${DATASHARE_EXTENSIONS_PATH:-"$datashare_home_path/extensions"}"
+datashare_jna_tmpdir="${DATASHARE_JNA_TMPDIR:-"${HOME}/Library/Caches/JNA/temp/"}"
 # Array of preferred Java versions in order
 preferred_java_versions=("17" "11" "8")
 
