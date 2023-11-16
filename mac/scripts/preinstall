@@ -4,7 +4,7 @@ macports_version=2.8.0
 macports_prefix=/opt/local/bin
 macports_bin=$macports_prefix/port
 homebrew_prefixes="/usr/local/bin:/opt/homebrew/bin"
-jre_version=11
+jre_version=17
 jre_brew_package=openjdk@$jre_version
 jre_macports_package=openjdk$jre_version
 
