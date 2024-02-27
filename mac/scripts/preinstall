@@ -223,10 +223,24 @@ install_jre_with_homebrew () {
     log_error "Failed to install OpenJDK $jre_version with Brew. You can try to install it manually."
     exit 1
   fi
-  # Add symlink as brew suggests
-  ln -sfn /usr/local/opt/$jre_brew_package/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk-$jre_version.jdk
+  # Add symlinks as brew suggests
+  create_jre_symlinks_for_homebrew
   # The installation was successful
   log_info "Successfully installed OpenJDK $jre_version with Brew."
+}
+
+create_jre_symlinks_for_homebrew () {
+    # Check for existence of the source folder for Intel Macs
+    if [ -d "/usr/local/opt/$jre_brew_package/libexec/openjdk.jdk" ]; then
+        log_info "Adding symlink for Intel architecture..."
+        ln -sfn "/usr/local/opt/$jre_brew_package/libexec/openjdk.jdk" "/Library/Java/JavaVirtualMachines/openjdk-$jre_version.jdk"
+    # Check for existence of the source folder for Apple Silicon Macs
+    elif [ -d "/opt/homebrew/opt/$jre_brew_package/libexec/openjdk.jdk" ]; then
+        log_info "Adding symlink for Apple Silicon architecture..."
+        ln -sfn "/opt/homebrew/opt/$jre_brew_package/libexec/openjdk.jdk" "/Library/Java/JavaVirtualMachines/openjdk-$jre_version.jdk"
+    else
+        log_error "The source folder for $jre_brew_package does not exist."
+    fi
 }
 
 install_jre_with_macports () {
