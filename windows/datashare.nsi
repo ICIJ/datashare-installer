@@ -3,6 +3,7 @@
 !include GetWindowsVersion.nsh
 !include "MUI2.nsh"
 !define MUI_ICON "${NSISDIR}\Contrib\Graphics\Icons\modern-install-colorful.ico"
+!define MUI_WELCOMEFINISHPAGE_BITMAP "welcome.bmp"
 !insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES
