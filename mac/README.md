@@ -4,6 +4,7 @@ This Mac installer use the following dependencies:
 
 * openssl
 * apple-codesign (Rust crate)
+* base64
 
 You must also set those environment variables:
 
@@ -12,3 +13,44 @@ You must also set those environment variables:
 * `APPSTORE_KEY_ID`: Key ID (an alphanumeric string like DEADBEEF42)
 * `APPSTORE_ISSUER_ID`: Issuer ID (likely a UUID)
 * `APPSTORE_PRIVATE_KEY_B64`: PEM encoded ECDSA private key (downloaded when you create an API Key) encoded in base64 ;
+
+## Creating a Developer ID Certificate
+
+This whole process aims at setting up the environment variables for CircleCI (`DATASHARE_CA_P12_B64` and `DATASHARE_CA_PASSWORD`). Part of this process is also explained on the [rcodesign documentation](https://gregoryszorc.com/docs/apple-codesign/0.17.0/apple_codesign_certificate_management.html).
+
+First, we need to create a [Certificate Sign-in Request (CSR)](https://developer.apple.com/help/account/create-certificates/create-a-certificate-signing-request) from your laptop:
+
+* Open macOS's Keychain app ;
+* From the Keychain Acess menu, choose `Certificate Assistant > Request a Certificate from a Certificate Authority...` ;
+* In the form choose:
+  * User Email Address: "datashare@icij.org" ;
+  * Common Name: "Datashare CA" (or something you will remember) ;
+  * CA Email Address: "datashare@icij.org" ;
+  * Then choose `Saved to disk` and continue ;
+* This will add a "*.certSigningRequest" in the selected folder.
+
+Second, submit this "*.certSigningRequest" file to Apple to get a 
+
+* Login to https://developer.apple.com ;
+* Go to the certificate list https://developer.apple.com/account/resources/certificates/list ;
+* Click on the "+" symbol or go directly to https://developer.apple.com/account/resources/certificates/add ;
+* Choose `Developer ID Installer` among the options and `Continue` ;
+* In `Profil Type` choose "G2 Sub-CA (Xcode 11.4.1 or later)" option ;
+* In `Choose File` pick your "*.certSigningRequest" file and `Continue` ;
+* Save your new "developerID_installer.cer" to your machine.
+
+Third, generate the .p12 file based on this certificate:
+
+* On your laptop's Finder, double click on "developerID_installer.cer" to import it to your keychain ;
+* You might have to enter your user password ;
+* In the list of "All items" you should now see your "Developer ID Installer: ..." certificate ;
+* Click on the caret on the left of the certificate to display its "private key" ;
+* Select the file then `Right Click` and `Export [...]` ;
+* Choose the ".p12" file format, set a password (will be stored in `DATASHARE_CA_PASSWORD`), and save the file.
+
+Finally, convert the .p12 file to base64:
+
+* Open a Terminal ;
+* Navigate to the directory where the .p12 file is stored ;
+* Then run `base64 <NAME OF THE FILE>.p12`;
+* This value can be stored in `DATASHARE_CA_P12_B64` (**replace new line by `\n`**).
