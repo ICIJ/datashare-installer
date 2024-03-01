@@ -3,7 +3,7 @@ export RESOURCES=resources
 export VERSION=${VERSION}
 export APPNAME=Datashare
 export FLAT_PACKAGE_INSTALLER_NAME=datashare-${VERSION}.pkg
-export P12_PASSWORD=password
+export DATASHARE_CA_PASSWORD=password
 
 all: $(DIST)/$(FLAT_PACKAGE_INSTALLER_NAME)
 
@@ -43,7 +43,7 @@ $(DIST)/$(FLAT_PACKAGE_INSTALLER_NAME): start.sh $(DIST)/Datashare.icns
 		@echo "$$APPSTORE_PRIVATE_KEY_B64" | base64 --decode > /tmp/appstore_private_key.asc
 		
 		# Sign the package
-		rcodesign sign --p12-file /tmp/kdatashare_ca.p12 --p12-password $(P12_PASSWORD) "$(DIST)/$(FLAT_PACKAGE_INSTALLER_NAME)"
+		rcodesign sign --p12-file /tmp/kdatashare_ca.p12 --p12-password "$(DATASHARE_CA_PASSWORD)" "$(DIST)/$(FLAT_PACKAGE_INSTALLER_NAME)"
 
 		# Generate the APP Store Connect API Key
 		rcodesign encode-app-store-connect-api-key -o /tmp/api.json $(APPSTORE_ISSUER_ID) $(APPSTORE_KEY_ID) /tmp/appstore_private_key.asc
