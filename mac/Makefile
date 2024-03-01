@@ -38,17 +38,12 @@ $(DIST)/$(FLAT_PACKAGE_INSTALLER_NAME): start.sh $(DIST)/Datashare.icns
 		( cd $(DIST)/flat && xar --compression none -cf "../$(FLAT_PACKAGE_INSTALLER_NAME)" * )
 		chmod +x "$(DIST)/$(FLAT_PACKAGE_INSTALLER_NAME)"
 
-		# Create transient files based on environment variables
-		@echo "$$DATASHARE_PEM_B64" | base64 --decode > /tmp/datashare.pem
-		@echo "$$ICIJ_CERT_B64" | base64 --decode > /tmp/icij.crt
-		@echo "$$P12_PASSWORD" > /tmp/key.p12.password
+		# # Create transient files based on environment variables
+		@echo "$$DATASHARE_CA_P12_B64" | base64 --decode > /tmp/datashare_ca.p12
 		@echo "$$APPSTORE_PRIVATE_KEY_B64" | base64 --decode > /tmp/appstore_private_key.asc
-
-		# Generate the p12 file with a dummy password
-		openssl pkcs12 -export -password pass:$(P12_PASSWORD) -in /tmp/icij.crt -inkey /tmp/datashare.pem -name 'Datashare' -out /tmp/key.p12
-
+		
 		# Sign the package
-		rcodesign sign --p12-file /tmp/key.p12 --p12-password-file /tmp/key.p12.password "$(DIST)/$(FLAT_PACKAGE_INSTALLER_NAME)"
+		rcodesign sign --p12-file /tmp/kdatashare_ca.p12 --p12-password $(P12_PASSWORD) "$(DIST)/$(FLAT_PACKAGE_INSTALLER_NAME)"
 
 		# Generate the APP Store Connect API Key
 		rcodesign encode-app-store-connect-api-key -o /tmp/api.json $(APPSTORE_ISSUER_ID) $(APPSTORE_KEY_ID) /tmp/appstore_private_key.asc
@@ -57,7 +52,7 @@ $(DIST)/$(FLAT_PACKAGE_INSTALLER_NAME): start.sh $(DIST)/Datashare.icns
 		rcodesign notary-submit --api-key-path /tmp/api.json --staple "$(DIST)/$(FLAT_PACKAGE_INSTALLER_NAME)"
 
 		# Remove keys
-		rm -f /tmp/datashare.pem /tmp/icij.crt /tmp/key.p12 /tmp/key.p12.password /tmp/key.json
+		rm -f /tmp/datashare_ca.p12 /tmp/datashare_ca.crt /tmp/key.json
 
 $(DIST)/Datashare.icns: $(DIST)
 		convert -resize 256x256 $(RESOURCES)/datashare.png $(DIST)/images/Datashare_256px.png
