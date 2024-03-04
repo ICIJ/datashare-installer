@@ -117,10 +117,10 @@ Function UninstallPreviousDatashare
   FindFirst $0 $1 "$PROGRAMFILES64\Datashare*"
   loop:
     IfErrors done
-    DetailPrint "found previous datashare $1 calling uninstall"
+    DetailPrint "Found previous datashare $1 calling uninstall"
     ExecWait "$PROGRAMFILES64\$1\uninstall.exe /S"
     IfErrors 0 +2
-    DetailPrint "uninstall of $1 failed"
+    DetailPrint "Uninstall of $1 failed"
     FindNext $0 $1
     Goto loop
   done:
