@@ -225,7 +225,7 @@ Section "install"
     Call InstallTesseractOCR64
 
   ${Else}
-    MessageBox MB_OK "Sorry, datashare² can only be installed on a 64 bits machine"
+    MessageBox MB_OK "Datashare can only be installed on a 64 bits machine"
     Abort
   ${EndIf}
 
