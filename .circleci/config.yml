@@ -9,13 +9,13 @@ jobs:
       - run:
           name: install dependencies
           command: |
-            sudo apt-get update && sudo apt install -y nsis cpio jq imagemagick icnsutils
+            sudo apt-get update && sudo apt install -y nsis cpio jq imagemagick icnsutils libxml2-dev
             wget https://nsis.sourceforge.io/mediawiki/images/c/c9/Inetc.zip && unzip Inetc.zip && sudo cp Plugins/x86-unicode/INetC.dll /usr/share/nsis/Plugins/x86-unicode/ && echo "cp INetC.dll done"
             wget https://nsis.sourceforge.io/mediawiki/images/7/7f/EnVar_plugin.zip && unzip EnVar_plugin.zip && sudo cp Plugins/x86-unicode/EnVar.dll /usr/share/nsis/Plugins/x86-unicode && echo "cp EnVar.dll done"
-            wget https://github.com/hogliux/bomutils/archive/0.2.tar.gz && tar -zxf 0.2.tar.gz && cd bomutils-0.2 && make && sudo make install
-            wget https://github.com/mackyle/xar/archive/refs/tags/xar-1.6.1.tar.gz && tar -zxf xar-1.6.1.tar.gz && cd xar-xar-1.6.1/xar && ./autogen.sh && make && sudo make install
+            wget https://github.com/ICIJ/bomutils/archive/refs/heads/master.zip && unzip master.zip && cd bomutils-master && make && sudo make install
+            wget https://github.com/mackyle/xar/archive/refs/tags/xar-1.6.1.tar.gz && tar -zxf xar-1.6.1.tar.gz && cd xar-xar-1.6.1/xar && sed -i 's/OpenSSL_add_all_ciphers/OPENSSL_init_crypto/g' configure.ac && ./autogen.sh && make && sudo make install
             wget https://nsis.sourceforge.io/mediawiki/images/9/9d/Untgz.zip  && unzip Untgz.zip && sudo cp untgz/untgz.dll /usr/share/nsis/Plugins/ && echo "cp untgz.dll done"
-            sudo cargo install apple-codesign
+            cargo install apple-codesign
 
       - run:
           name: make windows
@@ -36,5 +36,6 @@ jobs:
       - run:
           name: make mac
           command: |
-            cd /tmp/datashare-installer/mac
+            cd mac
             make VERSION=10.15.0 all
+            cd ..
