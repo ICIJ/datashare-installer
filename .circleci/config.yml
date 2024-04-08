@@ -22,7 +22,7 @@ jobs:
       - save_cache:
           key: cargo-cache
           paths:
-            - $HOME/.cargo
+            - /home/circleci/.cargo
       - run:
           name: make windows
           command: |
