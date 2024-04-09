@@ -37,9 +37,3 @@ jobs:
             # The version here does not matter
             make VERSION=10.15.0 all
             cd ..
-      - run:
-          name: make mac
-          command: |
-            cd mac
-            make VERSION=10.15.0 all
-            cd ..
