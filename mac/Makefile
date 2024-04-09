@@ -38,9 +38,9 @@ $(DIST)/$(FLAT_PACKAGE_INSTALLER_NAME): start.sh $(DIST)/Datashare.icns
 		chmod +x "$(DIST)/$(FLAT_PACKAGE_INSTALLER_NAME)"
 
 		# # Create transient files based on environment variables
-		@echo "$$DATASHARE_CA_P12_B64" | base64 --decode > /tmp/datashare_ca.p12
 		@echo "$$APPSTORE_PRIVATE_KEY_B64" | base64 --decode > /tmp/appstore_private_key.asc
-		
+		@echo "$$DATASHARE_CA_P12_B64" | base64 --decode > /tmp/datashare_ca.p12
+
 		# Sign the package
 		rcodesign sign --p12-file /tmp/datashare_ca.p12 --p12-password "$(DATASHARE_CA_PASSWORD)" "$(DIST)/$(FLAT_PACKAGE_INSTALLER_NAME)"
 
