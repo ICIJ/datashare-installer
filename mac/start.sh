@@ -15,7 +15,7 @@ datashare_plugins_path="${DATASHARE_PLUGINS_PATH:-"$datashare_home_path/plugins"
 datashare_extensions_path="${DATASHARE_EXTENSIONS_PATH:-"$datashare_home_path/extensions"}"
 datashare_jna_tmpdir="${DATASHARE_JNA_TMPDIR:-"${HOME}/Library/Caches/JNA/temp/"}"
 # Array of preferred Java versions in order
-preferred_java_versions=("17" "11" "8")
+preferred_java_versions=("17")
 
 function get_java_home() {
     /usr/libexec/java_home -F -v "$1" 2>/dev/null
