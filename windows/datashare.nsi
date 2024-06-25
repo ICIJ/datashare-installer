@@ -129,7 +129,7 @@ FunctionEnd
 
 Function InstallOpenJre64
     #Java lib test
-    nsExec::ExecToStack '"$SYSDIR\cmd.exe" /c where -f java | findstr -R "[jdk|jre]-" | findstr -R -v "[jdk|jre]-[0-9]\. [jdk|jre]-10"'
+    nsExec::ExecToStack '"$SYSDIR\cmd.exe" /c where -f java | findstr -R "[jdk|jre]-" | findstr -R -v "[jdk|jre]-[0-9]\. [jdk|jre]-1[0-6]"'
     Pop $0
     Pop $1
     StrCmp $0 1 JavaMissing JavaFound
