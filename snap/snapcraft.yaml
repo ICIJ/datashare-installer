@@ -48,7 +48,7 @@ parts:
       # Simplify the jar path to strip-out the version
       mv $SNAPCRAFT_PART_INSTALL/datashare-dist-*-all.jar $SNAPCRAFT_PART_INSTALL/datashare.jar
       # Remove the arch part of the openjdk directory
-      mv $SNAPCRAFT_PART_INSTALL/usr/lib/jvm/java-*-openjdk-* $SNAPCRAFT_PART_INSTALL/usr/lib/jvm/java-17-openjdk
+      mv $SNAPCRAFT_PART_INSTALL/usr/lib/jvm/java-17-openjdk-* $SNAPCRAFT_PART_INSTALL/usr/lib/jvm/java-17-openjdk || /bin/true
       # Remove errored symlink to the blacklist certificates
       rm -f $SNAPCRAFT_PART_INSTALL/usr/lib/jvm/java-*-openjdk/lib/security/blacklisted.certs
       snapcraftctl build
