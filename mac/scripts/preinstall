@@ -1,6 +1,6 @@
 #!/bin/bash
 
-macports_version=2.8.1
+macports_version=2.10.5
 macports_prefix=/opt/local/bin
 macports_bin=$macports_prefix/port
 homebrew_prefixes="/usr/local/bin:/opt/homebrew/bin"
@@ -108,8 +108,10 @@ get_os_version () {
 get_macports_package_url () {
   os_version=$(get_os_version)
   base_url="https://github.com/macports/macports-base/releases/download/v$macports_version/MacPorts-$macports_version"
-  
-  if [[ $os_version == 14.* ]]; then
+
+  if [[ $os_version == 15.* ]]; then
+    echo "$base_url-15-Sequoia.pkg"
+  elif [[ $os_version == 14.* ]]; then
     echo "$base_url-14-Sonoma.pkg"
   elif [[ $os_version == 13.* ]]; then
     echo "$base_url-13-Ventura.pkg"
