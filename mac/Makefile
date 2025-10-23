@@ -1,10 +1,17 @@
-export DIST=dist
-export RESOURCES=resources
-export VERSION=${VERSION}
-export APPNAME=Datashare
-export FLAT_PACKAGE_INSTALLER_NAME=datashare-${VERSION}.pkg
+DIST := dist
+RESOURCES := resources
+VERSION := 20.3.0 # This is an arbitrary default version number for the installer package
+APPNAME := Datashare
+FLAT_PACKAGE_INSTALLER_NAME := datashare-${VERSION}.pkg
 
-all: $(DIST)/$(FLAT_PACKAGE_INSTALLER_NAME)
+PHONY: all clean
+
+all: clean $(DIST)/$(FLAT_PACKAGE_INSTALLER_NAME)
+
+clean:
+		rm -rf ${DIST}
+		rm -rf Datashare.app/
+
 
 $(DIST):
 		mkdir -p $(DIST)/images
@@ -60,8 +67,3 @@ $(DIST)/Datashare.icns: $(DIST)
 		convert -resize 32x32 $(RESOURCES)/datashare.png $(DIST)/images/Datashare_32px.png
 		convert -resize 16x16 $(RESOURCES)/datashare.png $(DIST)/images/Datashare_16px.png
 		png2icns $(DIST)/Datashare.icns $(DIST)/images/Datashare_*px.png
-
-PHONY: clean
-clean:
-		rm -rf ${DIST}
-		rm -rf Datashare.app/
