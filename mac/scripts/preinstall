@@ -1,9 +1,10 @@
 #!/bin/bash
 
-macports_version=2.10.5
+homebrew_prefixes="/usr/local/bin:/opt/homebrew/bin"
+homebrew_version=4.6.18
+macports_version=2.11.5
 macports_prefix=/opt/local/bin
 macports_bin=$macports_prefix/port
-homebrew_prefixes="/usr/local/bin:/opt/homebrew/bin"
 jre_version=17
 jre_brew_package=openjdk@$jre_version
 jre_macports_package=openjdk$jre_version
@@ -22,6 +23,28 @@ log_info () {
   logger -t DatashareInstaller -p install.info "$1"
 }
 
+log_if () {
+  # This function takes three arguments:
+  # 1. A boolean condition (0 for false, non-zero for true)
+  # 2. A message to log if the condition is true
+  # 3. A message to log if the condition is false
+  if $1; then
+    log_info "$2"
+  else
+    log_info "$3"
+  fi
+}
+
+system_summary () {
+  log_info "**** System Summary ****"
+  log_if is_xcode_installed "=> Xcode: Installed" "=> Xcode: Not Installed"
+  log_if is_xcode_cli_tools_installed "=> Xcode Command Line Tools: Installed" "=> Xcode Command Line Tools: Not Installed"
+  log_if is_homebrew_installed "=> Homebrew: Installed" "=> Homebrew: Not Installed"
+  log_if is_macports_installed "=> MacPorts: Installed" "=> MacPorts: Not Installed"
+  log_if is_tesseract_installed "=> Tesseract: Installed" "=> Tesseract: Not Installed"
+  log_if is_jre_installed "=> OpenJDK $jre_version: Installed" "=> OpenJDK $jre_version: Not Installed"
+}
+
 is_xcode_installed () {
   # Note that this function only checks for the existence of the xcode-select command, 
   # which is a command-line utility included with Xcode. It does not actually verify 
@@ -29,7 +52,6 @@ is_xcode_installed () {
   if ! [ -x "$(command -v xcode-select -p)" ] || ! [ -d "/Application/Xcode.app" ]; then
     return 1
   fi
-  log_info 'Xcode is already installed.'
   return
 }
 
@@ -43,7 +65,6 @@ is_xcode_cli_tools_installed () {
   if ! [ -x "$(command -v xcode-select -p)" ] || ! [ -d "/Library/Developer/CommandLineTools" ]; then
     return 1
   fi
-  log_info 'Xcode Command Line Tools are already installed.'
   return
 }
 
@@ -54,7 +75,6 @@ is_homebrew_installed () {
   if ! [ -x "$(command -v brew)" ]; then
     return 1
   fi
-  log_info 'Homebrew is already installed.'
   return
 }
 
@@ -65,7 +85,6 @@ is_macports_installed () {
   if ! [ -x "$(command -v $macports_bin)" ]; then
     return 1
   fi
-  log_info 'MacPorts is already installed.'
   return
 }
 
@@ -79,15 +98,6 @@ is_tesseract_installed () {
   if ! [ -x "$(command -v tesseract)" ]; then
     return 1
   fi
-
-  # Check if the 'tesseract' command works correctly
-  tesseract --version
-  if [ $? -ne 0 ]; then
-    log_info 'Tesseract is installed but not working properly.'
-    return 1
-  fi
-
-  log_info 'Tesseract is already installed and working.'
   return
 }
 
@@ -97,8 +107,7 @@ is_jre_installed () {
   if [ $? -ne 0  ]; then
     return 1
   fi
-
-  log_info "OpenJDK $jre_version is already installed."
+  return
 }
 
 get_os_version () {
@@ -127,6 +136,10 @@ get_macports_package_url () {
   fi
 }
 
+get_homebrew_package_url () {
+  echo "https://github.com/Homebrew/brew/releases/download/$homebrew_version/Homebrew-$homebrew_version.pkg"
+}
+
 install_xcode_cli_tools () {
   log_info 'Installing Xcode Command Line Tools...'
   touch /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
@@ -139,6 +152,41 @@ install_xcode_cli_tools () {
   fi
   # The Xcode Command Line Tools were installed successfully
   log_info 'Successfully installed the Xcode Command Line Tools.'
+}
+
+install_package_manager() {
+  os_version=$(get_os_version)
+  # Decide which package manager to install based on the OS version.
+  # For macOS 14 Sonoma and later, install Homebrew.
+  if [[ $os_version == 26.* || $os_version == 15.* || $os_version == 14.* || $os_version == 13.* ]]; then
+    install_homebrew ;
+  # For macOS 12 Monterey and earlier, install MacPorts.
+  elif [[ $os_version == 12.* || $os_version == 11.* || $os_version == 10.15.* ]]; then
+    install_macports ;
+  # For unsupported versions, log an error and exit.
+  else
+    log_error "This version of Mac is not supported"
+    exit 1
+  fi
+}
+
+install_homebrew () {
+  log_info 'Installing Homebrew...'
+  homebrew_package_url=$(get_homebrew_package_url)
+  homebrew_package_path=/tmp/Homebrew.pkg
+  sudo rm -f $homebrew_package_path
+  # Download the Homebrew installation script
+  curl -fsSL $homebrew_package_url -o $homebrew_package_path
+  # Install the downloaded package
+  sudo installer -pkg $homebrew_package_path -target /
+  if [ $? -ne 0 ]; then
+    log_info 'Failed to install Homebrew.'
+    exit 1
+  fi
+  # Ensure Homebrew prefixes is in PATH
+  sudo sh -c "echo /opt/homebrew/bin >> /etc/paths.d/homebrew"
+  # Homebrew was installed successfully
+  log_info 'Successfully installed Homebrew.'
 }
 
 install_macports () {
@@ -262,10 +310,12 @@ PATH=$macports_prefix:$PATH
 # Ensure Homebrew prefixes are in PATH
 PATH=$homebrew_prefixes:$PATH
 
+# Display system summary before installations
+system_summary
 # Neither XCode or XCode Command Line Tools are installed
 if ! is_xcode_cli_tools_installed && ! is_xcode_installed ; then install_xcode_cli_tools ; fi
-# Neither Homebrew or MacPorts are not installed
-if ! is_macports_installed && ! is_homebrew_installed ; then install_macports ; fi
+# Neither Homebrew or MacPorts are installed
+if ! is_macports_installed && ! is_homebrew_installed ; then install_package_manager ; fi
 # Tesseract is not installed
 if ! is_tesseract_installed ; then install_tesseract ; fi
 # Java JRE is not installed
