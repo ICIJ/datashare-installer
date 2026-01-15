@@ -21,7 +21,7 @@ parts:
     plugin: nil
     source: .
     stage-packages:
-      - openjdk-21-jre
+      - openjdk-17-jre
       - tesseract-ocr
       - tesseract-ocr-eng
       - tesseract-ocr-fra
@@ -48,7 +48,7 @@ parts:
       # Simplify the jar path to strip-out the version
       mv $SNAPCRAFT_PART_INSTALL/datashare-dist-*-all.jar $SNAPCRAFT_PART_INSTALL/datashare.jar
       # Remove the arch part of the openjdk directory
-      mv $SNAPCRAFT_PART_INSTALL/usr/lib/jvm/java-21-openjdk-* $SNAPCRAFT_PART_INSTALL/usr/lib/jvm/java-21-openjdk || /bin/true
+      mv $SNAPCRAFT_PART_INSTALL/usr/lib/jvm/java-17-openjdk-* $SNAPCRAFT_PART_INSTALL/usr/lib/jvm/java-17-openjdk || /bin/true
       # Remove errored symlinks to the blacklist certificates
       rm -f $SNAPCRAFT_PART_INSTALL/usr/lib/jvm/java-*-openjdk/lib/security/blacklisted.certs
       rm -f $SNAPCRAFT_PART_INSTALL/usr/lib/jvm/java-*-openjdk-*/lib/security/blacklisted.certs
@@ -71,5 +71,5 @@ apps:
       DATASHARE_HOME: $SNAP_USER_COMMON
       DATASHARE_JAR: $SNAP/datashare.jar
       JAVA_BIN: "$JAVA_HOME/bin/java"
-      JAVA_HOME: "$SNAP/usr/lib/jvm/java-21-openjdk"
+      JAVA_HOME: "$SNAP/usr/lib/jvm/java-17-openjdk"
       PATH: "$SNAP/bin:$JAVA_HOME/bin:$PATH"
