@@ -29,6 +29,9 @@ $(DIST)/$(FLAT_PACKAGE_INSTALLER_NAME): start.sh $(DIST)/Datashare.icns
 		cp $(DIST)/Datashare.icns "${APPNAME}.app"/Contents/Resources/
 		cp $(RESOURCES)/Info.plist "${APPNAME}.app"/Contents
 
+		# Add Elasticsearch setup script
+		cp ../common/elasticsearch-setup.sh "${APPNAME}.app"/Contents/MacOS/
+
 		mv "${APPNAME}.app" $(DIST)/root/Applications/
 
 		# CF http://bomutils.dyndns.org/tutorial.html
