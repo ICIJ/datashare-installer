@@ -210,6 +210,11 @@ install_macports () {
   log_info 'Successfully installed MacPorts.'
 }
 
+update_macports () {
+  # Ensure macports is up-to-date
+  sudo port selfupdate && port outdated
+}
+
 install_tesseract () {
   if is_homebrew_installed ; then
     install_tesseract_with_homebrew ; 
@@ -315,7 +320,7 @@ system_summary
 # Neither XCode or XCode Command Line Tools are installed
 if ! is_xcode_cli_tools_installed && ! is_xcode_installed ; then install_xcode_cli_tools ; fi
 # Neither Homebrew or MacPorts are installed
-if ! is_macports_installed && ! is_homebrew_installed ; then install_package_manager ; fi
+if is_macports_installed ; then update_macports ; elif ! is_homebrew_installed ; then install_package_manager ; fi
 # Tesseract is not installed
 if ! is_tesseract_installed ; then install_tesseract ; fi
 # Java JRE is not installed
