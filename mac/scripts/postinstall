@@ -5,6 +5,10 @@ ds_jar=datashare-dist-$ds_version-all.jar
 ds_jar_dir=/Applications/Datashare.app/Contents/Resources
 ds_jar_path=$ds_jar_dir/$ds_jar
 ds_jar_url=https://github.com/ICIJ/datashare/releases/download/$ds_version/$ds_jar
+elasticsearch_version=8.19.8
+datashare_home="$HOME/Library/Datashare"
+es_home="$datashare_home/elasticsearch"
+es_setup_script="/Applications/Datashare.app/Contents/MacOS/elasticsearch-setup.sh"
 
 log_error () {
   # This function takes a single argument, which is the message to log.
@@ -55,13 +59,38 @@ download_datashare () {
   log_info 'Successfully installed Datashare.'
 }
 
+is_elasticsearch_installed () {
+  # Check if Elasticsearch is already installed
+  if [ -d "$es_home/elasticsearch-$elasticsearch_version" ]; then
+    return 0
+  fi
+  return 1
+}
+
+download_elasticsearch () {
+  log_info "Downloading Elasticsearch..."
+  if [ -f "$es_setup_script" ]; then
+    DATASHARE_HOME="$datashare_home" bash "$es_setup_script" install
+    if [ $? -eq 0 ]; then
+      log_info "Successfully installed Elasticsearch."
+    else
+      log_error "Failed to install Elasticsearch."
+      return 1
+    fi
+  else
+    log_error "Elasticsearch setup script not found at: $es_setup_script"
+    return 1
+  fi
+}
+
 
 setup_user_directories () {
   mkdir -p "$HOME/Datashare"
-  mkdir -p "$HOME/Library/Datashare/dist"
-  mkdir -p "$HOME/Library/Datashare/index"
+  mkdir -p "$datashare_home/dist"
+  mkdir -p "$datashare_home/index"
+  mkdir -p "$es_home"
   chown -R "$USER:staff" "$HOME/Datashare"
-  chown -R "$USER:staff" "$HOME/Library/Datashare"
+  chown -R "$USER:staff" "$datashare_home"
 }
 
 # Download Datashare, regardless of the current installation.
@@ -70,7 +99,12 @@ if ! is_datashare_installed && ! download_datashare ; then
   log_error 'The installation cannot be done.'
   exit 1
 fi
-# Finally, setup user directories
+# Setup user directories
 setup_user_directories
+# Download Elasticsearch if not already installed
+if ! is_elasticsearch_installed && ! download_elasticsearch ; then
+  log_error 'Elasticsearch installation failed.'
+  exit 1
+fi
 # When everything is done, we create the datashare CLI if it doesn't exist yet
 create_datashare_cli

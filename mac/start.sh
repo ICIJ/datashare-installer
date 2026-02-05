@@ -10,6 +10,7 @@ datashare_home_path="${DATASHARE_HOME_PATH:-"${HOME}/Library/Datashare"}"
 datashare_dist_path="${DATASHARE_DIST_PATH:-"$datashare_home_path/dist"}"
 datashare_settings_path="${DATASHARE_SETTINGS_PATH:-"$datashare_dist_path/datashare.conf"}"
 datashare_data_source_url="${DATASHARE_DATA_SOURCE_URL:-"jdbc:sqlite:file:$datashare_dist_path/datashare.db"}"
+datashare_elasticsearch_path="${DATASHARE_ELASTICSEARCH_PATH:-"$datashare_home_path/elasticsearch"}"
 datashare_index_path="${DATASHARE_INDEX_PATH:-"$datashare_home_path/index"}"
 datashare_plugins_path="${DATASHARE_PLUGINS_PATH:-"$datashare_home_path/plugins"}"
 datashare_extensions_path="${DATASHARE_EXTENSIONS_PATH:-"$datashare_home_path/extensions"}"
@@ -64,6 +65,7 @@ function start_datashare_with_defaults {
       --settings "$datashare_settings_path"
       --mode EMBEDDED
       --browserOpenLink true
+      --elasticsearchPath "$datashare_elasticsearch_path"
       --elasticsearchDataPath "$datashare_index_path"
       --pluginsDir "${datashare_plugins_path}"
       --extensionsDir "${datashare_extensions_path}"

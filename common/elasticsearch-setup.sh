@@ -72,6 +72,7 @@ extract_elasticsearch() {
     tar -xzf "$ES_ARCHIVE"
     ln -sfn "elasticsearch-$ES_VERSION" "$ES_HOME/current"
     echo "Extraction complete"
+    rm -f "$ES_ARCHIVE"
 }
 
 setup_elasticsearch() {

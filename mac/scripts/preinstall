@@ -8,7 +8,6 @@ macports_bin=$macports_prefix/port
 jre_version=17
 jre_brew_package=openjdk@$jre_version
 jre_macports_package=openjdk$jre_version
-elasticsearch_version=8.19.8
 
 log_error () {
   # This function takes a single argument, which is the message to log.
@@ -44,7 +43,6 @@ system_summary () {
   log_if is_macports_installed "=> MacPorts: Installed" "=> MacPorts: Not Installed"
   log_if is_tesseract_installed "=> Tesseract: Installed" "=> Tesseract: Not Installed"
   log_if is_jre_installed "=> OpenJDK $jre_version: Installed" "=> OpenJDK $jre_version: Not Installed"
-  log_if is_elasticsearch_installed "=> Elasticsearch: Installed" "=> Elasticsearch: Not Installed"
 }
 
 is_xcode_installed () {
@@ -110,16 +108,6 @@ is_jre_installed () {
     return 1
   fi
   return
-}
-
-is_elasticsearch_installed () {
-  # Check if Elasticsearch is already installed
-  local es_version="$elasticsearch_version"
-  local es_home="$HOME/.local/share/datashare/elasticsearch"
-  if [ -d "$es_home/elasticsearch-$es_version" ]; then
-    return 0
-  fi
-  return 1
 }
 
 get_os_version () {
@@ -317,21 +305,6 @@ install_jre_with_macports () {
   log_info "Successfully installed OpenJDK $jre_version with MacPorts."
 }
 
-install_elasticsearch () {
-  log_info "Installing Elasticsearch..."
-  local es_setup_script="/Applications/Datashare.app/Contents/MacOS/elasticsearch-setup.sh"
-  if [ -f "$es_setup_script" ]; then
-    bash "$es_setup_script" install
-    if [ $? -eq 0 ]; then
-      log_info "Successfully installed Elasticsearch."
-    else
-      log_error "Failed to install Elasticsearch."
-    fi
-  else
-    log_error "Elasticsearch setup script not found at: $es_setup_script"
-  fi
-}
-
 # Ensure MacPorts prefix is in PATH
 PATH=$macports_prefix:$PATH
 # Ensure Homebrew prefixes are in PATH
@@ -347,5 +320,3 @@ if ! is_macports_installed && ! is_homebrew_installed ; then install_package_man
 if ! is_tesseract_installed ; then install_tesseract ; fi
 # Java JRE is not installed
 if ! is_jre_installed ; then install_jre ; fi
-# Elasticsearch is not installed
-if ! is_elasticsearch_installed ; then install_elasticsearch ; fi
