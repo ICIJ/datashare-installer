@@ -28,6 +28,7 @@ Icon "datashare.ico"
 !define ELASTICSEARCH_VERSION "8.19.8"
 !define ELASTICSEARCH_ARCH "x86_64"
 !define ELASTICSEARCH_ARCHIVE "elasticsearch-${ELASTICSEARCH_VERSION}-windows-${ELASTICSEARCH_ARCH}.zip"
+!define ELASTICSEARCH_ARCHIVE_DIR "elasticsearch-${ELASTICSEARCH_VERSION}-windows-${ELASTICSEARCH_ARCH}"
 !define ELASTICSEARCH_DOWNLOAD_URL "https://artifacts.elastic.co/downloads/elasticsearch/${ELASTICSEARCH_ARCHIVE}"
 
 
@@ -170,7 +171,7 @@ Function InstallTesseractOCR64
         DetailPrint "Installing Tesseract"
         ExecWait '"${TESSERACT_OCR_64_PATH}"'
 
-        # Chack and add to PATH
+        # Check and add to PATH
         ReadRegStr $1 HKLM "${TESSERACT_UNINSTALL_KEY}" "UninstallString"
         Push $1
         Call GetParent
@@ -193,7 +194,7 @@ FunctionEnd
 
 Function InstallElasticsearch
     # Define Elasticsearch home directory
-    StrCpy $R9 "$PROFILE\.local\share\datashare\elasticsearch"
+    StrCpy $R9 "$APPDATA\Datashare\elasticsearch"
 
     DetailPrint "Detected platform: windows-${ELASTICSEARCH_ARCH}"
 
@@ -232,6 +233,13 @@ Function InstallElasticsearch
             ${EndIf}
 
             DetailPrint "Extraction complete"
+
+            DetailPrint "Moving Elasticsearch directory to $R9\elasticsearch-${ELASTICSEARCH_VERSION}..."
+
+            Rename "$R9\${ELASTICSEARCH_ARCHIVE_DIR}" "$R9\elasticsearch-${ELASTICSEARCH_VERSION}"
+            delete "$R9\${ELASTICSEARCH_ARCHIVE}"
+            RMDir /r "$R9\${ELASTICSEARCH_ARCHIVE_DIR}"
+
             DetailPrint "Elasticsearch ${ELASTICSEARCH_VERSION} installed successfully at $R9"
             Goto ESComplete
 
@@ -307,7 +315,7 @@ section "uninstall"
     rmDir /r "$APPDATA\Datashare\extensions"
 
     MessageBox MB_YESNO|MB_ICONQUESTION "Do you want to remove Elasticsearch installation ?" IDNO +2
-      rmDir /r "$PROFILE\.local\share\datashare\elasticsearch"
+      rmDir /r "$APPDATA\Datashare\elasticsearch"
 
     MessageBox MB_YESNO|MB_ICONQUESTION "Do you want to remove Datashare data directory ?" IDNO +3
       rmDir /r "$APPDATA\Datashare\data"
