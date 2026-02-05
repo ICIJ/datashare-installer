@@ -27,6 +27,7 @@ FOR /F "tokens=*" %%i IN ('where -f java ^| findstr -R "[jdk|jre]-" ^| findstr -
   --settings "%CURRENT_DIR%"\dist\datashare.conf ^
   --mode EMBEDDED ^
   --browserOpenLink true ^
+  --elasticsearchPath "%CURRENT_DIR%"\elasticsearch ^
   --elasticsearchDataPath "%CURRENT_DIR%"\index ^
   --pluginsDir "%CURRENT_DIR%"\plugins ^
   --extensionsDir "%CURRENT_DIR%"\extensions
