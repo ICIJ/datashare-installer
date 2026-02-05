@@ -305,7 +305,19 @@ SectionEnd
 section "uninstall"
   delete "$SMPROGRAMS\${COMPANYNAME}\${APPNAME}.lnk"
   rmDir "$SMPROGRAMS\${COMPANYNAME}" # only if empty
-  rmDir /r $INSTDIR # recursive
+
+  # delete files of installation directory (except folders)
+  FindFirst $0 $1 "$INSTDIR\*.*"
+  loop:
+    IfErrors done
+    IfFileExists "$INSTDIR\$1\*" skip_file
+      Delete "$INSTDIR\$1"
+    skip_file:
+    FindNext $0 $1
+    Goto loop
+  done:
+  FindClose $0
+  rmDir "$INSTDIR" # only if empty
 
   # data
   IfSilent +12
