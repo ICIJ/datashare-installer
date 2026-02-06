@@ -30,7 +30,7 @@ $(DIST)/$(FLAT_PACKAGE_INSTALLER_NAME): start.sh $(DIST)/Datashare.icns
 		cp $(RESOURCES)/Info.plist "${APPNAME}.app"/Contents
 
 		# Add Elasticsearch setup script
-		cp ../common/elasticsearch-setup.sh "${APPNAME}.app"/Contents/MacOS/
+		cp scripts/elasticsearch-setup.sh "${APPNAME}.app"/Contents/MacOS/
 
 		mv "${APPNAME}.app" $(DIST)/root/Applications/
 
