@@ -21,8 +21,3 @@ curl -s \
   -H "Authorization: token $GITHUB_TOKEN" \
   -H "Content-Type: application/vnd.microsoft.portable-executable" \
   --data-binary "@windows/dist/datashare-$release.exe" "$upload_url?name=datashare-$release.exe&label=datashare-$release.exe"
-  
-curl -s \
-  -H "Authorization: token $GITHUB_TOKEN" \
-  -H "Content-Type: application/x-sh" \
-  --data-binary "@linux/dist/datashare-$release.sh" "$upload_url?name=datashare-$release.sh&label=datashare-$release.sh"
