@@ -25,6 +25,11 @@ Icon "datashare.ico"
 !define OPEN_JRE_64_PATH "$TEMP\openjdk-jre-x64-windows-hotspot-17.msi"
 !define DATASHARE_JAR_FILENAME "datashare-dist-${VERSION}-all.jar"
 !define DATASHARE_JAR_DOWNLOAD_URL "https://github.com/ICIJ/datashare/releases/download/${VERSION}/${DATASHARE_JAR_FILENAME}"
+!define ELASTICSEARCH_VERSION "8.19.8"
+!define ELASTICSEARCH_ARCH "x86_64"
+!define ELASTICSEARCH_ARCHIVE "elasticsearch-${ELASTICSEARCH_VERSION}-windows-${ELASTICSEARCH_ARCH}.zip"
+!define ELASTICSEARCH_ARCHIVE_DIR "elasticsearch-${ELASTICSEARCH_VERSION}-windows-${ELASTICSEARCH_ARCH}"
+!define ELASTICSEARCH_DOWNLOAD_URL "https://artifacts.elastic.co/downloads/elasticsearch/${ELASTICSEARCH_ARCHIVE}"
 
 
 OutFile "dist/datashare-${VERSION}.exe"
@@ -166,7 +171,7 @@ Function InstallTesseractOCR64
         DetailPrint "Installing Tesseract"
         ExecWait '"${TESSERACT_OCR_64_PATH}"'
 
-        # Chack and add to PATH
+        # Check and add to PATH
         ReadRegStr $1 HKLM "${TESSERACT_UNINSTALL_KEY}" "UninstallString"
         Push $1
         Call GetParent
@@ -185,6 +190,73 @@ Function InstallTesseractOCR64
     TessFound:
         DetailPrint "Tesseract already installed"
     TessDone:
+FunctionEnd
+
+Function InstallElasticsearch
+    # Define Elasticsearch home directory
+    StrCpy $R9 "$APPDATA\Datashare\elasticsearch"
+
+    DetailPrint "Detected platform: windows-${ELASTICSEARCH_ARCH}"
+
+    # Check if Elasticsearch is already installed
+    IfFileExists "$R9\elasticsearch-${ELASTICSEARCH_VERSION}\*.*" ESAlreadyInstalled ESNotInstalled
+
+    ESNotInstalled:
+        DetailPrint "Downloading Elasticsearch ${ELASTICSEARCH_VERSION}..."
+        CreateDirectory "$R9"
+
+        # Check if archive already downloaded
+        IfFileExists "$R9\${ELASTICSEARCH_ARCHIVE}" ESExtract ESDownload
+
+        ESDownload:
+            inetc::get "${ELASTICSEARCH_DOWNLOAD_URL}" "$R9\${ELASTICSEARCH_ARCHIVE}" /end
+            Pop $0
+            DetailPrint "Download Status: $0"
+            ${If} $0 != "OK"
+                DetailPrint "Warning: Elasticsearch download failed: $0"
+                Goto ESDone
+            ${EndIf}
+            DetailPrint "Download complete"
+
+        ESExtract:
+            DetailPrint "Extracting Elasticsearch..."
+
+            # Remove old installation if exists
+            RMDir /r "$R9\elasticsearch-${ELASTICSEARCH_VERSION}"
+
+            # Extract using PowerShell
+            nsExec::ExecToLog 'powershell -Command "& {Expand-Archive -Path \"$R9\${ELASTICSEARCH_ARCHIVE}\" -DestinationPath \"$R9\" -Force}"'
+            Pop $0
+            ${If} $0 != 0
+                DetailPrint "Warning: Elasticsearch extraction failed with code $0"
+                Goto ESDone
+            ${EndIf}
+
+            DetailPrint "Extraction complete"
+
+            DetailPrint "Moving Elasticsearch directory to $R9\elasticsearch-${ELASTICSEARCH_VERSION}..."
+
+            Rename "$R9\${ELASTICSEARCH_ARCHIVE_DIR}" "$R9\elasticsearch-${ELASTICSEARCH_VERSION}"
+            delete "$R9\${ELASTICSEARCH_ARCHIVE}"
+            RMDir /r "$R9\${ELASTICSEARCH_ARCHIVE_DIR}"
+
+            # Create symbolic links
+            nsExec::Exec 'cmd /c mklink /d "$R9\current" "$R9\elasticsearch-${ELASTICSEARCH_VERSION}"'
+            DetailPrint 'Link created from "$R9\elasticsearch-${ELASTICSEARCH_VERSION}" to "$R9\current"'
+
+            DetailPrint "Elasticsearch ${ELASTICSEARCH_VERSION} installed successfully at $R9"
+            Goto ESComplete
+
+    ESAlreadyInstalled:
+        DetailPrint "Elasticsearch ${ELASTICSEARCH_VERSION} already installed at $R9"
+        DetailPrint "Skipping download and extraction"
+        Goto ESComplete
+
+    ESComplete:
+        DetailPrint "Installation complete"
+        DetailPrint "Note: Configuration will be handled by Datashare at runtime"
+
+    ESDone:
 FunctionEnd
 
 Function un.installTesseractOCR64
@@ -223,6 +295,7 @@ Section "install"
   ${If} ${RunningX64}
     Call InstallOpenJre64
     Call InstallTesseractOCR64
+    Call InstallElasticsearch
 
   ${Else}
     MessageBox MB_OK "Datashare can only be installed on a 64 bits machine"
@@ -236,14 +309,29 @@ SectionEnd
 section "uninstall"
   delete "$SMPROGRAMS\${COMPANYNAME}\${APPNAME}.lnk"
   rmDir "$SMPROGRAMS\${COMPANYNAME}" # only if empty
-  rmDir /r $INSTDIR # recursive
+
+  # delete files of installation directory (except folders)
+  FindFirst $0 $1 "$INSTDIR\*.*"
+  loop:
+    IfErrors done
+    IfFileExists "$INSTDIR\$1\*" skip_file
+      Delete "$INSTDIR\$1"
+    skip_file:
+    FindNext $0 $1
+    Goto loop
+  done:
+  FindClose $0
+  rmDir "$INSTDIR" # only if empty
 
   # data
-  IfSilent +9
+  IfSilent +12
     rmDir /r "$APPDATA\Datashare\dist"
     rmDir /r "$APPDATA\Datashare\index"
     rmDir /r "$APPDATA\Datashare\plugins"
     rmDir /r "$APPDATA\Datashare\extensions"
+
+    MessageBox MB_YESNO|MB_ICONQUESTION "Do you want to remove Elasticsearch installation ?" IDNO +2
+      rmDir /r "$APPDATA\Datashare\elasticsearch"
 
     MessageBox MB_YESNO|MB_ICONQUESTION "Do you want to remove Datashare data directory ?" IDNO +3
       rmDir /r "$APPDATA\Datashare\data"
