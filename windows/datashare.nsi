@@ -240,6 +240,10 @@ Function InstallElasticsearch
             delete "$R9\${ELASTICSEARCH_ARCHIVE}"
             RMDir /r "$R9\${ELASTICSEARCH_ARCHIVE_DIR}"
 
+            # Create symbolic links
+            nsExec::Exec 'cmd /c mklink /d "$R9\current" "$R9\elasticsearch-${ELASTICSEARCH_VERSION}"'
+            DetailPrint 'Link created from "$R9\elasticsearch-${ELASTICSEARCH_VERSION}" to "$R9\current"'
+
             DetailPrint "Elasticsearch ${ELASTICSEARCH_VERSION} installed successfully at $R9"
             Goto ESComplete
 
