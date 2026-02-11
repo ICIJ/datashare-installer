@@ -63,7 +63,7 @@ function start_datashare_with_defaults {
       --busType MEMORY
       --dataSourceUrl "$datashare_data_source_url"
       --settings "$datashare_settings_path"
-      --mode EMBEDDED
+      --mode LOCAL
       --browserOpenLink true
       --elasticsearchPath "$datashare_elasticsearch_path"
       --elasticsearchDataPath "$datashare_index_path"

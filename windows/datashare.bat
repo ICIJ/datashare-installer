@@ -25,7 +25,7 @@ FOR /F "tokens=*" %%i IN ('where -f java ^| findstr -R "[jdk|jre]-" ^| findstr -
   --busType MEMORY ^
   --dataSourceUrl jdbc:sqlite:file:"%CURRENT_DIR%"\dist\datashare.db ^
   --settings "%CURRENT_DIR%"\dist\datashare.conf ^
-  --mode EMBEDDED ^
+  --mode LOCAL ^
   --browserOpenLink true ^
   --elasticsearchPath "%CURRENT_DIR%"\elasticsearch ^
   --elasticsearchDataPath "%CURRENT_DIR%"\index ^
