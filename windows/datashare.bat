@@ -30,6 +30,7 @@ set DS_JAVA_OPTS=%DS_JAVA_OPTS% --add-opens java.base/java.lang=ALL-UNNAMED --ad
   --mode EMBEDDED ^
   --browserOpenLink true ^
   --elasticsearchPath "%CURRENT_DIR%"\elasticsearch ^
+  --elasticsearch.yaml "%CURRENT_DIR%"\elasticsearch.yml ^
   --elasticsearchDataPath "%CURRENT_DIR%"\index ^
   --pluginsDir "%CURRENT_DIR%"\plugins ^
   --extensionsDir "%CURRENT_DIR%"\extensions
