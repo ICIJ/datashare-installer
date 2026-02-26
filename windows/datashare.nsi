@@ -2,6 +2,8 @@
 !include x64.nsh
 !include GetWindowsVersion.nsh
 !include "MUI2.nsh"
+!include StrFunc.nsh
+${StrStr}
 !define MUI_ICON "${NSISDIR}\Contrib\Graphics\Icons\modern-install-colorful.ico"
 !define MUI_WELCOMEFINISHPAGE_BITMAP "welcome.bmp"
 !insertmacro MUI_PAGE_WELCOME
@@ -30,6 +32,7 @@ Icon "datashare.ico"
 !define ELASTICSEARCH_ARCHIVE "elasticsearch-${ELASTICSEARCH_VERSION}-windows-${ELASTICSEARCH_ARCH}.zip"
 !define ELASTICSEARCH_ARCHIVE_DIR "elasticsearch-${ELASTICSEARCH_VERSION}-windows-${ELASTICSEARCH_ARCH}"
 !define ELASTICSEARCH_DOWNLOAD_URL "https://artifacts.elastic.co/downloads/elasticsearch/${ELASTICSEARCH_ARCHIVE}"
+!define ELASTICSEARCH_MODULES "aggregations|analysis-common|apm|constant-keyword|ingest-attachment|ingest-common|ingest-geoip|ingest-user-agent|lang-painless|parent-join|reindex|rest-root|transport-netty4|x-pack-core|x-pack-geoip-enterprise-downloader|x-pack-security"
 
 
 OutFile "dist/datashare-${VERSION}.exe"
@@ -61,6 +64,33 @@ FunctionEnd
 !macroend
 !insertmacro GetParent ""
 !insertmacro GetParent "un."
+
+Function IsModuleInList
+  # Stack: module_name, list_string (pipe-separated)
+  Exch $R0  # list_string
+  Exch
+  Exch $R1  # module_name
+  Push $R2
+  Push $R3
+
+  StrCpy $R2 "|$R0|"  # Add delimiters
+  StrCpy $R3 "|$R1|"  # Add delimiters to search
+
+  ${StrStr} $R2 $R2 $R3
+  StrCmp $R2 "" not_found found
+
+  found:
+    StrCpy $R0 "1"
+    Goto done
+  not_found:
+    StrCpy $R0 "0"
+
+  done:
+  Pop $R3
+  Pop $R2
+  Pop $R1
+  Exch $R0
+FunctionEnd
 
 Function .onInit
   System::Call 'kernel32::CreateMutex(p 0, i 0, t "dsMutex") p .r1 ?e'
@@ -239,6 +269,45 @@ Function InstallElasticsearch
             Rename "$R9\${ELASTICSEARCH_ARCHIVE_DIR}" "$R9\elasticsearch-${ELASTICSEARCH_VERSION}"
             delete "$R9\${ELASTICSEARCH_ARCHIVE}"
             RMDir /r "$R9\${ELASTICSEARCH_ARCHIVE_DIR}"
+
+            DetailPrint "Cleaning unnecessary modules..."
+            DetailPrint "Module directory: $R9\elasticsearch-${ELASTICSEARCH_VERSION}\modules"
+            # Keep only required modules defined in ELASTICSEARCH_MODULES
+            ClearErrors
+            FindFirst $0 $1 "$R9\elasticsearch-${ELASTICSEARCH_VERSION}\modules\*.*"
+            module_loop:
+                DetailPrint "FindFirst/Next result - handle: $0 | item: $1"
+                IfErrors module_done
+                DetailPrint "Found item: $1"
+                # Skip . and ..
+                StrCmp $1 "." module_next
+                StrCmp $1 ".." module_next
+                # Check if it's a directory
+                DetailPrint "Testing if directory: $R9\elasticsearch-${ELASTICSEARCH_VERSION}\modules\$1"
+                IfFileExists "$R9\elasticsearch-${ELASTICSEARCH_VERSION}\modules\$1\*.*" 0 module_next
+                # Check if module is in the keep list
+                DetailPrint "Checking module: $1"
+                Push $1
+                Push "${ELASTICSEARCH_MODULES}"
+                Call IsModuleInList
+                Pop $2
+                DetailPrint "IsModuleInList returned: $2 for module: $1"
+                ${If} $2 == "0"
+                    # Module not in the keep list, delete it
+                    DetailPrint "Removing module: $1"
+                    nsExec::ExecToLog 'cmd /c rmdir /s /q "$R9\elasticsearch-${ELASTICSEARCH_VERSION}\modules\$1"'
+                    Pop $3
+                    DetailPrint "Delete returned: $3"
+                    ${If} $3 != 0
+                        DetailPrint "Warning: Failed to remove module $1 (error code: $3)"
+                    ${EndIf}
+                ${EndIf}
+                module_next:
+                FindNext $0 $1
+                Goto module_loop
+            module_done:
+            FindClose $0
+            DetailPrint "Module cleanup complete"
 
             # Create symbolic links
             nsExec::Exec 'cmd /c mklink /d "$R9\current" "$R9\elasticsearch-${ELASTICSEARCH_VERSION}"'
