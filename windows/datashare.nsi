@@ -134,6 +134,7 @@ Function InstallDatashare
   createDirectory "$APPDATA\Datashare\data"
   createDirectory "$APPDATA\Datashare\plugins"
   createDirectory "$APPDATA\Datashare\extensions"
+  createDirectory "$APPDATA\Datashare\downloads"
 
   # Create symbolic links
   rmDir "$DESKTOP\Datashare Data"

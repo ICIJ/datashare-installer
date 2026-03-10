@@ -15,6 +15,7 @@ datashare_elasticsearch_settings="${DATASHARE_ELASTICSEARCH_SETTINGS:-"$datashar
 datashare_index_path="${DATASHARE_INDEX_PATH:-"$datashare_home_path/index"}"
 datashare_plugins_path="${DATASHARE_PLUGINS_PATH:-"$datashare_home_path/plugins"}"
 datashare_extensions_path="${DATASHARE_EXTENSIONS_PATH:-"$datashare_home_path/extensions"}"
+datashare_downloads_path="${DATASHARE_DOWNLOADS_PATH:-"$datashare_home_path/downloads"}"
 datashare_jna_tmpdir="${DATASHARE_JNA_TMPDIR:-"${HOME}/Library/Caches/JNA/temp/"}"
 # Array of preferred Java versions in order
 preferred_java_versions=("21")
@@ -38,6 +39,7 @@ function start_datashare {
       "${datashare_index_path}" \
       "${datashare_plugins_path}" \
       "${datashare_extensions_path}" \
+      "${datashare_downloads_path}" \
       "${datashare_jna_tmpdir}"
 
     if [[ -z "${DS_JAVA_OPTS}" ]]; then
@@ -72,6 +74,7 @@ function start_datashare_with_defaults {
       --elasticsearchDataPath "${datashare_index_path}"
       --pluginsDir "${datashare_plugins_path}"
       --extensionsDir "${datashare_extensions_path}"
+      --batchDownloadDir "${datashare_downloads_path}"
     )
     
     start_datashare "${default_params[@]}"
