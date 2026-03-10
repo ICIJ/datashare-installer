@@ -68,7 +68,7 @@ function start_datashare_with_defaults {
       --mode EMBEDDED
       --browserOpenLink true
       --elasticsearchPath "${datashare_elasticsearch_path}"
-      --elasticsearch.yaml "${datashare_elasticsearch_settings}"
+      --elasticsearchSettings "${datashare_elasticsearch_settings}"
       --elasticsearchDataPath "${datashare_index_path}"
       --pluginsDir "${datashare_plugins_path}"
       --extensionsDir "${datashare_extensions_path}"
