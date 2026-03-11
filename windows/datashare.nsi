@@ -234,42 +234,39 @@ Function InstallElasticsearch
 
     ESNotInstalled:
         DetailPrint "Downloading Elasticsearch ${ELASTICSEARCH_VERSION}..."
+        # Download Elasticsearch archive
+        DetailPrint "Downloading Elasticsearch archive from: ${ELASTICSEARCH_DOWNLOAD_URL}"
+        # $PLUGINSDIR is a temporary directory which is deleted when the installer exits
+        inetc::get "${ELASTICSEARCH_DOWNLOAD_URL}" "$PLUGINSDIR\${ELASTICSEARCH_ARCHIVE}" /end
+        Pop $0
+        DetailPrint "Download Status: $0"
+        ${If} $0 != "OK"
+            DetailPrint "Warning: Elasticsearch download failed: $0"
+            Goto ESDone
+        ${EndIf}
+        DetailPrint "Download complete"
+
+        DetailPrint "Extracting Elasticsearch..."
+
+        # Remove old installation if exists
+        RMDir /r "$R9\elasticsearch-${ELASTICSEARCH_VERSION}"
+
         CreateDirectory "$R9"
 
-        # Check if archive already downloaded
-        IfFileExists "$R9\${ELASTICSEARCH_ARCHIVE}" ESExtract ESDownload
+        # Extract using PowerShell
+        nsExec::ExecToLog 'powershell -Command "& {Expand-Archive -Path \"$PLUGINSDIR\${ELASTICSEARCH_ARCHIVE}\" -DestinationPath \"$R9\" -Force}"'
+        Pop $0
+        ${If} $0 != 0
+            DetailPrint "Warning: Elasticsearch extraction failed with code $0"
+            Goto ESDone
+        ${EndIf}
 
-        ESDownload:
-            inetc::get "${ELASTICSEARCH_DOWNLOAD_URL}" "$R9\${ELASTICSEARCH_ARCHIVE}" /end
-            Pop $0
-            DetailPrint "Download Status: $0"
-            ${If} $0 != "OK"
-                DetailPrint "Warning: Elasticsearch download failed: $0"
-                Goto ESDone
-            ${EndIf}
-            DetailPrint "Download complete"
+        DetailPrint "Extraction complete"
 
-        ESExtract:
-            DetailPrint "Extracting Elasticsearch..."
+        DetailPrint "Moving Elasticsearch directory to $R9\elasticsearch-${ELASTICSEARCH_VERSION}..."
 
-            # Remove old installation if exists
-            RMDir /r "$R9\elasticsearch-${ELASTICSEARCH_VERSION}"
-
-            # Extract using PowerShell
-            nsExec::ExecToLog 'powershell -Command "& {Expand-Archive -Path \"$R9\${ELASTICSEARCH_ARCHIVE}\" -DestinationPath \"$R9\" -Force}"'
-            Pop $0
-            ${If} $0 != 0
-                DetailPrint "Warning: Elasticsearch extraction failed with code $0"
-                Goto ESDone
-            ${EndIf}
-
-            DetailPrint "Extraction complete"
-
-            DetailPrint "Moving Elasticsearch directory to $R9\elasticsearch-${ELASTICSEARCH_VERSION}..."
-
-            Rename "$R9\${ELASTICSEARCH_ARCHIVE_DIR}" "$R9\elasticsearch-${ELASTICSEARCH_VERSION}"
-            delete "$R9\${ELASTICSEARCH_ARCHIVE}"
-            RMDir /r "$R9\${ELASTICSEARCH_ARCHIVE_DIR}"
+        Rename "$R9\${ELASTICSEARCH_ARCHIVE_DIR}" "$R9\elasticsearch-${ELASTICSEARCH_VERSION}"
+        RMDir /r "$R9\${ELASTICSEARCH_ARCHIVE_DIR}"
 
             DetailPrint "Cleaning unnecessary modules..."
             DetailPrint "Module directory: $R9\elasticsearch-${ELASTICSEARCH_VERSION}\modules"
@@ -399,6 +396,7 @@ section "uninstall"
     rmDir /r "$APPDATA\Datashare\index"
     rmDir /r "$APPDATA\Datashare\plugins"
     rmDir /r "$APPDATA\Datashare\extensions"
+    rmDir /r "$APPDATA\Datashare\downloads"
 
     MessageBox MB_YESNO|MB_ICONQUESTION "Do you want to remove Elasticsearch installation ?" IDNO +2
       rmDir /r "$APPDATA\Datashare\elasticsearch"
