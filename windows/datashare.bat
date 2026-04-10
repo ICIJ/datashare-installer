@@ -65,6 +65,7 @@ set DS_JAVA_OPTS=%DS_JAVA_OPTS% --add-opens java.base/java.lang=ALL-UNNAMED --ad
 
 %java_exe% -cp "dist;%JAR_FILE%" ^
   %DS_JAVA_OPTS% org.icij.datashare.Main ^
+  app start ^
   --dataDir "%CURRENT_DIR%"\data ^
   --batchQueueType MEMORY ^
   --queueType MEMORY ^

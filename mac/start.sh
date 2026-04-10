@@ -62,6 +62,7 @@ function start_datashare {
 
 function start_datashare_with_defaults {
     local default_params=(
+      app start
       --dataDir "$datashare_data_path"
       --queueType MEMORY
       --busType MEMORY
