@@ -1,7 +1,8 @@
 DIST := dist
 RESOURCES := resources
-VERSION := 20.3.0 # This is an arbitrary default version number for the installer package
-APPNAME := Datashare
+export VERSION := 20.3.0
+export APPNAME := Datashare
+export BUNDLE_ID := org.icij.datashare
 FLAT_PACKAGE_INSTALLER_NAME := datashare-${VERSION}.pkg
 
 PHONY: all clean

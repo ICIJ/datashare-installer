@@ -10,6 +10,6 @@ if [ -n "$BASE_DIR" ]; then
   SIZE=$(du -s "$BASE_DIR"| cut -f1)
 fi
 
-TEMPLATE="$(cat $SOURCE_TPL)"
-TEMPLATE=$(sed 's/\([^\\]\)"/\1\\"/g; s/^"/\\"/g' <<< "$TEMPLATE")
-eval "echo \"${TEMPLATE}\"" > $DEST_FILE
+export NB_FILES SIZE
+
+envsubst < "$SOURCE_TPL" > "$DEST_FILE"
