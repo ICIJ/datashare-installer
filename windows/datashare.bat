@@ -73,7 +73,7 @@ set DS_JAVA_OPTS=%DS_JAVA_OPTS% --add-opens java.base/java.lang=ALL-UNNAMED --ad
   --dataSourceUrl jdbc:sqlite:file:"%CURRENT_DIR%"\dist\datashare.db ^
   --settings "%CURRENT_DIR%"\dist\datashare.conf ^
   --mode EMBEDDED ^
-  --browserOpenLink true ^
+  --browserOpenLink ^
   --elasticsearchPath "%CURRENT_DIR%"\elasticsearch ^
   --elasticsearchSettings "%CURRENT_DIR%"\elasticsearch.yml ^
   --elasticsearchDataPath "%CURRENT_DIR%"\index ^

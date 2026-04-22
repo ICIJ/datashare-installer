@@ -69,7 +69,7 @@ function start_datashare_with_defaults {
       --dataSourceUrl "$datashare_data_source_url"
       --settings "$datashare_settings_path"
       --mode EMBEDDED
-      --browserOpenLink true
+      --browserOpenLink
       --elasticsearchPath "${datashare_elasticsearch_path}"
       --elasticsearchSettings "${datashare_elasticsearch_settings}"
       --elasticsearchDataPath "${datashare_index_path}"
