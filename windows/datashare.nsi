@@ -20,7 +20,7 @@ Icon "datashare.ico"
 
 !define JAVA_REG_KEY "SOFTWARE\AdoptOpenJDK\JRE"
 !define DATASHARE_UNINSTALL_KEY "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}"
-!define TESSERACT_UNINSTALL_KEY "SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Tesseract-OCR"
+!define TESSERACT_UNINSTALL_KEY "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Tesseract-OCR"
 !define TESSERACT_OCR_64_DOWNLOAD_URL "https://github.com/tesseract-ocr/tesseract/releases/download/5.5.0/tesseract-ocr-w64-setup-5.5.0.20241111.exe"
 !define TESSERACT_OCR_64_PATH "$TEMP\tesseract-ocr-setup-5.exe"
 !define OPEN_JRE_64_DOWNLOAD_URL "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.5%2B11/OpenJDK21U-jre_x64_windows_hotspot_21.0.5_11.msi"
@@ -187,6 +187,7 @@ Function InstallOpenJre64
 FunctionEnd
 
 Function InstallTesseractOCR64
+    SetRegView 64  # Force 64-bit registry view - https://nsis.sourceforge.io/Reference/SetRegView
     ReadRegStr $0 HKLM "${TESSERACT_UNINSTALL_KEY}" "UninstallString"
     DetailPrint "Tesseract uninstall registry read: $0"
     StrCmp $0 "" TessMissing TessFound
@@ -203,7 +204,9 @@ Function InstallTesseractOCR64
         ExecWait '"${TESSERACT_OCR_64_PATH}"'
 
         # Check and add to PATH
+        SetRegView 64
         ReadRegStr $1 HKLM "${TESSERACT_UNINSTALL_KEY}" "UninstallString"
+        DetailPrint "Tesseract UninstallString read: $1"
         Push $1
         Call GetParent
         Pop $R0
@@ -327,6 +330,7 @@ Function InstallElasticsearch
 FunctionEnd
 
 Function un.installTesseractOCR64
+    SetRegView 64
     ReadRegStr $0 HKLM "${TESSERACT_UNINSTALL_KEY}" "QuietUninstallString"
     StrCpy $1 $0
     DetailPrint "Tesseract uninstall registry read: $0"
@@ -337,6 +341,7 @@ Function un.installTesseractOCR64
         DetailPrint "Tesseract Uninstalled"
 
         # Check and delete to PATH
+        SetRegView 64
         ReadRegStr $0 HKLM "${TESSERACT_UNINSTALL_KEY}" "UninstallString"
         Push $0
         Call un.GetParent
