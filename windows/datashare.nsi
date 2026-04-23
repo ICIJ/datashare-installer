@@ -3,6 +3,7 @@
 !include GetWindowsVersion.nsh
 !include "MUI2.nsh"
 !include StrFunc.nsh
+!include "WordFunc.nsh"
 ${StrStr}
 !define MUI_ICON "${NSISDIR}\Contrib\Graphics\Icons\modern-install-colorful.ico"
 !define MUI_WELCOMEFINISHPAGE_BITMAP "welcome.bmp"
@@ -20,8 +21,10 @@ Icon "datashare.ico"
 
 !define JAVA_REG_KEY "SOFTWARE\AdoptOpenJDK\JRE"
 !define DATASHARE_UNINSTALL_KEY "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}"
-!define TESSERACT_UNINSTALL_KEY "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Tesseract-OCR"
-!define TESSERACT_OCR_64_DOWNLOAD_URL "https://github.com/tesseract-ocr/tesseract/releases/download/5.5.0/tesseract-ocr-w64-setup-5.5.0.20241111.exe"
+!define TESSERACT_VERSION "5.5.0"
+!define TESSERACT_UNINSTALL_KEY_64 "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Tesseract-OCR"
+!define TESSERACT_UNINSTALL_KEY_32 "SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Tesseract-OCR"
+!define TESSERACT_OCR_64_DOWNLOAD_URL "https://github.com/tesseract-ocr/tesseract/releases/download/${TESSERACT_VERSION}/tesseract-ocr-w64-setup-${TESSERACT_VERSION}.20241111.exe"
 !define TESSERACT_OCR_64_PATH "$TEMP\tesseract-ocr-setup-5.exe"
 !define OPEN_JRE_64_DOWNLOAD_URL "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.5%2B11/OpenJDK21U-jre_x64_windows_hotspot_21.0.5_11.msi"
 !define OPEN_JRE_64_PATH "$TEMP\openjdk-jre-x64-windows-hotspot-21.msi"
@@ -188,9 +191,60 @@ FunctionEnd
 
 Function InstallTesseractOCR64
     SetRegView 64  # Force 64-bit registry view - https://nsis.sourceforge.io/Reference/SetRegView
-    ReadRegStr $0 HKLM "${TESSERACT_UNINSTALL_KEY}" "UninstallString"
-    DetailPrint "Tesseract uninstall registry read: $0"
-    StrCmp $0 "" TessMissing TessFound
+    ReadRegStr $0 HKLM "${TESSERACT_UNINSTALL_KEY_64}" "UninstallString"
+    DetailPrint "Tesseract 64-bit uninstall registry read: $0"
+    StrCmp $0 "" Check32Bit Tess64Found
+
+    Tess64Found:
+        # Check version of 64-bit installation
+        ReadRegStr $1 HKLM "${TESSERACT_UNINSTALL_KEY_64}" "DisplayVersion"
+        DetailPrint "Tesseract 64-bit version found: $1"
+
+        # Remove 'v' prefix if present
+        StrCpy $3 $1 1
+        ${If} $3 == "v"
+            StrCpy $1 $1 "" 1
+        ${EndIf}
+
+        # Compare versions
+        ${VersionCompare} $1 "${TESSERACT_VERSION}" $2
+        DetailPrint "Version comparison result: $2 (0=equal, 1=installed>required, 2=installed<required)"
+
+        ${If} $2 == 2
+            # Installed version is less than required version, uninstall it
+            DetailPrint "Tesseract 64-bit version $1 is older than ${TESSERACT_VERSION}, uninstalling..."
+            ReadRegStr $4 HKLM "${TESSERACT_UNINSTALL_KEY_64}" "QuietUninstallString"
+            ${If} $4 != ""
+                DetailPrint "Running quiet uninstall: $4"
+                ExecWait $4
+                DetailPrint "Old Tesseract 64-bit version uninstalled"
+            ${EndIf}
+            Goto TessMissing
+        ${Else}
+            DetailPrint "Tesseract 64-bit version $1 is already installed and up to date"
+            Goto TessDone
+        ${EndIf}
+
+    Check32Bit:
+        # Check for 32-bit installation (Tesseract 4)
+        SetRegView 32
+        ReadRegStr $0 HKLM "${TESSERACT_UNINSTALL_KEY_32}" "UninstallString"
+        DetailPrint "Tesseract 32-bit uninstall registry read: $0"
+        StrCmp $0 "" TessMissing Tess32Found
+
+    Tess32Found:
+        # Found 32-bit version, uninstall it
+        ReadRegStr $1 HKLM "${TESSERACT_UNINSTALL_KEY_32}" "DisplayVersion"
+        DetailPrint "Tesseract 32-bit version $1 found, uninstalling..."
+        ReadRegStr $4 HKLM "${TESSERACT_UNINSTALL_KEY_32}" "QuietUninstallString"
+        ${If} $4 != ""
+            DetailPrint "Running quiet uninstall: $4"
+            ExecWait $4
+            DetailPrint "Old Tesseract 32-bit version uninstalled"
+        ${EndIf}
+        SetRegView 64  # Reset to 64-bit view
+        Goto TessMissing
+
     TessMissing:
         DetailPrint "Downloading Tesseract from: ${TESSERACT_OCR_64_DOWNLOAD_URL}"
         inetc::get "${TESSERACT_OCR_64_DOWNLOAD_URL}" "${TESSERACT_OCR_64_PATH}" /end
@@ -205,7 +259,7 @@ Function InstallTesseractOCR64
 
         # Check and add to PATH
         SetRegView 64
-        ReadRegStr $1 HKLM "${TESSERACT_UNINSTALL_KEY}" "UninstallString"
+        ReadRegStr $1 HKLM "${TESSERACT_UNINSTALL_KEY_64}" "UninstallString"
         DetailPrint "Tesseract UninstallString read: $1"
         Push $1
         Call GetParent
@@ -220,9 +274,6 @@ Function InstallTesseractOCR64
         ${Else}
            DetailPrint "Tesseract already in PATH"
         ${EndIf}
-        Goto TessDone
-    TessFound:
-        DetailPrint "Tesseract already installed"
     TessDone:
 FunctionEnd
 
@@ -331,7 +382,7 @@ FunctionEnd
 
 Function un.installTesseractOCR64
     SetRegView 64
-    ReadRegStr $0 HKLM "${TESSERACT_UNINSTALL_KEY}" "QuietUninstallString"
+    ReadRegStr $0 HKLM "${TESSERACT_UNINSTALL_KEY_64}" "QuietUninstallString"
     StrCpy $1 $0
     DetailPrint "Tesseract uninstall registry read: $0"
     StrCmp $0 "" TessUniMissing TessUniFound
@@ -342,7 +393,7 @@ Function un.installTesseractOCR64
 
         # Check and delete to PATH
         SetRegView 64
-        ReadRegStr $0 HKLM "${TESSERACT_UNINSTALL_KEY}" "UninstallString"
+        ReadRegStr $0 HKLM "${TESSERACT_UNINSTALL_KEY_64}" "UninstallString"
         Push $0
         Call un.GetParent
         Pop $R0
