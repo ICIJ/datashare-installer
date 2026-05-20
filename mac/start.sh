@@ -6,6 +6,7 @@ pid=$(cat $pid_file 2>/dev/null)
 # Collect Datashare conviguration env
 datashare_version=__version__
 datashare_data_path="${DATASHARE_DATA_PATH:-"${HOME}/Datashare"}"
+datashare_default_user="${DATASHARE_DEFAULT_USER:-${USER:-local}}"
 datashare_home_path="${DATASHARE_HOME_PATH:-"${HOME}/Library/Datashare"}"
 datashare_dist_path="${DATASHARE_DIST_PATH:-"$datashare_home_path/dist"}"
 datashare_settings_path="${DATASHARE_SETTINGS_PATH:-"$datashare_dist_path/datashare.conf"}"
@@ -77,8 +78,28 @@ function start_datashare_with_defaults {
       --extensionsDir "${datashare_extensions_path}"
       --batchDownloadDir "${datashare_downloads_path}"
     )
-    
+
     start_datashare "${default_params[@]}"
+}
+
+# Inject the same environment-derived paths the legacy path uses so CLI
+# invocations talk to the same DB / data dir / config as the running app.
+# --mode is omitted because picocli subcommands force mode=CLI internally.
+# User-supplied flags still override these (picocli takes the last value).
+function start_datashare_with_subcommand_defaults {
+    local default_params=(
+      --defaultUserName "$datashare_default_user"
+      --dataDir "$datashare_data_path"
+      --dataSourceUrl "$datashare_data_source_url"
+      --settings "$datashare_settings_path"
+      --pluginsDir "${datashare_plugins_path}"
+      --extensionsDir "${datashare_extensions_path}"
+      --elasticsearchPath "${datashare_elasticsearch_path}"
+      --elasticsearchSettings "${datashare_elasticsearch_settings}"
+      --elasticsearchDataPath "${datashare_index_path}"
+    )
+
+    start_datashare "${default_params[@]}" "$@"
 }
 
 # Loop through the preferred versions
@@ -109,9 +130,26 @@ if [[ $# -eq 0 ]]; then
         # If the PID file does not exist, store its PID in the PID file
         save_pid
         # Finally, start Datashare
-        start_datashare_with_defaults 
+        start_datashare_with_defaults
     fi
 else
-    start_datashare "$@"
+    # Detect whether the user is using the new subcommand style. Scan every arg
+    # so that parent-command options can appear before the subcommand name,
+    # matching Main.isLegacyInvocation on the Java side.
+    is_subcommand=false
+    for _arg in "$@"; do
+        case "$_arg" in
+            app|worker|stage|plugin|extension|api-key|user|project|help)
+                is_subcommand=true
+                break
+                ;;
+        esac
+    done
+
+    if [[ "$is_subcommand" == true ]]; then
+        start_datashare_with_subcommand_defaults "$@"
+    else
+        start_datashare "$@"
+    fi
 fi
 

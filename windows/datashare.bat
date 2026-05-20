@@ -63,21 +63,56 @@ if "%java_exe%" == "" (
 :: Set JVM options (include user-defined DS_JAVA_OPTS if they exist)
 set DS_JAVA_OPTS=%DS_JAVA_OPTS% --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.net=ALL-UNNAMED -DPROD_MODE=true -Dfile.encoding=UTF-8 -Djava.system.class.loader=org.icij.datashare.DynamicClassLoader
 
-%java_exe% -cp "dist;%JAR_FILE%" ^
-  %DS_JAVA_OPTS% org.icij.datashare.Main ^
-  app start ^
-  --dataDir "%CURRENT_DIR%"\data ^
-  --batchQueueType MEMORY ^
-  --queueType MEMORY ^
-  --busType MEMORY ^
-  --dataSourceUrl jdbc:sqlite:file:"%CURRENT_DIR%"\dist\datashare.db ^
-  --settings "%CURRENT_DIR%"\dist\datashare.conf ^
-  --mode EMBEDDED ^
-  --browserOpenLink ^
-  --elasticsearchPath "%CURRENT_DIR%"\elasticsearch ^
-  --elasticsearchSettings "%CURRENT_DIR%"\elasticsearch.yml ^
-  --elasticsearchDataPath "%CURRENT_DIR%"\index ^
-  --pluginsDir "%CURRENT_DIR%"\plugins ^
-  --extensionsDir "%CURRENT_DIR%"\extensions ^
-  --batchDownloadDir "%CURRENT_DIR%"\downloads
-pause
+:: Detect whether the user is using the new subcommand style. Scan every arg
+:: so parent-command options can appear before the subcommand name, matching
+:: Main.isLegacyInvocation on the Java side.
+set "IS_SUBCOMMAND="
+for %%a in (%*) do (
+    if /i "%%~a"=="app"       set "IS_SUBCOMMAND=1"
+    if /i "%%~a"=="worker"    set "IS_SUBCOMMAND=1"
+    if /i "%%~a"=="stage"     set "IS_SUBCOMMAND=1"
+    if /i "%%~a"=="plugin"    set "IS_SUBCOMMAND=1"
+    if /i "%%~a"=="extension" set "IS_SUBCOMMAND=1"
+    if /i "%%~a"=="api-key"   set "IS_SUBCOMMAND=1"
+    if /i "%%~a"=="user"      set "IS_SUBCOMMAND=1"
+    if /i "%%~a"=="project"   set "IS_SUBCOMMAND=1"
+    if /i "%%~a"=="help"      set "IS_SUBCOMMAND=1"
+)
+
+if defined IS_SUBCOMMAND (
+    :: Subcommand style: inject path defaults so CLI invocations talk to the
+    :: same DB / data dir / config as the running app. --mode is omitted
+    :: because picocli subcommands force mode=CLI internally. User-supplied
+    :: flags still override these (picocli takes the last value).
+    %java_exe% -cp "dist;%JAR_FILE%" ^
+      %DS_JAVA_OPTS% org.icij.datashare.Main ^
+      --defaultUserName "%USERNAME%" ^
+      --dataDir "%CURRENT_DIR%"\data ^
+      --dataSourceUrl jdbc:sqlite:file:"%CURRENT_DIR%"\dist\datashare.db ^
+      --settings "%CURRENT_DIR%"\dist\datashare.conf ^
+      --pluginsDir "%CURRENT_DIR%"\plugins ^
+      --extensionsDir "%CURRENT_DIR%"\extensions ^
+      --elasticsearchPath "%CURRENT_DIR%"\elasticsearch ^
+      --elasticsearchSettings "%CURRENT_DIR%"\elasticsearch.yml ^
+      --elasticsearchDataPath "%CURRENT_DIR%"\index ^
+      %*
+) else (
+    %java_exe% -cp "dist;%JAR_FILE%" ^
+      %DS_JAVA_OPTS% org.icij.datashare.Main ^
+      app start ^
+      --dataDir "%CURRENT_DIR%"\data ^
+      --batchQueueType MEMORY ^
+      --queueType MEMORY ^
+      --busType MEMORY ^
+      --dataSourceUrl jdbc:sqlite:file:"%CURRENT_DIR%"\dist\datashare.db ^
+      --settings "%CURRENT_DIR%"\dist\datashare.conf ^
+      --mode EMBEDDED ^
+      --browserOpenLink ^
+      --elasticsearchPath "%CURRENT_DIR%"\elasticsearch ^
+      --elasticsearchSettings "%CURRENT_DIR%"\elasticsearch.yml ^
+      --elasticsearchDataPath "%CURRENT_DIR%"\index ^
+      --pluginsDir "%CURRENT_DIR%"\plugins ^
+      --extensionsDir "%CURRENT_DIR%"\extensions ^
+      --batchDownloadDir "%CURRENT_DIR%"\downloads
+    pause
+)
