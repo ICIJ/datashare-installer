@@ -1,5 +1,12 @@
 @echo off
 
+:: Scope all variables to this launcher. Without setlocal, every `set` below
+:: (CURRENT_DIR, DS_JAVA_OPTS, OMP_*, ...) would leak into the caller's cmd
+:: session when launched from an interactive shell. In particular a leaked
+:: OMP_THREAD_LIMIT=1 would silently throttle unrelated OpenMP programs in that
+:: window. Child processes spawned during this run still inherit the vars.
+setlocal
+
 :: Get the directory of the current file
 set "CURRENT_DIR=%~dp0"
 :: Remove the trailing backslash for consistency in path usage
