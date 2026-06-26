@@ -67,6 +67,12 @@ apps:
       - network-bind
       - mount-observe
     environment:
+      # OMP_THREAD_LIMIT / OMP_WAIT_POLICY are intentionally NOT set here. The
+      # `command: datashare` is the bundled deb launcher, which already exports
+      # the overridable defaults (OMP_THREAD_LIMIT=1, OMP_WAIT_POLICY=passive).
+      # snapd's environment: map has no `${VAR-default}` operator, so a value
+      # here would be hardcoded and would clobber a user override; leave it to
+      # the launcher (single source of truth).
       DATASHARE_DATA_DIR: $SNAP_REAL_HOME/Datashare
       DATASHARE_HOME: $SNAP_USER_COMMON
       DATASHARE_JAR: $SNAP/datashare.jar
