@@ -8,3 +8,6 @@ ds_stats.png
 logs
 prime
 *.snap
+# Local planning / agent artifacts (never commit)
+.superpowers/
+docs/superpowers/
