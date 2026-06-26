@@ -1,5 +1,12 @@
 @echo off
 
+:: Scope all variables to this launcher. Without setlocal, every `set` below
+:: (CURRENT_DIR, DS_JAVA_OPTS, OMP_*, ...) would leak into the caller's cmd
+:: session when launched from an interactive shell. In particular a leaked
+:: OMP_THREAD_LIMIT=1 would silently throttle unrelated OpenMP programs in that
+:: window. Child processes spawned during this run still inherit the vars.
+setlocal
+
 :: Get the directory of the current file
 set "CURRENT_DIR=%~dp0"
 :: Remove the trailing backslash for consistency in path usage
@@ -62,6 +69,16 @@ if "%java_exe%" == "" (
 
 :: Set JVM options (include user-defined DS_JAVA_OPTS if they exist)
 set DS_JAVA_OPTS=%DS_JAVA_OPTS% --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.net=ALL-UNNAMED -DPROD_MODE=true -Dfile.encoding=UTF-8 -Djava.system.class.loader=org.icij.datashare.DynamicClassLoader
+
+:: OMP_THREAD_LIMIT caps tesseract/Leptonica OpenMP fan-out to one thread per
+:: OCR (no CPU oversubscription, no OCR-timeout document loss). These are real
+:: environment variables, NOT JVM -D options, so the spawned java -> tesseract
+:: process inherits them. Set process-wide on purpose: also reaches the spaCy
+:: NLP worker. Override by defining the variable before launch, e.g.
+:: set OMP_THREAD_LIMIT=4 (batch cannot express a defined-empty var, so there
+:: is no empty-uncap; that is the footgun being removed).
+if not defined OMP_THREAD_LIMIT set "OMP_THREAD_LIMIT=1"
+if not defined OMP_WAIT_POLICY set "OMP_WAIT_POLICY=passive"
 
 :: Detect whether the user is using the new subcommand style. Scan every arg
 :: so parent-command options can appear before the subcommand name, matching

@@ -50,6 +50,14 @@ function start_datashare {
 
     cd "/Users/${USER}/Library/Datashare" || exit # needed for /dist
 
+    # OMP_THREAD_LIMIT caps tesseract/Leptonica OpenMP fan-out to one thread per
+    # OCR so parallelism x OMP ~= vCPUs (no CPU oversubscription, no OCR-timeout
+    # document loss). Exported process-wide on purpose: it also reaches the spaCy
+    # NLP worker, where one-thread-per-worker is likewise the intended invariant.
+    # Overridable; an explicit empty value uncaps. Mirrors the deb/Docker launchers.
+    export OMP_THREAD_LIMIT=${OMP_THREAD_LIMIT-1}
+    export OMP_WAIT_POLICY=${OMP_WAIT_POLICY-passive}
+
     $java_bin \
         --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.net=ALL-UNNAMED \
         -DPROD_MODE=true \
