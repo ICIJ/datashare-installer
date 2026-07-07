@@ -35,7 +35,7 @@ Icon "datashare.ico"
 !define ELASTICSEARCH_ARCHIVE "elasticsearch-${ELASTICSEARCH_VERSION}-windows-${ELASTICSEARCH_ARCH}.zip"
 !define ELASTICSEARCH_ARCHIVE_DIR "elasticsearch-${ELASTICSEARCH_VERSION}-windows-${ELASTICSEARCH_ARCH}"
 !define ELASTICSEARCH_DOWNLOAD_URL "https://artifacts.elastic.co/downloads/elasticsearch/${ELASTICSEARCH_ARCHIVE}"
-!define ELASTICSEARCH_MODULES "aggregations|analysis-common|apm|constant-keyword|ingest-attachment|ingest-common|ingest-geoip|ingest-user-agent|lang-painless|parent-join|reindex|rest-root|transport-netty4|x-pack-core|x-pack-geoip-enterprise-downloader|x-pack-security"
+!define ELASTICSEARCH_MODULES "aggregations|analysis-common|apm|constant-keyword|ingest-attachment|ingest-common|ingest-geoip|ingest-user-agent|lang-painless|parent-join|reindex|rest-root|transport-netty4|x-pack-core|x-pack-geoip-enterprise-downloader|x-pack-security|x-pack-async-search"
 
 
 OutFile "dist/datashare-${VERSION}.exe"
