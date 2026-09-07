@@ -32,6 +32,10 @@ parts:
       - wget
       - git
       - ca-certificates-java
+      # noble's ca-certificates-java dropped its JRE dependency; without a JRE its
+      # postinst skips /etc/ssl/certs/java/cacerts, leaving the JVM's cacerts an
+      # absolute symlink the store rejects as external
+      - default-jre-headless
     override-pull: |
       craftctl default
       # Get the latest tag on the latest tagged commit (one commit can have several tags)
