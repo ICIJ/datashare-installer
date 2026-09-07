@@ -1,5 +1,5 @@
 name: datashare 
-base: core20
+base: core24
 adopt-info: datashare
 summary: Datashare is a self-hosted search engine for documents.
 website: https://datashare.icij.org
@@ -13,8 +13,8 @@ description: |
 grade: stable
 confinement: strict
 
-architectures:
-  - build-on: amd64
+platforms:
+  amd64:
 
 parts:
   datashare:
@@ -33,28 +33,28 @@ parts:
       - git
       - ca-certificates-java
     override-pull: |
-      snapcraftctl pull
+      craftctl default
       # Get the latest tag on the latest tagged commit (one commit can have several tags)
       last_tag="$(git describe --tags --abbrev=0)"
       version="$(git tag --sort=committerdate --points-at $last_tag | tail -1)"
-      snapcraftctl set-version "$(echo $version)"
+      craftctl set version="$(echo $version)"
       # Download and extract the release tgz to a "release" folder
       tgz_url="https://github.com/ICIJ/datashare-installer/releases/download/$version/datashare-$version.tgz"
       wget $tgz_url -O datashare.tgz
       tar -xvzf datashare.tgz --one-top-level=release
     override-build: |
       # Move the release's artifacts out of the part's src folder
-      mv $SNAPCRAFT_PART_SRC/release/* $SNAPCRAFT_PART_INSTALL
+      mv $CRAFT_PART_SRC/release/* $CRAFT_PART_INSTALL
       # Simplify the jar path to strip-out the version
-      mv $SNAPCRAFT_PART_INSTALL/datashare-dist-*-all.jar $SNAPCRAFT_PART_INSTALL/datashare.jar
+      mv $CRAFT_PART_INSTALL/datashare-dist-*-all.jar $CRAFT_PART_INSTALL/datashare.jar
       # Remove the arch part of the openjdk directory
-      mv $SNAPCRAFT_PART_INSTALL/usr/lib/jvm/java-21-openjdk-* $SNAPCRAFT_PART_INSTALL/usr/lib/jvm/java-21-openjdk || /bin/true
+      mv $CRAFT_PART_INSTALL/usr/lib/jvm/java-21-openjdk-* $CRAFT_PART_INSTALL/usr/lib/jvm/java-21-openjdk || /bin/true
       # Remove errored symlinks to the blacklist certificates
-      rm -f $SNAPCRAFT_PART_INSTALL/usr/lib/jvm/java-*-openjdk/lib/security/blacklisted.certs
-      rm -f $SNAPCRAFT_PART_INSTALL/usr/lib/jvm/java-*-openjdk-*/lib/security/blacklisted.certs
-      snapcraftctl build
+      rm -f $CRAFT_PART_INSTALL/usr/lib/jvm/java-*-openjdk/lib/security/blacklisted.certs
+      rm -f $CRAFT_PART_INSTALL/usr/lib/jvm/java-*-openjdk-*/lib/security/blacklisted.certs
+      craftctl default
     override-prime: |
-      snapcraftctl prime
+      craftctl default
       chmod +x datashare
 
 apps:
