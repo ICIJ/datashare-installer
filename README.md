@@ -35,8 +35,8 @@ The Datashare version the installers target is stored in [VERSION.txt](VERSION.t
 | [mac/](mac/) | macOS `.pkg` installer (flat package built with bomutils and xar, signed and notarized with rcodesign) |
 | [windows/](windows/) | Windows `.exe` installer ([NSIS](https://nsis.sourceforge.io/)) |
 | [snap/](snap/) | Linux [snap](https://snapcraft.io/datashare) definition |
-| [deploy.sh](deploy.sh) | Uploads built installers to a GitHub release (run by the [Datashare CI](https://github.com/ICIJ/datashare/blob/main/.circleci/config.yml)) |
-| [stats.py](stats.py) | Exports per-release download counts to `ds_stats.csv` |
+| [scripts/deploy.sh](scripts/deploy.sh) | Uploads built installers to a GitHub release (run by the [Datashare CI](https://github.com/ICIJ/datashare/blob/main/.circleci/config.yml)) |
+| [scripts/stats.py](scripts/stats.py) | Exports per-release download counts to `ds_stats.csv` |
 
 ## Build
 

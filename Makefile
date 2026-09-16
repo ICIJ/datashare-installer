@@ -14,7 +14,7 @@ windows: ## Build the Windows installer (windows/dist/datashare-$(VERSION).exe)
 	$(MAKE) -C windows VERSION=$(VERSION) all
 
 stats: ## Export release download stats to ds_stats.csv
-	python3 stats.py
+	python3 scripts/stats.py
 
 clean: ## Remove build artifacts
 	$(MAKE) -C mac clean
