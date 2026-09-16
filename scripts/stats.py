@@ -1,6 +1,5 @@
 import json
 import csv
-from ctypes import Array
 from urllib.request import urlopen
 
 TYPES_MAP = {
@@ -16,7 +15,7 @@ FIELD_NAMES = ['release', 'date'] + list(TYPES_MAP.values())
 def get_json():
     releases = []
     current_page = None
-    page_nb = 0
+    page_nb = 1
     while current_page is None or len(current_page) > 0:
         with urlopen(f'https://api.github.com/repos/ICIJ/datashare-installer/releases?per_page=100&page={page_nb}') as f:
             current_page = json.load(f)
