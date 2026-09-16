@@ -1,40 +1,81 @@
-# Datashare installers for Mac, Windows and Linux
+<p align="center">
+<a href="https://datashare.icij.org/">
+  <img src="https://datashare.icij.org/android-chrome-512x512.png" width="158px">
+</a>
+<br>
+Installers for Datashare
+</p>
 
-You will find several assets in [release list](https://github.com/ICIJ/datashare-installer/releases):
+<div align="center">
 
-* `datashare-6.5.0.pkg` : installer for MacOS
-* `datashare-6.5.0.exe` : installer for Windows
-* `datashare-6.5.0.deb` : installer for Ubuntu/Debian
-* `datashare-6.5.0.sh` :  bash shell script to run datashare with [Docker](https://www.docker.com/).
+| | Status |
+| --: | :-- |
+| **CI checks** | [![CircleCI](https://img.shields.io/circleci/build/github/ICIJ/datashare-installer/main?style=shield)](https://app.circleci.com/pipelines/github/ICIJ/datashare-installer) |
+| **Latest version** | [![Latest version](https://img.shields.io/github/v/tag/icij/datashare-installer?style=shield)](https://github.com/ICIJ/datashare-installer/releases/latest) |
+| **Release date** | [![Release date](https://img.shields.io/github/release-date/icij/datashare-installer?style=shield)](https://github.com/ICIJ/datashare-installer/releases/latest) |
+| **Snap Store** | [![datashare](https://snapcraft.io/datashare/badge.svg)](https://snapcraft.io/datashare) |
+| **Open issues** | [![Open issues](https://img.shields.io/github/issues/icij/datashare?style=shield&color=success)](https://github.com/ICIJ/datashare/issues/) |
 
-To compile installers, just run `make VERSION=10.15.0 clean all` in each OS directory.
+</div>
 
-## What installers do?
+# Datashare installers
 
-* **MacOS only**: ensure either XCode Command Line Tools or XCode are installed
-* **MacOS only**: ensure either MacPorts or Homebrew are installed
-* check if the JVM is installed and if not install it
-* check if the computer has tesseract OCR library installed and install it
-* installing a launcher script that uses -Jjava and sets the right runtime options for Datashare.
+This repository builds the [Datashare](https://datashare.icij.org/) installers for macOS, Windows and Linux. Each [release](https://github.com/ICIJ/datashare-installer/releases) publishes:
 
-## How they are built?
+* `datashare-X.Y.Z.pkg` — macOS installer
+* `datashare-X.Y.Z.exe` — Windows installer
+* the [datashare snap](https://snapcraft.io/datashare) for Linux, built from [snap/snapcraft.yaml](snap/snapcraft.yaml)
+
+The Datashare version the installers target is stored in [VERSION.txt](VERSION.txt).
+
+## Repository layout
+
+| Path | Purpose |
+| :-- | :-- |
+| [mac/](mac/) | macOS `.pkg` installer (flat package built with bomutils and xar, signed and notarized with rcodesign) |
+| [windows/](windows/) | Windows `.exe` installer ([NSIS](https://nsis.sourceforge.io/)) |
+| [snap/](snap/) | Linux [snap](https://snapcraft.io/datashare) definition |
+| [deploy.sh](deploy.sh) | Uploads built installers to a GitHub release |
+| [stats.py](stats.py) | Exports per-release download counts to `ds_stats.csv` |
+
+## Build
+
+Run `make help` to list targets. `VERSION` defaults to the content of `VERSION.txt`:
+
+```bash
+make mac                    # mac/dist/datashare-$(VERSION).pkg
+make windows                # windows/dist/datashare-$(VERSION).exe
+make VERSION=21.14.0 all    # both, for a specific version
+```
+
+### macOS
+
+Built as a flat package following [this tutorial](http://bomutils.dyndns.org/tutorial.html) (cf [mac/Makefile](mac/Makefile)). You need `cpio`, `imagemagick`, `icnsutils`, [bomutils](https://github.com/hogliux/bomutils), [xar](https://github.com/mackyle/xar) and [rcodesign](https://github.com/indygreg/apple-platform-rs) (apple-codesign crate). Signing and notarization require Apple credentials in environment variables: see [mac/README.md](mac/README.md).
 
 ### Windows
 
-It is based on [Nullsoft Scriptable Install System](http://nsis.sourceforge.net). 
+Built with [NSIS](https://nsis.sourceforge.io/) (`nsis` package on Ubuntu/Debian) and three plugins, each copied to `/usr/share/nsis/Plugins/`:
 
-You will need to install the package [nsis](https://packages.ubuntu.com/search?keywords=nsis) 
+* [INetC](https://nsis.sourceforge.io/Inetc_plug-in) (`x86-unicode/INetC.dll`)
+* [EnVar](https://nsis.sourceforge.io/EnVar_plug-in) (`x86-unicode/EnVar.dll`)
+* [Untgz](https://nsis.sourceforge.io/Untgz_plug-in) (`untgz.dll`)
 
-You will also need the [inetc plugin](http://nsis.sourceforge.net/Inetc_plug-in). Just copy the `Plugin/x86-ansi/INetC.dll` under `/usr/share/nsis/Plugins/x86-ansi/`
-
-You will also need the [EnVar plugin](https://nsis.sourceforge.io/EnVar_plug-in). Just copy the `Plugin/x86-ansi/EnVar.dll` under `/usr/share/nsis/Plugins/x86-ansi/`
-
-### MacOS 
-
-Based on [this tutorial](http://bomutils.dyndns.org/tutorial.html) (cf the [Makefile](mac/Makefile))
-
-You have to install the `cpio` package, [bomutils](https://github.com/hogliux/bomutils) and the [xar tarball](https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/xar/xar-1.5.2.tar.gz).
+See [.circleci/config.yml](.circleci/config.yml) for the exact setup.
 
 ### Linux
 
-It's a simple shell script that just runs docker-compose.
+The snap is built by Snapcraft from [snap/snapcraft.yaml](snap/snapcraft.yaml). It picks its version from the latest git tag and bundles OpenJDK 21, Tesseract OCR and the Datashare release tarball.
+
+## What the installers do
+
+* **macOS**: ensures Xcode Command Line Tools and a package manager (Homebrew, or MacPorts on older systems) are installed, installs Tesseract OCR and OpenJDK 21 with it, downloads the Datashare jar and Elasticsearch, installs `Datashare.app` and a `datashare` CLI.
+* **Windows**: downloads and installs the Temurin JRE 21, Tesseract OCR and Elasticsearch, downloads the Datashare jar and creates the launcher.
+* **Linux (snap)**: self-contained, bundles the JRE and Tesseract so nothing else is installed on the host.
+
+## Release
+
+```bash
+make deploy                 # uploads mac and windows artifacts to the GitHub release $(VERSION)
+```
+
+`deploy.sh` needs a `GITHUB_TOKEN` and an existing release tagged with the version.
