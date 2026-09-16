@@ -1,11 +1,11 @@
 DIST := dist
 RESOURCES := resources
-export VERSION := 20.3.0
+export VERSION ?= $(shell cat ../VERSION.txt)
 export APPNAME := Datashare
 export BUNDLE_ID := org.icij.datashare
 FLAT_PACKAGE_INSTALLER_NAME := datashare-${VERSION}.pkg
 
-PHONY: all clean
+.PHONY: all clean
 
 all: clean $(DIST)/$(FLAT_PACKAGE_INSTALLER_NAME)
 

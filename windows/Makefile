@@ -1,5 +1,5 @@
 export DIST=dist
-export VERSION=${VERSION}
+export VERSION ?= $(shell cat ../VERSION.txt)
 export APPNAME=Datashare
 export INSTALLER_NAME=datashare-${VERSION}.exe
 
@@ -12,6 +12,6 @@ $(DIST)/$(INSTALLER_NAME): $(DIST)
 		../mac/build/gen_file datashare.bat $(DIST)/datashare.bat
 		makensis datashare.nsi
 
-PHONY: clean
+.PHONY: all clean
 clean:
 		rm -rf ${DIST}
