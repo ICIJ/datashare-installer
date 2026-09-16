@@ -1,5 +1,6 @@
 export DIST=dist
 export VERSION ?= $(shell cat ../VERSION.txt)
+export ELASTICSEARCH_VERSION ?= $(shell cat ../ELASTICSEARCH_VERSION.txt)
 export APPNAME=Datashare
 export INSTALLER_NAME=datashare-${VERSION}.exe
 

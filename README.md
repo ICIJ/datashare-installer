@@ -26,7 +26,7 @@ This repository builds the [Datashare](https://datashare.icij.org/) installers f
 * `datashare-X.Y.Z.exe` — Windows installer
 * the [datashare snap](https://snapcraft.io/datashare) for Linux, built from [snap/snapcraft.yaml](snap/snapcraft.yaml)
 
-The Datashare version the installers target is stored in [VERSION.txt](VERSION.txt).
+The Datashare version the installers target is stored in [VERSION.txt](VERSION.txt), the bundled Elasticsearch version in [ELASTICSEARCH_VERSION.txt](ELASTICSEARCH_VERSION.txt).
 
 ## Repository layout
 
@@ -50,7 +50,7 @@ make VERSION=21.14.0 all    # both, for a specific version
 
 ### macOS
 
-Built as a flat package following [this tutorial](http://bomutils.dyndns.org/tutorial.html) (cf [mac/Makefile](mac/Makefile)). You need `cpio`, `imagemagick`, `icnsutils`, [bomutils](https://github.com/hogliux/bomutils), [xar](https://github.com/mackyle/xar) and [rcodesign](https://github.com/indygreg/apple-platform-rs) (apple-codesign crate). Signing and notarization require Apple credentials in environment variables: see [mac/README.md](mac/README.md).
+Built as a flat package following [this tutorial](http://bomutils.dyndns.org/tutorial.html) (cf [mac/Makefile](mac/Makefile)). You need `cpio`, `imagemagick`, `icnsutils`, [bomutils](https://github.com/hogliux/bomutils), [xar](https://github.com/mackyle/xar) and [rcodesign](https://github.com/indygreg/apple-platform-rs) (apple-codesign crate). `make -C mac package` builds an unsigned `.pkg` with no credentials. `make mac` (or `make -C mac all`) also signs and notarizes, which requires Apple credentials in environment variables: see [mac/README.md](mac/README.md).
 
 ### Windows
 

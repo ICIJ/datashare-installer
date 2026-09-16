@@ -26,8 +26,10 @@ jobs:
       - run:
           name: make windows
           command: |
-            cd windows
             # The version here does not matter
-            make VERSION=10.15.0 all
-            cd ..
+            make VERSION=10.15.0 windows
+      - run:
+          name: make mac (unsigned)
+          command: |
+            make -C mac VERSION=10.15.0 package
  

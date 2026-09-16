@@ -1,13 +1,16 @@
 DIST := dist
 RESOURCES := resources
 export VERSION ?= $(shell cat ../VERSION.txt)
+export ELASTICSEARCH_VERSION ?= $(shell cat ../ELASTICSEARCH_VERSION.txt)
 export APPNAME := Datashare
 export BUNDLE_ID := org.icij.datashare
 FLAT_PACKAGE_INSTALLER_NAME := datashare-${VERSION}.pkg
 
-.PHONY: all clean
+.PHONY: all package sign clean
 
-all: clean $(DIST)/$(FLAT_PACKAGE_INSTALLER_NAME)
+all: clean package sign
+
+package: $(DIST)/$(FLAT_PACKAGE_INSTALLER_NAME)
 
 clean:
 		rm -rf ${DIST}
@@ -32,6 +35,7 @@ $(DIST)/$(FLAT_PACKAGE_INSTALLER_NAME): start.sh $(DIST)/Datashare.icns
 
 		# Add Elasticsearch setup script
 		cp scripts/elasticsearch-setup.sh "${APPNAME}.app"/Contents/MacOS/
+		sed -i 's/__elasticsearch_version__/${ELASTICSEARCH_VERSION}/g' "${APPNAME}.app"/Contents/MacOS/elasticsearch-setup.sh
 
 		mv "${APPNAME}.app" $(DIST)/root/Applications/
 
@@ -40,6 +44,7 @@ $(DIST)/$(FLAT_PACKAGE_INSTALLER_NAME): start.sh $(DIST)/Datashare.icns
 		$(eval export POSTINSTALL=postinstall)
 		cp -a scripts $(DIST)
 		sed -i 's/__version__/"${VERSION}"/g' $(DIST)/scripts/postinstall
+		sed -i 's/__elasticsearch_version__/${ELASTICSEARCH_VERSION}/g' $(DIST)/scripts/postinstall $(DIST)/scripts/elasticsearch-setup.sh
 		( cd $(DIST)/scripts/ && find . | cpio -o --format odc --owner 0:80 | gzip -c ) > $(DIST)/flat/base.pkg/Scripts
 		( cd $(DIST)/root && find . | cpio -o --format odc --owner 0:80 | gzip -c ) > $(DIST)/flat/base.pkg/Payload
 		./build/gen_file PackageInfo $(DIST)/flat/base.pkg/PackageInfo $(DIST)
@@ -48,6 +53,7 @@ $(DIST)/$(FLAT_PACKAGE_INSTALLER_NAME): start.sh $(DIST)/Datashare.icns
 		( cd $(DIST)/flat && xar --compression none -cf "../$(FLAT_PACKAGE_INSTALLER_NAME)" * )
 		chmod +x "$(DIST)/$(FLAT_PACKAGE_INSTALLER_NAME)"
 
+sign:
 		# # Create transient files based on environment variables
 		@echo "$$APPSTORE_PRIVATE_KEY_B64" | base64 --decode > /tmp/appstore_private_key.asc
 		@echo "$$DATASHARE_CA_P12_B64" | base64 --decode > /tmp/datashare_ca.p12
