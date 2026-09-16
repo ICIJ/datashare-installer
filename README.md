@@ -35,7 +35,7 @@ The Datashare version the installers target is stored in [VERSION.txt](VERSION.t
 | [mac/](mac/) | macOS `.pkg` installer (flat package built with bomutils and xar, signed and notarized with rcodesign) |
 | [windows/](windows/) | Windows `.exe` installer ([NSIS](https://nsis.sourceforge.io/)) |
 | [snap/](snap/) | Linux [snap](https://snapcraft.io/datashare) definition |
-| [deploy.sh](deploy.sh) | Uploads built installers to a GitHub release |
+| [deploy.sh](deploy.sh) | Uploads built installers to a GitHub release (run by the [Datashare CI](https://github.com/ICIJ/datashare/blob/main/.circleci/config.yml)) |
 | [stats.py](stats.py) | Exports per-release download counts to `ds_stats.csv` |
 
 ## Build
@@ -71,11 +71,3 @@ The snap is built by Snapcraft from [snap/snapcraft.yaml](snap/snapcraft.yaml). 
 * **macOS**: ensures Xcode Command Line Tools and a package manager (Homebrew, or MacPorts on older systems) are installed, installs Tesseract OCR and OpenJDK 21 with it, downloads the Datashare jar and Elasticsearch, installs `Datashare.app` and a `datashare` CLI.
 * **Windows**: downloads and installs the Temurin JRE 21, Tesseract OCR and Elasticsearch, downloads the Datashare jar and creates the launcher.
 * **Linux (snap)**: self-contained, bundles the JRE and Tesseract so nothing else is installed on the host.
-
-## Release
-
-```bash
-make deploy                 # uploads mac and windows artifacts to the GitHub release $(VERSION)
-```
-
-`deploy.sh` needs a `GITHUB_TOKEN` and an existing release tagged with the version.
