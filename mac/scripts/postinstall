@@ -37,9 +37,8 @@ create_datashare_cli () {
     if ! command -v datashare 1>/dev/null 2>&1 ; then
         sudo ln -s /Applications/Datashare.app/Contents/MacOS/Datashare.command /usr/local/bin/datashare
         if [ $? -ne 0 ]; then
+            # The CLI is a convenience, its failure should not abort the install
             log_error "Unable to create Datashare CLI"
-            # TODO: uncomment this to exit here in case of failure
-#            return 1
         else
             log_info 'Successfully create datashare CLI'
         fi
