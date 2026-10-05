@@ -26,6 +26,7 @@ Icon "datashare.ico"
 !define TESSERACT_UNINSTALL_KEY_32 "SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Tesseract-OCR"
 !define TESSERACT_OCR_64_DOWNLOAD_URL "https://github.com/tesseract-ocr/tesseract/releases/download/${TESSERACT_VERSION}/tesseract-ocr-w64-setup-${TESSERACT_VERSION}.20241111.exe"
 !define TESSERACT_OCR_64_PATH "$TEMP\tesseract-ocr-setup-5.exe"
+!define TESSERACT_SCRIPT_DOWNLOAD_URL "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/main/script"
 # Pinned Temurin JRE, bump manually when a new 21.x GA is released (https://adoptium.net/temurin/releases/)
 !define OPEN_JRE_64_DOWNLOAD_URL "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.5%2B11/OpenJDK21U-jre_x64_windows_hotspot_21.0.5_11.msi"
 !define OPEN_JRE_64_PATH "$TEMP\openjdk-jre-x64-windows-hotspot-21.msi"
@@ -278,6 +279,37 @@ Function InstallTesseractOCR64
     TessDone:
 FunctionEnd
 
+!macro InstallTesseractScript MODEL
+    ${IfNot} ${FileExists} "$2\tessdata\script\${MODEL}.traineddata"
+        DetailPrint "Downloading Tesseract ${MODEL} script model"
+        inetc::get "${TESSERACT_SCRIPT_DOWNLOAD_URL}/${MODEL}.traineddata" "$2\tessdata\script\${MODEL}.traineddata" /end
+        Pop $0
+        DetailPrint "Download Status: $0"
+        ${If} $0 != "OK"
+            DetailPrint "Tesseract ${MODEL} script model not installed, OCR language detection will fall back to English"
+        ${EndIf}
+    ${EndIf}
+!macroend
+
+Function InstallTesseractScripts
+    SetRegView 64
+    ReadRegStr $1 HKLM "${TESSERACT_UNINSTALL_KEY_64}" "UninstallString"
+    ${If} $1 == ""
+        DetailPrint "Tesseract not found, skipping its script models"
+        Return
+    ${EndIf}
+    Push $1
+    Call GetParent
+    Pop $2
+    CreateDirectory "$2\tessdata\script"
+    !insertmacro InstallTesseractScript Latin
+    !insertmacro InstallTesseractScript HanS
+    !insertmacro InstallTesseractScript Cyrillic
+    !insertmacro InstallTesseractScript Arabic
+    !insertmacro InstallTesseractScript Japanese
+    !insertmacro InstallTesseractScript Hangul
+FunctionEnd
+
 Function InstallElasticsearch
     # Define Elasticsearch home directory
     StrCpy $R9 "$APPDATA\Datashare\elasticsearch"
@@ -419,6 +451,7 @@ Section "install"
   ${If} ${RunningX64}
     Call InstallOpenJre64
     Call InstallTesseractOCR64
+    Call InstallTesseractScripts
     Call InstallElasticsearch
 
   ${Else}
