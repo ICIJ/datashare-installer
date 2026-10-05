@@ -27,6 +27,12 @@ parts:
       - tesseract-ocr-fra
       - tesseract-ocr-deu
       - tesseract-ocr-spa
+      - tesseract-ocr-script-arab
+      - tesseract-ocr-script-cyrl
+      - tesseract-ocr-script-hang
+      - tesseract-ocr-script-hans
+      - tesseract-ocr-script-jpan
+      - tesseract-ocr-script-latn
       - ca-certificates-java
     build-packages:
       - wget
@@ -56,6 +62,12 @@ parts:
       # Remove errored symlinks to the blacklist certificates
       rm -f $CRAFT_PART_INSTALL/usr/lib/jvm/java-*-openjdk/lib/security/blacklisted.certs
       rm -f $CRAFT_PART_INSTALL/usr/lib/jvm/java-*-openjdk-*/lib/security/blacklisted.certs
+      # Ubuntu installs the script models at the tessdata root, extract only finds them under tessdata/script/
+      tessdata=$CRAFT_PART_INSTALL/usr/share/tesseract-ocr/5/tessdata
+      mkdir -p $tessdata/script
+      for model in Latin HanS Cyrillic Arabic Japanese Hangul; do
+        ln -s ../$model.traineddata $tessdata/script/$model.traineddata
+      done
       craftctl default
     override-prime: |
       craftctl default
