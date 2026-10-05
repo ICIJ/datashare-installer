@@ -42,6 +42,7 @@ system_summary () {
   log_if is_homebrew_installed "=> Homebrew: Installed" "=> Homebrew: Not Installed"
   log_if is_macports_installed "=> MacPorts: Installed" "=> MacPorts: Not Installed"
   log_if is_tesseract_installed "=> Tesseract: Installed" "=> Tesseract: Not Installed"
+  log_if are_tesseract_scripts_installed "=> Tesseract script models: Installed" "=> Tesseract script models: Not Installed"
   log_if is_jre_installed "=> OpenJDK $jre_version: Installed" "=> OpenJDK $jre_version: Not Installed"
 }
 
@@ -99,6 +100,11 @@ is_tesseract_installed () {
     return 1
   fi
   return
+}
+
+are_tesseract_scripts_installed () {
+  # Extract needs the script models to detect the OCR language of each image
+  tesseract --list-langs 2>&1 | grep -qx 'script/Latin'
 }
 
 is_jre_installed () {
@@ -241,6 +247,16 @@ install_tesseract_with_homebrew () {
   log_info 'Successfully installed Tesseract, imagemagick and leptonica with Homebrew.'
 }
 
+install_tesseract_scripts_with_homebrew () {
+  log_info 'Installing Tesseract script models with Homebrew...'
+  # We don't exit on failure because Datashare falls back to English OCR without them.
+  if ! sudo -i -u "${USER}" brew install tesseract-lang; then
+    log_error 'Failed to install Tesseract script models with Homebrew.'
+    return
+  fi
+  log_info 'Successfully installed Tesseract script models with Homebrew.'
+}
+
 install_tesseract_with_macports () {
   log_info 'Installing Tesseract and leptonica with MacPorts...'
   sudo "$macports_bin" -N install tesseract tesseract-eng tesseract-spa tesseract-fra leptonica
@@ -323,5 +339,7 @@ if ! is_xcode_cli_tools_installed && ! is_xcode_installed ; then install_xcode_c
 if is_macports_installed ; then update_macports ; elif ! is_homebrew_installed ; then install_package_manager ; fi
 # Tesseract is not installed
 if ! is_tesseract_installed ; then install_tesseract ; fi
+# Tesseract script models are not installed (MacPorts has no package for them)
+if is_homebrew_installed && ! are_tesseract_scripts_installed ; then install_tesseract_scripts_with_homebrew ; fi
 # Java JRE is not installed
 if ! is_jre_installed ; then install_jre ; fi
