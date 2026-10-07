@@ -162,9 +162,10 @@ install_xcode_cli_tools () {
 
 install_package_manager() {
   os_version=$(get_os_version)
+  os_major=${os_version%%.*}
   # Decide which package manager to install based on the OS version.
-  # For macOS 14 Sonoma and later, install Homebrew.
-  if [[ $os_version == 26.* || $os_version == 15.* || $os_version == 14.* || $os_version == 13.* ]]; then
+  # For macOS 13 Ventura and later, install Homebrew.
+  if (( os_major >= 13 )); then
     install_homebrew ;
   # For macOS 12 Monterey and earlier, install MacPorts.
   elif [[ $os_version == 12.* || $os_version == 11.* || $os_version == 10.15.* ]]; then
