@@ -19,9 +19,6 @@ if /i "%CURRENT_DIR%"=="%APPDATA%\Datashare" (
     )
 )
 
-:: Ensure the current dir is active
-cd /d "%CURRENT_DIR%"
-
 :: Check if the Datashare JAR exists in the current directory
 set "JAR_FILE="
 for %%f in ("%CURRENT_DIR%\datashare-dist-*-all.jar") do set "JAR_FILE=%%f"
@@ -102,7 +99,7 @@ if defined IS_SUBCOMMAND (
     :: same DB / data dir / config as the running app. --mode is omitted
     :: because each subcommand picks its own mode on the Java side.
     :: User-supplied flags still override these (picocli takes the last value).
-    %java_exe% -cp "dist;%JAR_FILE%" ^
+    %java_exe% -cp "%CURRENT_DIR%\dist;%JAR_FILE%" ^
       %DS_JAVA_OPTS% org.icij.datashare.Main ^
       --defaultUserName "%USERNAME%" ^
       --dataDir "%CURRENT_DIR%"\data ^
@@ -115,7 +112,7 @@ if defined IS_SUBCOMMAND (
       --elasticsearchDataPath "%CURRENT_DIR%"\index ^
       %*
 ) else (
-    %java_exe% -cp "dist;%JAR_FILE%" ^
+    %java_exe% -cp "%CURRENT_DIR%\dist;%JAR_FILE%" ^
       %DS_JAVA_OPTS% org.icij.datashare.Main ^
       app start ^
       --dataDir "%CURRENT_DIR%"\data ^
