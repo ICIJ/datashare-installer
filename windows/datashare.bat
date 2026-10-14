@@ -112,6 +112,8 @@ if defined IS_SUBCOMMAND (
       --elasticsearchDataPath "%CURRENT_DIR%"\index ^
       %*
 ) else (
+    :: keep .\logs under the installation directory for the desktop app
+    cd /d "%CURRENT_DIR%"
     %java_exe% -cp "%CURRENT_DIR%\dist;%JAR_FILE%" ^
       %DS_JAVA_OPTS% org.icij.datashare.Main ^
       app start ^
