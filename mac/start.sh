@@ -147,7 +147,7 @@ else
     is_subcommand=false
     for _arg in "$@"; do
         case "$_arg" in
-            app|worker|stage|plugin|extension|api-key|user|project|help)
+            app|worker|stage|plugin|extension|api-key|user|project|entities|help)
                 is_subcommand=true
                 break
                 ;;

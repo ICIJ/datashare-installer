@@ -93,6 +93,7 @@ for %%a in (%*) do (
     if /i "%%~a"=="api-key"   set "IS_SUBCOMMAND=1"
     if /i "%%~a"=="user"      set "IS_SUBCOMMAND=1"
     if /i "%%~a"=="project"   set "IS_SUBCOMMAND=1"
+    if /i "%%~a"=="entities"  set "IS_SUBCOMMAND=1"
     if /i "%%~a"=="help"      set "IS_SUBCOMMAND=1"
 )
 
