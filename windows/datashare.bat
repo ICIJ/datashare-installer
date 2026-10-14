@@ -100,8 +100,8 @@ for %%a in (%*) do (
 if defined IS_SUBCOMMAND (
     :: Subcommand style: inject path defaults so CLI invocations talk to the
     :: same DB / data dir / config as the running app. --mode is omitted
-    :: because picocli subcommands force mode=CLI internally. User-supplied
-    :: flags still override these (picocli takes the last value).
+    :: because each subcommand picks its own mode on the Java side.
+    :: User-supplied flags still override these (picocli takes the last value).
     %java_exe% -cp "dist;%JAR_FILE%" ^
       %DS_JAVA_OPTS% org.icij.datashare.Main ^
       --defaultUserName "%USERNAME%" ^
