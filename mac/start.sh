@@ -115,14 +115,14 @@ for version in "${preferred_java_versions[@]}"; do
     java_home=$(get_java_home "$version")
     if [[ -n "$java_home" ]]; then
         java_bin="$java_home/bin/java"
-        echo "Using Java at $java_bin"
+        echo "Using Java at $java_bin" >&2
         break
     fi
 done
 
 # Check if Java was found
 if [[ -z "$java_bin" ]]; then
-    echo "None of the preferred Java versions (Java ${preferred_java_versions[*]}) are installed."
+    echo "None of the preferred Java versions (Java ${preferred_java_versions[*]}) are installed." >&2
     exit 1
 fi
 
@@ -133,7 +133,7 @@ if [[ $# -eq 0 ]]; then
 
     # Check if the PID file exists and is already running
     if [[ -f "$pid_file" ]] && kill -0 "$pid" > /dev/null 2>&1; then
-        echo "Datashare is already running (PID: $pid)"
+        echo "Datashare is already running (PID: $pid)" >&2
     else
         # If the PID file does not exist, store its PID in the PID file
         save_pid
