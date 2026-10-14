@@ -68,6 +68,7 @@ function start_datashare {
 }
 
 function start_datashare_with_defaults {
+    cd "$datashare_home_path" || exit # keep ./logs under the Datashare home for the desktop app
     local default_params=(
       app start
       --dataDir "$datashare_data_path"
