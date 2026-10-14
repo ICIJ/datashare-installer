@@ -92,7 +92,7 @@ function start_datashare_with_defaults {
 
 # Inject the same environment-derived paths the legacy path uses so CLI
 # invocations talk to the same DB / data dir / config as the running app.
-# --mode is omitted because picocli subcommands force mode=CLI internally.
+# --mode is omitted because each subcommand picks its own mode on the Java side.
 # User-supplied flags still override these (picocli takes the last value).
 function start_datashare_with_subcommand_defaults {
     local default_params=(
