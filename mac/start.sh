@@ -48,8 +48,6 @@ function start_datashare {
         DS_JAVA_OPTS="-Xmx${mem_allocated}m"
     fi
 
-    cd "/Users/${USER}/Library/Datashare" || exit # needed for /dist
-
     # OMP_THREAD_LIMIT caps tesseract/Leptonica OpenMP fan-out to one thread per
     # OCR so parallelism x OMP ~= vCPUs (no CPU oversubscription, no OCR-timeout
     # document loss). Exported process-wide on purpose: it also reaches the spaCy
@@ -65,7 +63,7 @@ function start_datashare {
         -Djava.system.class.loader=org.icij.datashare.DynamicClassLoader \
         -Djava.net.preferIPv4Stack=true \
         ${DS_JAVA_OPTS} \
-        -cp "./dist:/Applications/Datashare.app/Contents/Resources/datashare-dist-${datashare_version}-all.jar" org.icij.datashare.Main \
+        -cp "${datashare_dist_path}:/Applications/Datashare.app/Contents/Resources/datashare-dist-${datashare_version}-all.jar" org.icij.datashare.Main \
         "$@"
 }
 
