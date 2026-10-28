@@ -64,6 +64,21 @@ if "%java_exe%" == "" (
     exit /b 1
 )
 
+:: Memory settings. Neither JVM gets a heap size from this launcher. To set one,
+:: define these variables either by uncommenting the `set` lines below (needs
+:: admin rights, lost when Datashare is updated) or in the Windows "Environment
+:: Variables" dialog (user variables, kept across Datashare updates):
+::   DS_JAVA_OPTS  extra JVM options for Datashare. Without -Xmx, the JVM caps
+::                 its heap at 25% of the machine RAM.
+::   ES_JAVA_OPTS  JVM options for Elasticsearch. Not used here: Datashare starts
+::                 elasticsearch.bat as a child process, which inherits the
+::                 environment and reads it. Without it, Elasticsearch sizes
+::                 its heap from the machine RAM.
+:: If Datashare or Elasticsearch fails to start, we recommend these values, to
+:: adjust to the available memory:
+:: set "DS_JAVA_OPTS=-Xmx2g"
+:: set "ES_JAVA_OPTS=-Xms2g -Xmx2g"
+::
 :: Set JVM options (include user-defined DS_JAVA_OPTS if they exist)
 set DS_JAVA_OPTS=%DS_JAVA_OPTS% --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.net=ALL-UNNAMED -DPROD_MODE=true -Dfile.encoding=UTF-8 -Djava.system.class.loader=org.icij.datashare.DynamicClassLoader
 
