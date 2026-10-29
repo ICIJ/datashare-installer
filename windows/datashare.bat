@@ -65,9 +65,9 @@ if "%java_exe%" == "" (
 )
 
 :: Memory settings. Neither JVM gets a heap size from this launcher. To set one,
-:: define these variables either by uncommenting the `set` lines below (needs
-:: admin rights, lost when Datashare is updated) or in the Windows "Environment
-:: Variables" dialog (user variables, kept across Datashare updates):
+:: define these variables either by uncommenting the `set` lines below (lost
+:: when Datashare is updated) or in the Windows "Environment Variables" dialog
+:: (user variables, kept across Datashare updates):
 ::   DS_JAVA_OPTS  extra JVM options for Datashare. Without -Xmx, the JVM caps
 ::                 its heap at 25% of the machine RAM.
 ::   ES_JAVA_OPTS  JVM options for Elasticsearch. Not used here: Datashare starts
