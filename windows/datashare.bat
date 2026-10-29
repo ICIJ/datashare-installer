@@ -109,11 +109,15 @@ for %%a in (%*) do (
     if /i "%%~a"=="help"      set "IS_SUBCOMMAND=1"
 )
 
+:: Subcommand style: inject path defaults so CLI invocations talk to the
+:: same DB / data dir / config as the running app. --mode is omitted
+:: because each subcommand picks its own mode on the Java side.
+:: User-supplied flags still override these (picocli takes the last value).
+:: Otherwise start the desktop app from the installation directory, to keep
+:: .\logs there.
+:: Keep comments out of the ( ) blocks below: cmd parses `::` lines inside a
+:: block, so a parenthesis or a dot in them breaks the whole script.
 if defined IS_SUBCOMMAND (
-    :: Subcommand style: inject path defaults so CLI invocations talk to the
-    :: same DB / data dir / config as the running app. --mode is omitted
-    :: because each subcommand picks its own mode on the Java side.
-    :: User-supplied flags still override these (picocli takes the last value).
     %java_exe% -cp "%CURRENT_DIR%\dist;%JAR_FILE%" ^
       %DS_JAVA_OPTS% org.icij.datashare.Main ^
       --defaultUserName "%USERNAME%" ^
@@ -127,7 +131,6 @@ if defined IS_SUBCOMMAND (
       --elasticsearchDataPath "%CURRENT_DIR%"\index ^
       %*
 ) else (
-    :: keep .\logs under the installation directory for the desktop app
     cd /d "%CURRENT_DIR%"
     %java_exe% -cp "%CURRENT_DIR%\dist;%JAR_FILE%" ^
       %DS_JAVA_OPTS% org.icij.datashare.Main ^
