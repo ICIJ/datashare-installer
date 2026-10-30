@@ -1,4 +1,4 @@
-version: 2
+version: 2.1
 jobs:
   build:
     docker:
@@ -32,4 +32,8 @@ jobs:
           name: make mac (unsigned)
           command: |
             make -C mac VERSION=10.15.0 package
- 
+
+workflows:
+  build:
+    jobs:
+      - build
